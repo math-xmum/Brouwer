@@ -4,6 +4,6 @@ A constructive formalization in Lean 4 connecting combinatorial and topological 
 
 This formalization is based on **Nikolai V. Ivanov**'s article "**Beyond Sperner's Lemma**".
 
-### This lean4 code is run under leanprover/lean4:v4.22.0-rc4
+### This lean4 code is run under leanprover/lean4:v4.22.0-rc4.
 
 
