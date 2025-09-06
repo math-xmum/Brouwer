@@ -480,7 +480,6 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
 
 end finiteness
 
--- 有界向量的L2范数上界定理
 theorem norm_bound_of_coord_bound (n : ℕ) (v : Fin n → ℝ) (bound : ℝ)
     (h_nonneg_bound : bound ≥ 0) (h_coord_bound : ∀ i : Fin n, abs (v i) ≤ bound) :
     Real.sqrt (∑ i, v i ^ 2) ≤ Real.sqrt (n : ℝ) * bound := by
@@ -718,7 +717,6 @@ theorem f_coords_ge_z_coords (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
       have f_y_seq_φ_converges_to_f_z : Filter.Tendsto (f ∘ y_seq ∘ φ) Filter.atTop (𝓝 (f z)) := by
         exact hf.continuousAt.tendsto.comp y_seq_φ_converges_to_z
 
-      -- The coordinates are continuous functions, so the sequences of coordinates also converge.
       have f_y_seq_φ_coord_converges : Filter.Tendsto (fun l' => (f (y_seq (φ l'))).1 idx) Filter.atTop (𝓝 ((f z).1 idx)) := by
         have h_continuous : Continuous (fun x : stdSimplex ℝ (Fin n) => x.1 idx) :=
           Continuous.comp (continuous_apply idx) continuous_subtype_val
