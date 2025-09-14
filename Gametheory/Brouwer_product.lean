@@ -5,21 +5,26 @@ open Filter
 section Brouwer.ProductRetraction
 variable {I : Type*} [Fintype I] [DecidableEq I] [Inhabited I] [LinearOrder I] (card : I → ℕ+)
 
+/-- Total number of coordinates: the sum of `card i` over all `i`. -/
 noncomputable def total_card (card : I → ℕ+) : ℕ+ := ⟨(Finset.univ : Finset I).sum (fun i => (card i : ℕ)), by
   apply Finset.sum_pos
   · simp
   · exact Finset.univ_nonempty⟩
 
+/-- The big simplex on `total_card card` coordinates. -/
 abbrev BigSimplex := stdSimplex ℝ (Fin (total_card card))
 
+/-- The product of simplices indexed by `I`. -/
 abbrev ProductSimplices := (i : I) → stdSimplex ℝ (Fin (card i))
 
 
 
+/-- Cumulative sum of `card` over indices strictly less than `i`. -/
 noncomputable def prefix_sum (card : I → ℕ+) (i : I) : ℕ :=
   ∑ j ∈ Finset.univ.filter (· < i), (card j : ℕ)
 
 
+/-- A flat index `k` belongs to a unique block `i` with an in-block index `j`. -/
 lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (card i)),
     prefix_sum card p.1 ≤ k.val ∧ k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
     p.2.val = k.val - prefix_sum card p.1 := by
@@ -97,15 +102,18 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
   use { fst := i₀, snd := ⟨k.val - prefix_sum card i₀, by
     rw [Nat.sub_lt_iff_lt_add h_le]; rwa [add_comm]⟩ }
 
+/-- Split a flat index `k` into its block/index pair `(i, j)`. -/
 noncomputable def index_split (k : Fin (total_card card)) : Σ i, Fin (card i) :=
   Classical.choose (index_split_existence card k)
 
+/-- Specification of `index_split`: bounds and value relation for `(i, j)`. -/
 lemma index_split_spec (k : Fin (total_card card)) :
   let p := index_split card k
   prefix_sum card p.1 ≤ k.val ∧ k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
   p.2.val = k.val - prefix_sum card p.1 :=
   Classical.choose_spec (index_split_existence card k)
 
+/-- Combine a block/index pair `(i, j)` back into a flat index. -/
 noncomputable def index_combine (p : Σ i, Fin (card i)) : Fin (total_card card) :=
   ⟨prefix_sum card p.1 + (p.2 : ℕ), by
     have h1 : prefix_sum card p.1 + (p.2 : ℕ) < prefix_sum card p.1 + (card p.1 : ℕ) := by
@@ -125,6 +133,7 @@ noncomputable def index_combine (p : Σ i, Fin (card i)) : Fin (total_card card)
     exact lt_of_lt_of_le h1 h2⟩
 
 
+/-- `index_split` is a left inverse to `index_combine`. -/
 lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (index_combine card p) = p := by
   classical
   cases p with
@@ -186,6 +195,7 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
         exact hj_val
       simpa [hsplit] using hj'
 
+/-- `index_combine` is a left inverse to `index_split`. -/
 lemma index_combine_split_inverse (k : Fin (total_card card)) : index_combine card (index_split card k) = k := by
   classical
   have hspec := index_split_spec card k
@@ -193,11 +203,14 @@ lemma index_combine_split_inverse (k : Fin (total_card card)) : index_combine ca
   simp [index_combine, hspec.2.2, Nat.add_sub_of_le hspec.1]
 
 
+/-- Weight (size fraction) of block `i`: `(card i) / (total_card card)`. -/
 noncomputable def blockWeight (i : I) : ℝ := (card i : ℝ) / (total_card card : ℝ)
 
+/-- Sum of coordinates of `x` over the block `i`. -/
 noncomputable def blockSum (i : I) (x : BigSimplex card) : ℝ :=
   ∑ j : Fin (card i), x.1 (index_combine card ⟨i, j⟩)
 
+/-- The uniform point in each block simplex. -/
 noncomputable def uniformProduct : ProductSimplices card :=
   fun i =>
     (⟨fun _ => (1 : ℝ) / (card i : ℝ), by
@@ -207,6 +220,7 @@ noncomputable def uniformProduct : ProductSimplices card :=
       · simp [Finset.sum_const]
     ⟩ : stdSimplex ℝ (Fin (card i)))
 
+/-- The uniform point in the big simplex. -/
 noncomputable def z_uniform : BigSimplex card :=
   ⟨fun _ => (1 : ℝ) / (total_card card : ℝ), by
     simp only [stdSimplex, Set.mem_setOf_eq]
@@ -222,12 +236,15 @@ noncomputable def z_uniform : BigSimplex card :=
       simp [Finset.sum_const, (ne_of_gt hpos)]
   ⟩
 
+/-- Total positive shortfall of block sums relative to block weights. -/
 noncomputable def deficit (x : BigSimplex card) : ℝ :=
   ∑ i, max (0 : ℝ) ((blockWeight card i) - blockSum card i x)
 
+/-- Amount to push `x` toward `z_uniform` (always in `[0, 1]`). -/
 noncomputable def tPush (x : BigSimplex card) : ℝ :=
   (deficit card x) / (1 + deficit card x)
 
+/-- Convex push of `x` toward `z_uniform` by amount `tPush`. -/
 noncomputable def pushTowardsZ (x : BigSimplex card) : BigSimplex card :=
   ⟨fun k => (1 - tPush card x) * x.1 k + (tPush card x) * (z_uniform card).1 k, by
     simp only [stdSimplex, Set.mem_setOf_eq]
@@ -274,6 +291,7 @@ noncomputable def pushTowardsZ (x : BigSimplex card) : BigSimplex card :=
               simp [hx_sum, hz_sum]
   ⟩
 
+/-- Retraction from the big simplex to the product of simplices. -/
 noncomputable def project_to_product (x : BigSimplex card) : ProductSimplices card :=
   fun i =>
     let y := pushTowardsZ card x
@@ -353,6 +371,7 @@ noncomputable def project_to_product (x : BigSimplex card) : ProductSimplices ca
         field_simp
     ⟩ : stdSimplex ℝ (Fin (card i)))
 
+/-- Embedding of the product of simplices into the big simplex. -/
 noncomputable def embed_from_product (y : ProductSimplices card) : BigSimplex card :=
   ⟨fun k =>
     let p := index_split card k
@@ -391,6 +410,7 @@ noncomputable def embed_from_product (y : ProductSimplices card) : BigSimplex ca
       rw [h_numerator]
       field_simp⟩
 
+/-- `project_to_product ∘ embed_from_product = id`. -/
 lemma project_embed_id (y : ProductSimplices card) :
   project_to_product card (embed_from_product card y) = y := by
   classical
@@ -466,6 +486,7 @@ lemma project_embed_id (y : ProductSimplices card) :
   simpa [h_norm_eq_div] using h_div_cancel
 
 
+/-- Continuity of `project_to_product`. -/
 lemma project_continuous : Continuous (project_to_product card) := by
   apply continuous_pi
   intro i
@@ -625,6 +646,7 @@ lemma project_continuous : Continuous (project_to_product card) := by
   simpa [project_to_product, blockSum] using h_div
 
 
+/-- Continuity of `embed_from_product`. -/
 lemma embed_continuous : Continuous (embed_from_product card) := by
   apply Continuous.subtype_mk
   apply continuous_pi
@@ -652,7 +674,7 @@ lemma embed_continuous : Continuous (embed_from_product card) := by
       exact PNat.pos (card i)
     · exact Finset.univ_nonempty
 
--- Main theorem: Brouwer for product of simplices using retraction
+/-- Brouwer fixed point theorem for a product of simplices, via a retraction. -/
 theorem Brouwer_Product
   (f : ProductSimplices card → ProductSimplices card) (hf : Continuous f) :
   ∃ x : ProductSimplices card, f x = x := by
