@@ -20,86 +20,91 @@ noncomputable def prefix_sum (card : I → ℕ+) (i : I) : ℕ :=
   ∑ j ∈ Finset.univ.filter (· < i), (card j : ℕ)
 
 
-noncomputable def index_split (k : Fin (total_card card)) : Σ i, Fin (card i) :=
-  Classical.choose (by
-    have h : ∃ (p : Σ i, Fin (card i)),
-      prefix_sum card p.1 ≤ k.val ∧ k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
-      p.2.val = k.val - prefix_sum card p.1 := by
-      let prefix_sum_inclusive (i : I) : ℕ := ∑ j ∈ Finset.univ.filter (· ≤ i), (card j : ℕ)
-      let S : Set I := {i | k.val < prefix_sum_inclusive i}
-      have s_nonempty : S.Nonempty := by
-        let i_max := (Finset.univ : Finset I).max' Finset.univ_nonempty
-        use i_max
-        have h_sum_eq_total : prefix_sum_inclusive i_max = (total_card card : ℕ) := by
-          simp only [prefix_sum_inclusive, total_card]
-          rw [Finset.filter_true_of_mem]
-          simp
-          intro j _; exact Finset.le_max' _ _ (Finset.mem_univ j)
-        show k.val < prefix_sum_inclusive i_max
-        rw [h_sum_eq_total]
-        exact k.is_lt
-      let i₀ := @WellFounded.min I (· < ·) wellFounded_lt S s_nonempty
-      have i₀_in_S : i₀ ∈ S := WellFounded.min_mem wellFounded_lt S s_nonempty
-      have i₀_is_min : ∀ j < i₀, j ∉ S := fun j hlt => by
-        intro hj
-        have := WellFounded.min_le wellFounded_lt hj
-        exact not_le_of_gt hlt this
-      have h_lt : k.val < prefix_sum card i₀ + (card i₀ : ℕ) := by
-        simp at i₀_in_S
-        change k.val < (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) at i₀_in_S
-        have : (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) =
-                (∑ j ∈ Finset.univ.filter (· < i₀), (card j : ℕ)) + (card i₀ : ℕ) := by
-          have h_split : Finset.univ.filter (· ≤ i₀) = Finset.univ.filter (· < i₀) ∪ {i₀} := by
-            ext j
-            simp [le_iff_lt_or_eq]
-          rw [h_split, Finset.sum_union]
-          · simp
-          · simp
-        rwa [this] at i₀_in_S
-      have h_le : prefix_sum card i₀ ≤ k.val := by
-        by_cases h_i₀_is_min : i₀ = (Finset.univ.min' Finset.univ_nonempty)
-        · rw [h_i₀_is_min, prefix_sum]
-          rw [Finset.sum_eq_zero]
-          · exact Nat.zero_le _
-          · intro j hj
-            simp only [Finset.mem_filter] at hj
-            exact False.elim (not_lt_of_ge (Finset.min'_le _ _ (Finset.mem_univ j)) hj.2)
-        · let pred_set := Finset.univ.filter (· < i₀)
-          have pred_set_nonempty : pred_set.Nonempty := by
-            have : i₀ ≠ Finset.univ.min' Finset.univ_nonempty := h_i₀_is_min
-            have : ¬ (∀ j ∈ Finset.univ, i₀ ≤ j) := by
-              intro h_all_ge
-              have h_min : i₀ = Finset.univ.min' Finset.univ_nonempty := by
-                apply le_antisymm
-                · exact h_all_ge (Finset.univ.min' Finset.univ_nonempty) (Finset.mem_univ _)
-                · exact Finset.min'_le _ _ (Finset.mem_univ i₀)
-              exact this h_min
-            push_neg at this
-            obtain ⟨j, _, hj⟩ := this
-            exact ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hj⟩⟩
-          let j₀ := pred_set.max' pred_set_nonempty
-          have j₀_lt_i₀ : j₀ < i₀ := by
-            have h_mem : j₀ ∈ pred_set := Finset.max'_mem pred_set pred_set_nonempty
-            exact (Finset.mem_filter.mp h_mem).2
-          have j₀_notin_S : j₀ ∉ S := i₀_is_min j₀ j₀_lt_i₀
-          have j₀_ineq : prefix_sum_inclusive j₀ ≤ k.val := by
-            simp only [S, Set.mem_setOf_eq] at j₀_notin_S
-            exact le_of_not_gt j₀_notin_S
-          have : prefix_sum card i₀ = prefix_sum_inclusive j₀ := by
-            simp only [prefix_sum, prefix_sum_inclusive]
-            congr 1
-            ext x
-            simp only [Finset.mem_filter]
-            apply Iff.intro
-            · intro h_x_lt_i₀
-              exact ⟨Finset.mem_univ x, Finset.le_max' pred_set x (Finset.mem_filter.mpr h_x_lt_i₀)⟩
-            · intro h_x_le_j₀
-              exact ⟨Finset.mem_univ x, lt_of_le_of_lt h_x_le_j₀.2 j₀_lt_i₀⟩
-          exact this ▸ j₀_ineq
-      use { fst := i₀, snd := ⟨k.val - prefix_sum card i₀, by
-        rw [Nat.sub_lt_iff_lt_add h_le]; rwa [add_comm]⟩ }
+lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (card i)),
+    prefix_sum card p.1 ≤ k.val ∧ k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
+    p.2.val = k.val - prefix_sum card p.1 := by
+  let prefix_sum_inclusive (i : I) : ℕ := ∑ j ∈ Finset.univ.filter (· ≤ i), (card j : ℕ)
+  let S : Set I := {i | k.val < prefix_sum_inclusive i}
+  have s_nonempty : S.Nonempty := by
+    let i_max := (Finset.univ : Finset I).max' Finset.univ_nonempty
+    use i_max
+    have h_sum_eq_total : prefix_sum_inclusive i_max = (total_card card : ℕ) := by
+      simp only [prefix_sum_inclusive, total_card]
+      rw [Finset.filter_true_of_mem]
+      simp
+      intro j _; exact Finset.le_max' _ _ (Finset.mem_univ j)
+    show k.val < prefix_sum_inclusive i_max
+    rw [h_sum_eq_total]
+    exact k.is_lt
+  let i₀ := @WellFounded.min I (· < ·) wellFounded_lt S s_nonempty
+  have i₀_in_S : i₀ ∈ S := WellFounded.min_mem wellFounded_lt S s_nonempty
+  have i₀_is_min : ∀ j < i₀, j ∉ S := fun j hlt => by
+    intro hj
+    have := WellFounded.min_le wellFounded_lt hj
+    exact not_le_of_gt hlt this
+  have h_lt : k.val < prefix_sum card i₀ + (card i₀ : ℕ) := by
+    simp at i₀_in_S
+    change k.val < (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) at i₀_in_S
+    have : (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) =
+            (∑ j ∈ Finset.univ.filter (· < i₀), (card j : ℕ)) + (card i₀ : ℕ) := by
+      have h_split : Finset.univ.filter (· ≤ i₀) = Finset.univ.filter (· < i₀) ∪ {i₀} := by
+        ext j
+        simp [le_iff_lt_or_eq]
+      rw [h_split, Finset.sum_union]
+      · simp
+      · simp
+    rwa [this] at i₀_in_S
+  have h_le : prefix_sum card i₀ ≤ k.val := by
+    by_cases h_i₀_is_min : i₀ = (Finset.univ.min' Finset.univ_nonempty)
+    · rw [h_i₀_is_min, prefix_sum]
+      rw [Finset.sum_eq_zero]
+      · exact Nat.zero_le _
+      · intro j hj
+        simp only [Finset.mem_filter] at hj
+        exact False.elim (not_lt_of_ge (Finset.min'_le _ _ (Finset.mem_univ j)) hj.2)
+    · let pred_set := Finset.univ.filter (· < i₀)
+      have pred_set_nonempty : pred_set.Nonempty := by
+        have : i₀ ≠ Finset.univ.min' Finset.univ_nonempty := h_i₀_is_min
+        have : ¬ (∀ j ∈ Finset.univ, i₀ ≤ j) := by
+          intro h_all_ge
+          have h_min : i₀ = Finset.univ.min' Finset.univ_nonempty := by
+            apply le_antisymm
+            · exact h_all_ge (Finset.univ.min' Finset.univ_nonempty) (Finset.mem_univ _)
+            · exact Finset.min'_le _ _ (Finset.mem_univ i₀)
+          exact this h_min
+        push_neg at this
+        obtain ⟨j, _, hj⟩ := this
+        exact ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hj⟩⟩
+      let j₀ := pred_set.max' pred_set_nonempty
+      have j₀_lt_i₀ : j₀ < i₀ := by
+        have h_mem : j₀ ∈ pred_set := Finset.max'_mem pred_set pred_set_nonempty
+        exact (Finset.mem_filter.mp h_mem).2
+      have j₀_notin_S : j₀ ∉ S := i₀_is_min j₀ j₀_lt_i₀
+      have j₀_ineq : prefix_sum_inclusive j₀ ≤ k.val := by
+        simp only [S, Set.mem_setOf_eq] at j₀_notin_S
+        exact le_of_not_gt j₀_notin_S
+      have : prefix_sum card i₀ = prefix_sum_inclusive j₀ := by
+        simp only [prefix_sum, prefix_sum_inclusive]
+        congr 1
+        ext x
+        simp only [Finset.mem_filter]
+        apply Iff.intro
+        · intro h_x_lt_i₀
+          exact ⟨Finset.mem_univ x, Finset.le_max' pred_set x (Finset.mem_filter.mpr h_x_lt_i₀)⟩
+        · intro h_x_le_j₀
+          exact ⟨Finset.mem_univ x, lt_of_le_of_lt h_x_le_j₀.2 j₀_lt_i₀⟩
+      exact this ▸ j₀_ineq
+  use { fst := i₀, snd := ⟨k.val - prefix_sum card i₀, by
+    rw [Nat.sub_lt_iff_lt_add h_le]; rwa [add_comm]⟩ }
 
-    exact h)
+noncomputable def index_split (k : Fin (total_card card)) : Σ i, Fin (card i) :=
+  Classical.choose (index_split_existence card k)
+
+lemma index_split_spec (k : Fin (total_card card)) :
+  let p := index_split card k
+  prefix_sum card p.1 ≤ k.val ∧ k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
+  p.2.val = k.val - prefix_sum card p.1 :=
+  Classical.choose_spec (index_split_existence card k)
 
 noncomputable def index_combine (p : Σ i, Fin (card i)) : Fin (total_card card) :=
   ⟨prefix_sum card p.1 + (p.2 : ℕ), by
@@ -124,97 +129,9 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
   classical
   cases p with
   | mk i j =>
-    -- Let k be the combined index and extract the spec for index_split k
     let k : Fin (total_card card) := index_combine card ⟨i, j⟩
-    -- Specification satisfied by index_split (copied from its definition)
-    have hspec :
-        prefix_sum card (index_split card k).1 ≤ k.val ∧
-        k.val < prefix_sum card (index_split card k).1 + (card (index_split card k).1 : ℕ) ∧
-        (index_split card k).2.val = k.val - prefix_sum card (index_split card k).1 := by
-      -- Reproduce the existence proof and use choose_spec
-      have hexists : ∃ (p : Σ i, Fin (card i)),
-          prefix_sum card p.1 ≤ k.val ∧
-          k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
-          p.2.val = k.val - prefix_sum card p.1 := by
-        -- This block mirrors the proof used in index_split
-        let prefix_sum_inclusive (i : I) : ℕ := ∑ j ∈ Finset.univ.filter (· ≤ i), (card j : ℕ)
-        let S : Set I := {i | k.val < prefix_sum_inclusive i}
-        have s_nonempty : S.Nonempty := by
-          let i_max := (Finset.univ : Finset I).max' Finset.univ_nonempty
-          use i_max
-          have h_sum_eq_total : prefix_sum_inclusive i_max = (total_card card : ℕ) := by
-            simp only [prefix_sum_inclusive, total_card]
-            rw [Finset.filter_true_of_mem]
-            simp
-            intro j _; exact Finset.le_max' _ _ (Finset.mem_univ j)
-          show k.val < prefix_sum_inclusive i_max
-          rw [h_sum_eq_total]
-          exact k.is_lt
-        let i₀ := @WellFounded.min I (· < ·) wellFounded_lt S s_nonempty
-        have i₀_in_S : i₀ ∈ S := WellFounded.min_mem wellFounded_lt S s_nonempty
-        have i₀_is_min : ∀ j < i₀, j ∉ S := fun j hlt => by
-          intro hj
-          have := WellFounded.min_le wellFounded_lt hj
-          exact not_le_of_gt hlt this
-        have h_lt : k.val < prefix_sum card i₀ + (card i₀ : ℕ) := by
-          simp at i₀_in_S
-          change k.val < (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) at i₀_in_S
-          have : (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) =
-                  (∑ j ∈ Finset.univ.filter (· < i₀), (card j : ℕ)) + (card i₀ : ℕ) := by
-            have h_split : Finset.univ.filter (· ≤ i₀) = Finset.univ.filter (· < i₀) ∪ {i₀} := by
-              ext j
-              simp [le_iff_lt_or_eq]
-            rw [h_split, Finset.sum_union]
-            · simp
-            · simp
-          rwa [this] at i₀_in_S
-        have h_le : prefix_sum card i₀ ≤ k.val := by
-          by_cases h_i₀_is_min : i₀ = (Finset.univ.min' Finset.univ_nonempty)
-          · rw [h_i₀_is_min, prefix_sum]
-            rw [Finset.sum_eq_zero]
-            · exact Nat.zero_le _
-            · intro j hj
-              simp only [Finset.mem_filter] at hj
-              exact False.elim (not_lt_of_ge (Finset.min'_le _ _ (Finset.mem_univ j)) hj.2)
-          · let pred_set := Finset.univ.filter (· < i₀)
-            have pred_set_nonempty : pred_set.Nonempty := by
-              have : i₀ ≠ Finset.univ.min' Finset.univ_nonempty := h_i₀_is_min
-              have : ¬ (∀ j ∈ Finset.univ, i₀ ≤ j) := by
-                intro h_all_ge
-                have h_min : i₀ = Finset.univ.min' Finset.univ_nonempty := by
-                  apply le_antisymm
-                  · exact h_all_ge (Finset.univ.min' Finset.univ_nonempty) (Finset.mem_univ _)
-                  · exact Finset.min'_le _ _ (Finset.mem_univ i₀)
-                exact this h_min
-              push_neg at this
-              obtain ⟨j, _, hj⟩ := this
-              exact ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hj⟩⟩
-            let j₀ := pred_set.max' pred_set_nonempty
-            have j₀_lt_i₀ : j₀ < i₀ := by
-              have h_mem : j₀ ∈ pred_set := Finset.max'_mem pred_set pred_set_nonempty
-              exact (Finset.mem_filter.mp h_mem).2
-            have j₀_notin_S : j₀ ∉ S := i₀_is_min j₀ j₀_lt_i₀
-            have j₀_ineq : prefix_sum_inclusive j₀ ≤ k.val := by
-              simp only [S, Set.mem_setOf_eq] at j₀_notin_S
-              exact le_of_not_gt j₀_notin_S
-            have : prefix_sum card i₀ = prefix_sum_inclusive j₀ := by
-              simp only [prefix_sum, prefix_sum_inclusive]
-              congr 1
-              ext x
-              simp only [Finset.mem_filter]
-              apply Iff.intro
-              · intro h_x_lt_i₀
-                exact ⟨Finset.mem_univ x, Finset.le_max' pred_set x (Finset.mem_filter.mpr h_x_lt_i₀)⟩
-              · intro h_x_le_j₀
-                exact ⟨Finset.mem_univ x, lt_of_le_of_lt h_x_le_j₀.2 j₀_lt_i₀⟩
-            exact this ▸ j₀_ineq
-        use { fst := i₀, snd := ⟨k.val - prefix_sum card i₀, by
-          rw [Nat.sub_lt_iff_lt_add h_le]; rwa [add_comm]⟩ }
+    have hspec := index_split_spec card k
 
-
-      simpa [index_split] using Classical.choose_spec hexists
-
-    -- Helper monotonicity of prefix_sum across the order blocks
     have prefix_sum_mono_lt : ∀ {a b : I}, a < b →
         prefix_sum card a + (card a : ℕ) ≤ prefix_sum card b := by
       intro a b hlt
@@ -235,13 +152,11 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
           intro j _ _; exact Nat.zero_le _)
       simpa [prefix_sum, h_eq_a] using h_le
 
-    -- Bounds for k relative to block i
     have hk_le : prefix_sum card i ≤ k.val := by
       simp [k, index_combine]
     have hk_lt : k.val < prefix_sum card i + (card i : ℕ) := by
       simp [k, index_combine, add_lt_add_iff_left]
 
-    -- Show the chosen block index equals i by ruling out both strict inequalities
     have hnot_lt1 : ¬ (index_split card k).1 < i := by
       intro hlt
       have hmono := prefix_sum_mono_lt hlt
@@ -255,116 +170,25 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
     have hi : (index_split card k).1 = i :=
       le_antisymm (le_of_not_gt hnot_lt2) (le_of_not_gt hnot_lt1)
 
-    -- Compute the second component using the spec
     have hj_spec : (index_split card k).2.val = k.val - prefix_sum card (index_split card k).1 := hspec.2.2
     have hj_spec_i : (index_split card k).2.val = k.val - prefix_sum card i := by
       simpa [hi] using hj_spec
     have hj_val : (index_split card k).2.val = j.val := by
       simpa [k, index_combine, Nat.add_sub_cancel_left] using hj_spec_i
 
-    -- Conclude equality of Sigma pairs by componentwise reasoning
     cases hsplit : index_split card k with
     | mk i' j' =>
       have hi' : i' = i := by simpa [hsplit] using hi
       subst hi'
       have hj' : j' = j := by
-        -- Two Fin elements are equal if their values coincide
         apply Fin.ext
         rw [hsplit] at hj_val
         exact hj_val
-      -- rewrite j' using the above equality
       simpa [hsplit] using hj'
 
 lemma index_combine_split_inverse (k : Fin (total_card card)) : index_combine card (index_split card k) = k := by
   classical
-  -- Specification satisfied by index_split (copied from its definition)
-  have hspec :
-      prefix_sum card (index_split card k).1 ≤ k.val ∧
-      k.val < prefix_sum card (index_split card k).1 + (card (index_split card k).1 : ℕ) ∧
-      (index_split card k).2.val = k.val - prefix_sum card (index_split card k).1 := by
-    -- Reproduce the existence proof and use choose_spec
-    have hexists : ∃ (p : Σ i, Fin (card i)),
-        prefix_sum card p.1 ≤ k.val ∧
-        k.val < prefix_sum card p.1 + (card p.1 : ℕ) ∧
-        p.2.val = k.val - prefix_sum card p.1 := by
-      -- This block mirrors the proof used in index_split
-      let prefix_sum_inclusive (i : I) : ℕ := ∑ j ∈ Finset.univ.filter (· ≤ i), (card j : ℕ)
-      let S : Set I := {i | k.val < prefix_sum_inclusive i}
-      have s_nonempty : S.Nonempty := by
-        let i_max := (Finset.univ : Finset I).max' Finset.univ_nonempty
-        use i_max
-        have h_sum_eq_total : prefix_sum_inclusive i_max = (total_card card : ℕ) := by
-          simp only [prefix_sum_inclusive, total_card]
-          rw [Finset.filter_true_of_mem]
-          simp
-          intro j _; exact Finset.le_max' _ _ (Finset.mem_univ j)
-        show k.val < prefix_sum_inclusive i_max
-        rw [h_sum_eq_total]
-        exact k.is_lt
-      let i₀ := @WellFounded.min I (· < ·) wellFounded_lt S s_nonempty
-      have i₀_in_S : i₀ ∈ S := WellFounded.min_mem wellFounded_lt S s_nonempty
-      have i₀_is_min : ∀ j < i₀, j ∉ S := fun j hlt => by
-        intro hj
-        have := WellFounded.min_le wellFounded_lt hj
-        exact not_le_of_gt hlt this
-      have h_lt : k.val < prefix_sum card i₀ + (card i₀ : ℕ) := by
-        simp at i₀_in_S
-        change k.val < (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) at i₀_in_S
-        have : (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) =
-                (∑ j ∈ Finset.univ.filter (· < i₀), (card j : ℕ)) + (card i₀ : ℕ) := by
-          have h_split : Finset.univ.filter (· ≤ i₀) = Finset.univ.filter (· < i₀) ∪ {i₀} := by
-            ext j
-            simp [le_iff_lt_or_eq]
-          rw [h_split, Finset.sum_union]
-          · simp
-          · simp
-        rwa [this] at i₀_in_S
-      have h_le : prefix_sum card i₀ ≤ k.val := by
-        by_cases h_i₀_is_min : i₀ = (Finset.univ.min' Finset.univ_nonempty)
-        · rw [h_i₀_is_min, prefix_sum]
-          rw [Finset.sum_eq_zero]
-          · exact Nat.zero_le _
-          · intro j hj
-            simp only [Finset.mem_filter] at hj
-            exact False.elim (not_lt_of_ge (Finset.min'_le _ _ (Finset.mem_univ j)) hj.2)
-        · let pred_set := Finset.univ.filter (· < i₀)
-          have pred_set_nonempty : pred_set.Nonempty := by
-            have : i₀ ≠ Finset.univ.min' Finset.univ_nonempty := h_i₀_is_min
-            have : ¬ (∀ j ∈ Finset.univ, i₀ ≤ j) := by
-              intro h_all_ge
-              have h_min : i₀ = Finset.univ.min' Finset.univ_nonempty := by
-                apply le_antisymm
-                · exact h_all_ge (Finset.univ.min' Finset.univ_nonempty) (Finset.mem_univ _)
-                · exact Finset.min'_le _ _ (Finset.mem_univ i₀)
-              exact this h_min
-            push_neg at this
-            obtain ⟨j, _, hj⟩ := this
-            exact ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hj⟩⟩
-          let j₀ := pred_set.max' pred_set_nonempty
-          have j₀_lt_i₀ : j₀ < i₀ := by
-            have h_mem : j₀ ∈ pred_set := Finset.max'_mem pred_set pred_set_nonempty
-            exact (Finset.mem_filter.mp h_mem).2
-          have j₀_notin_S : j₀ ∉ S := i₀_is_min j₀ j₀_lt_i₀
-          have j₀_ineq : prefix_sum_inclusive j₀ ≤ k.val := by
-            simp only [S, Set.mem_setOf_eq] at j₀_notin_S
-            exact le_of_not_gt j₀_notin_S
-          have : prefix_sum card i₀ = prefix_sum_inclusive j₀ := by
-            simp only [prefix_sum, prefix_sum_inclusive]
-            congr 1
-            ext x
-            simp only [Finset.mem_filter]
-            apply Iff.intro
-            · intro h_x_lt_i₀
-              exact ⟨Finset.mem_univ x, Finset.le_max' pred_set x (Finset.mem_filter.mpr h_x_lt_i₀)⟩
-            · intro h_x_le_j₀
-              exact ⟨Finset.mem_univ x, lt_of_le_of_lt h_x_le_j₀.2 j₀_lt_i₀⟩
-          exact this ▸ j₀_ineq
-      use { fst := i₀, snd := ⟨k.val - prefix_sum card i₀, by
-        rw [Nat.sub_lt_iff_lt_add h_le]; rwa [add_comm]⟩ }
-
-    simpa [index_split] using Classical.choose_spec hexists
-
-  -- Conclude by comparing values
+  have hspec := index_split_spec card k
   apply Fin.ext
   simp [index_combine, hspec.2.2, Nat.add_sub_of_le hspec.1]
 
