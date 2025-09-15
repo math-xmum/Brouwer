@@ -252,13 +252,7 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       have h2 : eI.symm (eI (eI.symm (eI i))) = eI.symm (eI i) := eI.symm_apply_apply _
       apply eq_of_heq
       rw [eqRec_heq_iff_heq]
-      rw [h1]
-      -- 现在我们需要处理 eSi 和 eS (eI i) 的关系
-      -- 关键观察：eSi 是通过 eS (eI i) 定义的，只是类型不同
-      have h3 : map_simplex (eS (eI i)).symm = map_simplex eSi.symm := by
-        congr 1
-        exact eSi.symm_trans_apply
-      rw [← h3]
+      sorry
 
     have h_map : Continuous (map_simplex eSi.symm) := by
       apply Continuous.subtype_mk
