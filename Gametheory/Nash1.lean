@@ -109,8 +109,6 @@ end FinGame
 section Brouwer.mixedGame
 variable {G : FinGame}
 
-lemma equiv_apply_symm_apply {α β : Type*} (e : α ≃ β) (b : β) : e (e.symm b) = b :=
-  Equiv.apply_symm_apply e b
 
 variable {n : ℕ} (eI : G.I ≃ Fin n)
 
@@ -126,6 +124,10 @@ lemma reindex_right_inv :
     rw [reindex,reindex_inv]
     have h1 : eI (eI.symm k) = k := eI.apply_symm_apply _
     have h2 : eI.symm (eI (eI.symm k)) = eI.symm k := eI.symm_apply_apply _
+    apply eq_of_heq
+    rw [eqRec_heq_iff_heq]
+    rw [h1]
+
 
 
 
@@ -141,7 +143,11 @@ lemma reindex_left_inv {n : ℕ} (eI : G.I ≃ Fin n) :
   ∀ x, reindex_inv (reindex x) = x := by
     intro reindex reindex_inv x; funext i
     dsimp [reindex, reindex_inv]
-    simp
+    have h1 : eI.symm (eI i) = i := eI.symm_apply_apply i
+    have h2 : eI (eI.symm (eI i)) = eI i := eI.apply_symm_apply _
+    apply eq_of_heq
+    rw [eqRec_heq_iff_heq]
+    rw [h1]
 
 /-- Lifts an equivalence `e : n ≃ m` to a function between simplices. -/
 def map_simplex {n m : Type*} [Fintype n] [Fintype m] (e : n ≃ m) :
@@ -241,7 +247,18 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
     have : (fun w : ProductSimplices card' => (φ_inv w) i)
        = (fun w : ProductSimplices card' => map_simplex eSi.symm (w (eI i))) := by
       funext w
-      sorry
+      simp [φ_inv, reindex_inv, map_idx_inv]
+      have h1 : eI (eI.symm (eI i)) = eI i := eI.apply_symm_apply _
+      have h2 : eI.symm (eI (eI.symm (eI i))) = eI.symm (eI i) := eI.symm_apply_apply _
+      apply eq_of_heq
+      rw [eqRec_heq_iff_heq]
+      rw [h1]
+      -- 现在我们需要处理 eSi 和 eS (eI i) 的关系
+      -- 关键观察：eSi 是通过 eS (eI i) 定义的，只是类型不同
+      have h3 : map_simplex (eS (eI i)).symm = map_simplex eSi.symm := by
+        congr 1
+        exact eSi.symm_trans_apply
+      rw [← h3]
 
     have h_map : Continuous (map_simplex eSi.symm) := by
       apply Continuous.subtype_mk
@@ -280,7 +297,7 @@ lemma mixed_g_eq_evaluate (i : G.I) (σ : G.mixedS) : evaluate_at_mixed G i σ =
 
 
 
-/-variable {G}
+variable {G}
 
 noncomputable abbrev g_function (i : G.I) (σ : G.mixedS) (a : G.SS i) : ℝ :=
   σ i a + max 0 (mixed_g i (Function.update σ i (stdSimplex.pure a)) - mixed_g i σ)
@@ -504,4 +521,4 @@ theorem ExistsNashEq : ∃ σ : G.mixedS , mixedNashEquilibrium σ := by {
     linarith
 }
 
-end mixedNashEquilibrium-/
+end mixedNashEquilibrium
