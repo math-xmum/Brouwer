@@ -112,15 +112,26 @@ variable {G : FinGame}
 lemma equiv_apply_symm_apply {α β : Type*} (e : α ≃ β) (b : β) : e (e.symm b) = b :=
   Equiv.apply_symm_apply e b
 
-lemma reindex_right_inv {n : ℕ} (eI : G.I ≃ Fin n) :
-  let reindex : G.mixedS → ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) :=
+variable {n : ℕ} (eI : G.I ≃ Fin n)
+
+def  reindex : G.mixedS → ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) :=
     fun x k => x (eI.symm k)
-  let reindex_inv : ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) → G.mixedS :=
+
+def reindex_inv : ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) → G.mixedS :=
     fun z i => (eI.symm_apply_apply i) ▸ z (eI i)
-  ∀ y, reindex (reindex_inv y) = y := by
-    intro reindex reindex_inv y; funext k
-    dsimp [reindex, reindex_inv]
-    rw [Equiv.apply_symm_apply]
+
+lemma reindex_right_inv :
+  ∀ y, reindex eI (reindex_inv eI y) = y := by
+    intro y; funext k
+    rw [reindex,reindex_inv]
+    have h1 : eI (eI.symm k) = k := eI.apply_symm_apply _
+    have h2 : eI.symm (eI (eI.symm k)) = eI.symm k := eI.symm_apply_apply _
+
+
+
+
+
+
 
 lemma reindex_left_inv {n : ℕ} (eI : G.I ≃ Fin n) :
   let reindex : G.mixedS → ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) :=
