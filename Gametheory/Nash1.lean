@@ -269,7 +269,11 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       have h2 : eI.symm (eI (eI.symm (eI i))) = eI.symm (eI i) := eI.symm_apply_apply _
       apply eq_of_heq
       rw [eqRec_heq_iff_heq]
-      sorry
+      congr
+      · exact eI.symm_apply_apply i
+      · exact eI.symm_apply_apply i
+      · exact eI.symm_apply_apply i
+      · sorry
 
     have h_map : Continuous (map_simplex eSi.symm) := by
       apply Continuous.subtype_mk
