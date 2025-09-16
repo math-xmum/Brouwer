@@ -262,12 +262,11 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       continuous_apply (eI i)
     simpa [this] using h_map.comp h_eval
 
-  -- Transport `f` to the canonical product space and apply Brouwer on `Fin n`
   let f' : ProductSimplices card' → ProductSimplices card' := φ ∘ f ∘ φ_inv
   have hf' : Continuous f' := hφ_cont.comp (hf.comp hφinv_cont)
   obtain ⟨w, hw⟩ := Brouwer_Product (card := card') f' hf'
 
-  -- Pull the fixed point back
+
   refine ⟨φ_inv w, ?_⟩
   calc
     f (φ_inv w)
