@@ -258,8 +258,11 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
   have hφinv_cont : Continuous φ_inv := by
     apply continuous_pi; intro i
 
-    have eSi : G.SS i ≃ Fin (card' (eI i)) := by
-      simpa [eI.symm_apply_apply] using (eS (eI i))
+    have saai := eI.symm_apply_apply i
+    have typeeq : (G.SS i ≃ Fin ↑(card' (eI i))) = (G.SS (eI.symm (eI i)) ≃ Fin ↑(card' ((eI i)))) :=
+      by rw [saai]
+    let eSi : G.SS i ≃ Fin (card' (eI i)) :=
+      typeeq.symm ▸ (eS (eI i))
 
     have : (fun w : ProductSimplices card' => (φ_inv w) i)
        = (fun w : ProductSimplices card' => map_simplex eSi.symm (w (eI i))) := by
@@ -270,10 +273,8 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       apply eq_of_heq
       rw [eqRec_heq_iff_heq]
       congr
-      · exact eI.symm_apply_apply i
-      · exact eI.symm_apply_apply i
-      · exact eI.symm_apply_apply i
-      · sorry
+      .  symm
+         apply eqRec_heq'
 
     have h_map : Continuous (map_simplex eSi.symm) := by
       apply Continuous.subtype_mk

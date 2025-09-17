@@ -1,0 +1,25 @@
+{"synthetic": false,
+ "outputs":
+ {"o": ["13824993861779084971"],
+  "i": "11076134147305865270",
+  "c": "6608421661843796475"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/hoxide/mycodes/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/build/lib/lean /Users/hoxide/.elan/toolchains/leanprover--lean4---v4.22.0-rc4/bin/lean /Users/hoxide/mycodes/Brouwer/Gametheory.lean -o /Users/hoxide/mycodes/Brouwer/.lake/build/lib/lean/Gametheory.olean -i /Users/hoxide/mycodes/Brouwer/.lake/build/lib/lean/Gametheory.ilean -c /Users/hoxide/mycodes/Brouwer/.lake/build/ir/Gametheory.c --setup /Users/hoxide/mycodes/Brouwer/.lake/build/ir/Gametheory.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Gametheory:deps",
+   [["deps",
+     [["Gametheory/Gametheory:extraDep", [["@Gametheory:extraDep", "1723"]]],
+      ["import oleans", "1723"]]],
+    ["libs",
+     [["import dynlibs", "1723"],
+      ["package external libraries", "1723"],
+      ["module dynlibs", "1723"],
+      ["module plugins", "1723"]]]]],
+  ["Lean 4.22.0, commit 30ceb3260d7d7536092fedff969b4b2e8de7f942",
+   "7333961747739924687"],
+  ["/Users/hoxide/mycodes/Brouwer/Gametheory.lean", "4902063864649640708"],
+  ["options", "1723"],
+  ["Module.leanArgs: #[]", "1723"]],
+ "depHash": "12917514204817400313"}

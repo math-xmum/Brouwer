@@ -1,0 +1,30 @@
+{"synthetic": false,
+ "outputs":
+ {"o": ["14161688422338185540"],
+  "i": "11372720759148336604",
+  "c": "832143213146299461"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/hoxide/mycodes/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/hoxide/mycodes/Brouwer/.lake/build/lib/lean /Users/hoxide/.elan/toolchains/leanprover--lean4---v4.22.0-rc4/bin/lean /Users/hoxide/mycodes/Brouwer/Gametheory/Simplex1.lean -o /Users/hoxide/mycodes/Brouwer/.lake/build/lib/lean/Gametheory/Simplex1.olean -i /Users/hoxide/mycodes/Brouwer/.lake/build/lib/lean/Gametheory/Simplex1.ilean -c /Users/hoxide/mycodes/Brouwer/.lake/build/ir/Gametheory/Simplex1.c --setup /Users/hoxide/mycodes/Brouwer/.lake/build/ir/Gametheory/Simplex1.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Gametheory.Simplex1:deps",
+   [["deps",
+     [["Gametheory/Gametheory:extraDep", [["@Gametheory:extraDep", "1723"]]],
+      ["import oleans",
+       [["Mathlib:olean",
+         [["Mathlib:deps", "5924285806023362810"],
+          ["/Users/hoxide/mycodes/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
+           "13225282519080737477"]]]]]]],
+    ["libs",
+     [["import dynlibs", "1723"],
+      ["package external libraries", "1723"],
+      ["module dynlibs", "1723"],
+      ["module plugins", "1723"]]]]],
+  ["Lean 4.22.0, commit 30ceb3260d7d7536092fedff969b4b2e8de7f942",
+   "7333961747739924687"],
+  ["/Users/hoxide/mycodes/Brouwer/Gametheory/Simplex1.lean",
+   "6833204683051243019"],
+  ["options", "1723"],
+  ["Module.leanArgs: #[]", "1723"]],
+ "depHash": "12275354955899051262"}
