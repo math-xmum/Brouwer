@@ -190,31 +190,20 @@ def map_mixedS_equiv {G : FinGame} (e : (i : G.I) → G.SS i ≃ Fin (Fintype.ca
 variable {G : FinGame}
 
 
--- A fixed-point theorem for continuous functions on the space of mixed strategies,
--- which is a product of simplices. This is a crucial step towards proving the
--- existence of a Nash equilibrium. It works by showing the space of mixed strategies
--- is homeomorphic to a product of standard simplices, and then applying Brouwer's
--- fixed-point theorem on that standard space.
+
 theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ x : G.mixedS, f x = x := by
   classical
-  -- To apply Brouwer's theorem, we first map the game's structure to a canonical,
-  -- numerically-indexed space.
 
-  -- Reindex the set of players `G.I` with `Fin n`, where `n` is the number of players.
   let n : ℕ := Fintype.card G.I
   let eI : G.I ≃ Fin n := Fintype.equivFin (G.I)
   have n_pos : 0 < n := Fintype.card_pos_iff.mpr (by infer_instance)
   letI : Inhabited (Fin n) := ⟨⟨0, n_pos⟩⟩
 
-  -- For each re-indexed player `k : Fin n`, find the number of their strategies.
-  -- `card' k` is the number of strategies for the player corresponding to `k`.
   have card_pos (i : G.I) : 0 < Fintype.card (G.SS i) := by
     haveI : Inhabited (G.SS i) := inferInstance
     exact Fintype.card_pos_iff.mpr inferInstance
   let card' : Fin n → ℕ+ := fun k => ⟨Fintype.card (G.SS (eI.symm k)), card_pos (eI.symm k)⟩
 
-  -- Define `reindex` and its inverse to switch between mixed strategies indexed by `G.I`
-  -- and those indexed by `Fin n`.
   let reindex : G.mixedS → ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) :=
     fun x k => x (eI.symm k)
   let reindex_inv : ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) → G.mixedS :=
@@ -223,10 +212,8 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
   have reindex_right : ∀ y, reindex (reindex_inv y) = y := reindex_right_inv eI
 
 
-  -- For each player `k`, create an equivalence `eS k` between their strategy set
-  -- `G.SS (eI.symm k)` and the canonical `Fin (card' k)`.
   let eS : (k : Fin n) → G.SS (eI.symm k) ≃ Fin (card' k) := fun k => Fintype.equivFin _
-  -- Use `eS` to map simplices over strategy sets to standard simplices over `Fin`.
+
   let map_idx : ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) → ((k : Fin n) → stdSimplex ℝ (Fin (card' k))) :=
     fun y k => map_simplex (eS k) (y k)
   let map_idx_inv : ((k : Fin n) → stdSimplex ℝ (Fin (card' k))) → ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) :=
@@ -236,16 +223,11 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
   have map_idx_right : ∀ z, map_idx (map_idx_inv z) = z := by
     intro z; funext k; ext j; simp [map_idx, map_idx_inv]
 
-
-  -- `φ` is a homeomorphism mapping the game's mixed strategy space `G.mixedS`
-  -- to a canonical product of simplices `ProductSimplices card'`.
   let φ : G.mixedS → ProductSimplices card' := fun x => map_idx (reindex x)
   let φ_inv : ProductSimplices card' → G.mixedS := fun w => reindex_inv (map_idx_inv w)
   have φ_left : ∀ x, φ_inv (φ x) = x := by intro x; simp [φ, φ_inv, reindex_left, map_idx_left]
   have φ_right : ∀ w, φ (φ_inv w) = w := by intro w; simp [φ, φ_inv, reindex_right, map_idx_right]
 
-
-  -- Prove that `φ` and `φ_inv` are continuous.
   have hφ_cont : Continuous φ := by
     apply continuous_pi; intro k
     have : (fun x : G.mixedS => (φ x) k) = (map_simplex (eS k)) ∘ (fun x : G.mixedS => x (eI.symm k)) := rfl
@@ -284,17 +266,10 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       continuous_apply (eI i)
     simpa [this] using h_map.comp h_eval
 
-  -- Define a new function `f'` on the canonical space `ProductSimplices card'`
-  -- by conjugating the original function `f` with `φ`.
   let f' : ProductSimplices card' → ProductSimplices card' := φ ∘ f ∘ φ_inv
-  -- The new function `f'` is continuous because it's a composition of continuous functions.
   have hf' : Continuous f' := hφ_cont.comp (hf.comp hφinv_cont)
-  -- Apply Brouwer's fixed-point theorem to `f'` to find a fixed point `w`.
   obtain ⟨w, hw⟩ := Brouwer_Product (card := card') f' hf'
 
-
-  -- Map the fixed point `w` from the canonical space back to the original mixed strategy space.
-  -- The result, `φ_inv w`, is the fixed point for the original function `f`.
   refine ⟨φ_inv w, ?_⟩
   calc
     f (φ_inv w)
