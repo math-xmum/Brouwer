@@ -14,103 +14,103 @@
 extern "C" {
 #endif
 LEAN_EXPORT lean_object* l_mk__subseq___boxed(lean_object*, lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1041_;
-LEAN_EXPORT lean_object* l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1041_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__7;
-static lean_object* l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1307_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__1;
-static lean_object* l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1041_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1389_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1108_;
 LEAN_EXPORT lean_object* l_TT_inhabited___lam__0___boxed(lean_object*, lean_object*, lean_object*);
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__20;
-static lean_object* l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1307_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1307_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__22;
-static lean_object* l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1041_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1389_;
 uint8_t l_Lean_Syntax_isOfKind(lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1041_;
+LEAN_EXPORT lean_object* l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__18;
-static lean_object* l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1307_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1307_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1108_;
 LEAN_EXPORT lean_object* l_mk__subseq___redArg(lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1041_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__21;
-static lean_object* l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1389_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__3;
 LEAN_EXPORT lean_object* l___private_Gametheory_Brouwer_0__mk__subseq_match__1_splitter___redArg(lean_object*, lean_object*, lean_object*);
-static lean_object* l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1307_;
 lean_object* l_Lean_SourceInfo_fromRef(lean_object*, uint8_t);
 LEAN_EXPORT lean_object* l_TT_funlike(lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1307_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1389_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__6;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__0;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__16;
+static lean_object* l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1389_;
 lean_object* l_Lean_Name_num___override(lean_object*, lean_object*);
 lean_object* l_Lean_Syntax_node3(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__11;
+static lean_object* l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__19;
 lean_object* l_Lean_addMacroScope(lean_object*, lean_object*, lean_object*);
+static lean_object* l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1389_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__0;
 lean_object* l_Lean_Name_str___override(lean_object*, lean_object*);
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__13;
 lean_object* l_Lean_Syntax_node2(lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_TT_funlike___boxed(lean_object*, lean_object*);
 lean_object* l_Lean_Syntax_getArg(lean_object*, lean_object*);
+static lean_object* l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1389_;
 LEAN_EXPORT lean_object* l___private_Gametheory_Brouwer_0__mk__subseq_match__1_splitter___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1307_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1389_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1108_;
 LEAN_EXPORT lean_object* l_TT_funlike___lam__0(lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1041_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__10;
-static lean_object* l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1307_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1041_;
-LEAN_EXPORT lean_object* l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1307_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1307_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1389_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__8;
 uint8_t lean_nat_dec_eq(lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1041_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1041_;
 lean_object* lean_nat_mod(lean_object*, lean_object*);
 lean_object* l_Lean_Name_mkStr2(lean_object*, lean_object*);
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__2;
 lean_object* l_Lean_Syntax_node1(lean_object*, lean_object*, lean_object*);
+static lean_object* l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1389_;
 LEAN_EXPORT lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1(lean_object*, lean_object*, lean_object*);
 lean_object* lean_nat_sub(lean_object*, lean_object*);
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__4;
 LEAN_EXPORT lean_object* l_mk__subseq___redArg___boxed(lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1041_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__23;
+static lean_object* l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__12;
 LEAN_EXPORT lean_object* l___private_Gametheory_Brouwer_0__mk__subseq_match__1_splitter___redArg___boxed(lean_object*, lean_object*, lean_object*);
+static lean_object* l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1108_;
+LEAN_EXPORT lean_object* l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1389_;
 LEAN_EXPORT lean_object* l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1(lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l___private_Gametheory_Brouwer_0__mk__subseq_match__1_splitter(lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__15;
 lean_object* l_Lean_Name_mkStr1(lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1041_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__5;
 lean_object* l_Lean_Name_mkStr4(lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__1;
-static lean_object* l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1307_;
-static lean_object* l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1307_;
-static lean_object* l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1041_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1108_;
 lean_object* lean_nat_add(lean_object*, lean_object*);
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__9;
-static lean_object* l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1307_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1108_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1389_;
+static lean_object* l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1389_;
 lean_object* l_String_toSubstring_x27(lean_object*);
 LEAN_EXPORT lean_object* l_TT_inhabited(lean_object*, lean_object*);
+static lean_object* l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__14;
+static lean_object* l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1389_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__2;
+static lean_object* l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1108_;
 static lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__17;
 LEAN_EXPORT lean_object* l_mk__subseq(lean_object*, lean_object*, lean_object*);
-static lean_object* l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1041_;
+static lean_object* l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1108_;
 LEAN_EXPORT lean_object* l_TT_inhabited___lam__0(lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_TT_inhabited___lam__0(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
 _start:
@@ -183,7 +183,7 @@ lean_dec(x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -191,17 +191,17 @@ x_1 = lean_mk_string_unchecked("term_<[_]_", 10, 10);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1108_;
 x_2 = lean_box(0);
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -209,17 +209,17 @@ x_1 = lean_mk_string_unchecked("_@", 2, 2);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1108_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -227,17 +227,17 @@ x_1 = lean_mk_string_unchecked("Gametheory", 10, 10);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1108_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -245,17 +245,17 @@ x_1 = lean_mk_string_unchecked("Brouwer", 7, 7);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1108_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -263,27 +263,27 @@ x_1 = lean_mk_string_unchecked("_hyg", 4, 4);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1108_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = lean_unsigned_to_nat(1041u);
-x_2 = l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = lean_unsigned_to_nat(1108u);
+x_2 = l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1108_;
 x_3 = l_Lean_Name_num___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -291,16 +291,16 @@ x_1 = lean_mk_string_unchecked("andthen", 7, 7);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; 
-x_1 = l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1108_;
 x_2 = l_Lean_Name_mkStr1(x_1);
 return x_2;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -308,17 +308,17 @@ x_1 = lean_mk_string_unchecked("<[", 2, 2);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; 
-x_1 = l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1108_;
 x_2 = lean_alloc_ctor(5, 1, 0);
 lean_ctor_set(x_2, 0, x_1);
 return x_2;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -326,34 +326,34 @@ x_1 = lean_mk_string_unchecked("term", 4, 4);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; 
-x_1 = l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1108_;
 x_2 = l_Lean_Name_mkStr1(x_1);
 return x_2;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
 x_1 = lean_unsigned_to_nat(0u);
-x_2 = l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1041_;
+x_2 = l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1108_;
 x_3 = lean_alloc_ctor(7, 2, 0);
 lean_ctor_set(x_3, 0, x_2);
 lean_ctor_set(x_3, 1, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
-x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1041_;
-x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1108_;
+x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_;
 x_4 = lean_alloc_ctor(2, 3, 0);
 lean_ctor_set(x_4, 0, x_3);
 lean_ctor_set(x_4, 1, x_2);
@@ -361,7 +361,7 @@ lean_ctor_set(x_4, 2, x_1);
 return x_4;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
@@ -369,23 +369,23 @@ x_1 = lean_mk_string_unchecked("]", 1, 1);
 return x_1;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; 
-x_1 = l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1108_;
 x_2 = lean_alloc_ctor(5, 1, 0);
 lean_ctor_set(x_2, 0, x_1);
 return x_2;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
-x_1 = l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1041_;
-x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1108_;
+x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_;
 x_4 = lean_alloc_ctor(2, 3, 0);
 lean_ctor_set(x_4, 0, x_3);
 lean_ctor_set(x_4, 1, x_2);
@@ -393,13 +393,13 @@ lean_ctor_set(x_4, 2, x_1);
 return x_4;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
-x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1041_;
-x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1108_;
+x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_;
 x_4 = lean_alloc_ctor(2, 3, 0);
 lean_ctor_set(x_4, 0, x_3);
 lean_ctor_set(x_4, 1, x_2);
@@ -407,14 +407,14 @@ lean_ctor_set(x_4, 2, x_1);
 return x_4;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; 
-x_1 = l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1108_;
 x_2 = lean_unsigned_to_nat(0u);
 x_3 = lean_unsigned_to_nat(1022u);
-x_4 = l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1041_;
+x_4 = l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1108_;
 x_5 = lean_alloc_ctor(4, 4, 0);
 lean_ctor_set(x_5, 0, x_4);
 lean_ctor_set(x_5, 1, x_3);
@@ -423,11 +423,11 @@ lean_ctor_set(x_5, 3, x_1);
 return x_5;
 }
 }
-static lean_object* _init_l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1041_() {
+static lean_object* _init_l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1108_() {
 _start:
 {
 lean_object* x_1; 
-x_1 = l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1108_;
 return x_1;
 }
 }
@@ -653,7 +653,7 @@ LEAN_EXPORT lean_object* l___aux__Gametheory__Brouwer______macroRules__term___x3
 _start:
 {
 lean_object* x_4; uint8_t x_5; 
-x_4 = l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1041_;
+x_4 = l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1108_;
 lean_inc(x_1);
 x_5 = l_Lean_Syntax_isOfKind(x_1, x_4);
 if (x_5 == 0)
@@ -747,7 +747,7 @@ return x_46;
 }
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; 
@@ -755,67 +755,67 @@ x_1 = lean_mk_string_unchecked("term_≤[_]_", 12, 10);
 return x_1;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1389_;
 x_2 = lean_box(0);
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1389_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1389_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1389_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1389_;
 x_3 = l_Lean_Name_str___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = lean_unsigned_to_nat(1307u);
-x_2 = l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = lean_unsigned_to_nat(1389u);
+x_2 = l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1389_;
 x_3 = l_Lean_Name_num___override(x_2, x_1);
 return x_3;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; 
@@ -823,23 +823,23 @@ x_1 = lean_mk_string_unchecked("≤[", 4, 2);
 return x_1;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; 
-x_1 = l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1389_;
 x_2 = lean_alloc_ctor(5, 1, 0);
 lean_ctor_set(x_2, 0, x_1);
 return x_2;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
-x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1307_;
-x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1389_;
+x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_;
 x_4 = lean_alloc_ctor(2, 3, 0);
 lean_ctor_set(x_4, 0, x_3);
 lean_ctor_set(x_4, 1, x_2);
@@ -847,13 +847,13 @@ lean_ctor_set(x_4, 2, x_1);
 return x_4;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
-x_1 = l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1307_;
-x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1389_;
+x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_;
 x_4 = lean_alloc_ctor(2, 3, 0);
 lean_ctor_set(x_4, 0, x_3);
 lean_ctor_set(x_4, 1, x_2);
@@ -861,13 +861,13 @@ lean_ctor_set(x_4, 2, x_1);
 return x_4;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
-x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_;
-x_2 = l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1307_;
-x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_;
+x_1 = l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_;
+x_2 = l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1389_;
+x_3 = l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_;
 x_4 = lean_alloc_ctor(2, 3, 0);
 lean_ctor_set(x_4, 0, x_3);
 lean_ctor_set(x_4, 1, x_2);
@@ -875,14 +875,14 @@ lean_ctor_set(x_4, 2, x_1);
 return x_4;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; 
-x_1 = l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1389_;
 x_2 = lean_unsigned_to_nat(0u);
 x_3 = lean_unsigned_to_nat(1022u);
-x_4 = l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1307_;
+x_4 = l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1389_;
 x_5 = lean_alloc_ctor(4, 4, 0);
 lean_ctor_set(x_5, 0, x_4);
 lean_ctor_set(x_5, 1, x_3);
@@ -891,11 +891,11 @@ lean_ctor_set(x_5, 3, x_1);
 return x_5;
 }
 }
-static lean_object* _init_l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1307_() {
+static lean_object* _init_l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1389_() {
 _start:
 {
 lean_object* x_1; 
-x_1 = l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1307_;
+x_1 = l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1389_;
 return x_1;
 }
 }
@@ -929,7 +929,7 @@ LEAN_EXPORT lean_object* l___aux__Gametheory__Brouwer______macroRules__term___u2
 _start:
 {
 lean_object* x_4; uint8_t x_5; 
-x_4 = l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1307_;
+x_4 = l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1389_;
 lean_inc(x_1);
 x_5 = l_Lean_Syntax_isOfKind(x_1, x_4);
 if (x_5 == 0)
@@ -1141,56 +1141,56 @@ lean_dec_ref(res);
 res = initialize_Gametheory_Scarf(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1041_);
-l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1041_ = _init_l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1041_();
-lean_mark_persistent(l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1041_);
+l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__13____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__14____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__15____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__16____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__17____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__18____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__19____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__20____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__21____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__22____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d_____closed__23____x40_Gametheory_Brouwer___hyg_1108_);
+l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1108_ = _init_l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1108_();
+lean_mark_persistent(l_term___x3c_x5b___x5d______x40_Gametheory_Brouwer___hyg_1108_);
 l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__0 = _init_l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__0();
 lean_mark_persistent(l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__0);
 l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__1 = _init_l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__1();
@@ -1239,34 +1239,34 @@ l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed
 lean_mark_persistent(l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__22);
 l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__23 = _init_l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__23();
 lean_mark_persistent(l___aux__Gametheory__Brouwer______macroRules__term___x3c_x5b___x5d____1___closed__23);
-l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1307_);
-l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1307_ = _init_l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1307_();
-lean_mark_persistent(l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1307_);
+l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__0____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__1____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__2____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__3____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__4____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__5____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__6____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__7____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__8____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__9____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__10____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__11____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d_____closed__12____x40_Gametheory_Brouwer___hyg_1389_);
+l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1389_ = _init_l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1389_();
+lean_mark_persistent(l_term___u2264_x5b___x5d______x40_Gametheory_Brouwer___hyg_1389_);
 l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__0 = _init_l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__0();
 lean_mark_persistent(l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__0);
 l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__1 = _init_l___aux__Gametheory__Brouwer______macroRules__term___u2264_x5b___x5d____1___closed__1();
