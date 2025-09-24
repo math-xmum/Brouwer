@@ -64,10 +64,62 @@ def mixed_g (i : G.I) (m : Π i, S (G.SS i) ) : ℝ := ∑ s : (Π j, G.SS j) , 
 #print mixed_g
 
 
-lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mixed_g i (update x i (stdSimplex.pure s)) := by sorry
+lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mixed_g i (update x i (stdSimplex.pure s)) := by
+  unfold mixed_g
+  simp only [Finset.mul_sum]
+  rw [Finset.sum_comm]
+  congr 1
+  ext f
+  conv => rhs
+          conv => rhs
+                  ext t
+                  rw [← mul_assoc]
+  rw [← Finset.sum_mul]
+  congr 1
+  have h : ∏ j, (update x i y j) (f j) =
+           (update x i y i) (f i) * ∏ j ∈ Finset.univ \ {i}, (update x i y j) (f j) := by
+           rw [Function.update_self]
+           rw [← Finset.prod_update_of_mem]
+           apply Finset.prod_congr rfl
+           intro j hj
+           by_cases h1 : j = i
+           · rw [h1, Function.update_self]
+             simp
+           · push_neg at h1
+             rw [Function.update_of_ne (show j ≠ i by exact h1)]
+             set t := fun j =>(update x i y j) (f j)
+             have h2 : t j = (x j) (f j) := by
+              unfold t
+              rw [Function.update_of_ne (show j ≠ i by exact h1)]
+             rw [Function.update_of_ne (show j ≠ i by exact h1)]
+             rw [h2]
+           · simp
 
+  rw [h,Function.update_self]
+  have h1 : y (f i) = ∑ j : G.SS i, y j * (stdSimplex.pure j) (f i) := by
+    simp only [stdSimplex.pure]
+    sorry
 
-
+  rw [h1, Finset.sum_mul]
+  congr 1
+  ext g
+  rw [mul_assoc]
+  congr 1
+  rw [← Finset.prod_update_of_mem]
+  apply Finset.prod_congr rfl
+  intro j hj
+  by_cases h2 : j = i
+  · rw [h2,Function.update_self]
+    simp
+  · push_neg at h2
+    nth_rw 2 [Function.update_of_ne (show j ≠ i by exact h2)]
+    set p := fun j =>(update x i y j) (f j)
+    have h3 : p j = (x j) (f j) := by
+      unfold p
+      rw [Function.update_of_ne (show j ≠ i by exact h2)]
+    rw [Function.update_of_ne (show j ≠ i by exact h2)]
+    rw [h3]
+  · simp
 
 def FinGame2MixedGame (G : FinGame) : Game := {
   I := G.I
