@@ -31,4 +31,5 @@ The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This reposi
 ## References
 
 -   The formalizations of Scarf's Lemma (`Gametheory/Scarf.lean`) and Brouwer's fixed-point theorem (`Gametheory/Brouwer.lean`, `Gametheory/Brouwer_product.lean`) are based on Nikolai V. Ivanov, "Beyond Sperner's Lemma".
+-   For Nash's theorem, the reference is John Nash, "Non-Cooperative Games" (1951).
 
