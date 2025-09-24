@@ -98,7 +98,8 @@ lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mix
   rw [h,Function.update_self]
   have h1 : y (f i) = ∑ j : G.SS i, y j * (stdSimplex.pure j) (f i) := by
     calc
-    _ = ∑ j : G.SS i, if j = (f i) then y (f i) else 0 := by sorry
+    _ = ∑ j : G.SS i, if j = (f i) then y (f i) else 0 := by
+      simp only [Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
     _ = _ := by
       apply Finset.sum_congr (rfl)
       intro x hx
@@ -108,11 +109,8 @@ lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mix
         simp [hxx]
       · simp only [hxx, ↓reduceIte, zero_eq_mul]
         right
-        sorry
-
-
-
-
+        push_neg at hxx
+        rw [stdSimplex.pure_eval_neq hxx]
 
   rw [h1, Finset.sum_mul]
   congr 1
