@@ -1,7 +1,7 @@
 import Mathlib
 
 import Gametheory.Brouwer_product
-import Gametheory.Simplex1
+import Gametheory.Simplex
 
 open Classical
 open BigOperators
