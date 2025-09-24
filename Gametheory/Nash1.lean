@@ -102,14 +102,10 @@ lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mix
     _ = _ := by
       apply Finset.sum_congr (rfl)
       intro x hx
-      unfold stdSimplex.pure
       by_cases hxx : x = f i
-      · simp only [hxx, ↓reduceIte]
-        nth_rw 1 [<-mul_one (y (f i))]
-        congr
-        calc
-        _ =  (fun j => if x = j then (1:ℝ) else 0) (f i) := by simp [hxx]
-        _ = _ := by rw [<-stdSimplex.funlike_eval2]
+      · nth_rw 1 [<-mul_one (y (f i))]
+        rw [stdSimplex.pure_eval_eq hxx]
+        simp [hxx]
       · simp only [hxx, ↓reduceIte, zero_eq_mul]
         right
         sorry

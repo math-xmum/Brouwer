@@ -33,13 +33,15 @@ abbrev pure [DecidableEq α] (i : α) : stdSimplex k α  := ⟨fun j => if i=j t
   . simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   }⟩
 
-lemma pure_eval_eq [DecidableEq α] (i j: α) (h : i=j):  pure i j = (1:k) := by
+variable {k α} in
+lemma pure_eval_eq [DecidableEq α] {i j: α} (h : i=j):  pure i j = (1:k) := by
   unfold pure;
   rw [<-funlike_eval2]
   simp [h]
 
 
-lemma pure_eval_neq [DecidableEq α] (i j: α) (h : ¬ i=j):  pure i j = (0:k) := by
+variable {k α} in
+lemma pure_eval_neq [DecidableEq α] {i j: α} (h : ¬ i=j):  pure i j = (0:k) := by
   unfold pure;
   rw [<-funlike_eval2]
   simp [h]
