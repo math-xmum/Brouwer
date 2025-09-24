@@ -15,6 +15,12 @@ instance funlike [DecidableEq α] : FunLike (stdSimplex k α) α k where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
+omit [IsStrictOrderedRing k] in
+lemma funlike_eval1 (f : stdSimplex k α)  : f = f.val := rfl
+
+omit [IsStrictOrderedRing k] in
+lemma funlike_eval2 [DecidableEq α] (f : stdSimplex k α) (x : α) : f.val x = f x := rfl
+
 variable {k α} in
 abbrev pure [DecidableEq α] (i : α) : stdSimplex k α  := ⟨fun j => if i=j then 1 else 0,
  by {
@@ -26,6 +32,16 @@ abbrev pure [DecidableEq α] (i : α) : stdSimplex k α  := ⟨fun j => if i=j t
   }
   . simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   }⟩
+
+lemma pure_eval_eq [DecidableEq α] (i j: α) (h : i=j):  pure i j = (1:k) := by
+  unfold pure;
+  simp [h]
+  sorry
+
+
+lemma pure_eval_neq [DecidableEq α] (i j: α) (h : ¬ i=j):  pure i j = (0:k) := by
+  unfold pure;
+  sorry
 
 noncomputable instance SInhabited_of_Inhabited [DecidableEq α] [Inhabited α]: Inhabited (stdSimplex k α) where
   default := pure (default : α)
