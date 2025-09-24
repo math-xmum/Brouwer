@@ -35,13 +35,15 @@ abbrev pure [DecidableEq α] (i : α) : stdSimplex k α  := ⟨fun j => if i=j t
 
 lemma pure_eval_eq [DecidableEq α] (i j: α) (h : i=j):  pure i j = (1:k) := by
   unfold pure;
+  rw [<-funlike_eval2]
   simp [h]
-  sorry
 
 
 lemma pure_eval_neq [DecidableEq α] (i j: α) (h : ¬ i=j):  pure i j = (0:k) := by
   unfold pure;
-  sorry
+  rw [<-funlike_eval2]
+  simp [h]
+
 
 noncomputable instance SInhabited_of_Inhabited [DecidableEq α] [Inhabited α]: Inhabited (stdSimplex k α) where
   default := pure (default : α)
