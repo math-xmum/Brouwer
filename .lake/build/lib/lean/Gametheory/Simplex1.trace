@@ -1,0 +1,29 @@
+{"synthetic": false,
+ "outputs":
+ {"o": ["13061527820406647443"],
+  "i": "10312084315812197680",
+  "c": "832143213146299461"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/lvyuwei/Lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/build/lib/lean /Users/lvyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lvyuwei/Lean/Gametheory/Simplex1.lean -o /Users/lvyuwei/Lean/.lake/build/lib/lean/Gametheory/Simplex1.olean -i /Users/lvyuwei/Lean/.lake/build/lib/lean/Gametheory/Simplex1.ilean -c /Users/lvyuwei/Lean/.lake/build/ir/Gametheory/Simplex1.c --setup /Users/lvyuwei/Lean/.lake/build/ir/Gametheory/Simplex1.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Gametheory.Simplex1:deps",
+   [["deps",
+     [["Gametheory/Gametheory:extraDep", [["@Gametheory:extraDep", "1723"]]],
+      ["import oleans",
+       [["Mathlib:olean",
+         [["Mathlib:deps", "8557109786630910532"],
+          ["/Users/lvyuwei/Lean/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
+           "4012991845282597754"]]]]]]],
+    ["libs",
+     [["import dynlibs", "1723"],
+      ["package external libraries", "1723"],
+      ["module dynlibs", "1723"],
+      ["module plugins", "1723"]]]]],
+  ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
+   "8739116525927611134"],
+  ["/Users/lvyuwei/Lean/Gametheory/Simplex1.lean", "14810021905708614580"],
+  ["options", "1723"],
+  ["Module.leanArgs: #[]", "1723"]],
+ "depHash": "2573062687388864661"}
