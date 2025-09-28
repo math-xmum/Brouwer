@@ -5,7 +5,7 @@
   "c": "7377310259762978144"},
  "log":
  [{"message":
-   ".> LEAN_PATH=/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lvyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lvyuwei/Documents/GitHub/Brouwer/Gametheory/Simplex.lean -o /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Simplex.olean -i /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Simplex.ilean -c /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Simplex.c --setup /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Simplex.setup.json --json",
+   ".> LEAN_PATH=/Users/lvyuwei/Lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lvyuwei/Lean/.lake/build/lib/lean /Users/lvyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lvyuwei/Lean/Gametheory/Simplex.lean -o /Users/lvyuwei/Lean/.lake/build/lib/lean/Gametheory/Simplex.olean -i /Users/lvyuwei/Lean/.lake/build/lib/lean/Gametheory/Simplex.ilean -c /Users/lvyuwei/Lean/.lake/build/ir/Gametheory/Simplex.c --setup /Users/lvyuwei/Lean/.lake/build/ir/Gametheory/Simplex.setup.json --json",
    "level": "trace"}],
  "inputs":
  [["Gametheory.Simplex:deps",
@@ -13,8 +13,8 @@
      [["Gametheory/Gametheory:extraDep", [["@Gametheory:extraDep", "1723"]]],
       ["import oleans",
        [["Mathlib:olean",
-         [["Mathlib:deps", "8557109786630910532"],
-          ["/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
+         [["Mathlib:deps", "16368585485951814472"],
+          ["/Users/lvyuwei/Lean/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
            "4012991845282597754"]]]]]]],
     ["libs",
      [["import dynlibs", "1723"],
@@ -23,8 +23,7 @@
       ["module plugins", "1723"]]]]],
   ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
    "8739116525927611134"],
-  ["/Users/lvyuwei/Documents/GitHub/Brouwer/Gametheory/Simplex.lean",
-   "14810021905708614580"],
+  ["/Users/lvyuwei/Lean/Gametheory/Simplex.lean", "14810021905708614580"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "2573062687388864661"}
+ "depHash": "10164470297070380765"}
