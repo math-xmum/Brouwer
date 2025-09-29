@@ -594,7 +594,6 @@ lemma sublemma_3_2 [Fintype T] (τ : Finset T) (D : Finset I) (x : T)
       | inr h_z_in_tau =>
         exact hk_dom z h_z_in_tau
 
--- Helper lemma: prove j ∈ {a,b} via injectivity
 omit [Inhabited T] in
 lemma mem_pair_of_card_eq [Fintype T] (τ : Finset T) (D C : Finset I) (j : I) (a b : I)
     (h_nonempty : τ.Nonempty) (h_room : IST.isRoom τ C) (_ : IST.isDoor τ D)
@@ -626,7 +625,6 @@ lemma mem_pair_of_card_eq [Fintype T] (τ : Finset T) (D C : Finset I) (j : I) (
     exact h_card_eq.symm
   exact hab (h_inj_C ha_in_C hb_in_C h_eq_mini)
 
--- Helper lemma: idoor uniqueness pattern
 omit [Inhabited T] in
 lemma idoor_uniqueness_via_maximality [Fintype T] (τ : Finset T) (D : Finset I) (x : T)
     (h_door : IST.isDoor τ D) (h_nonempty : τ.Nonempty) (h_x_not_mem : x ∉ τ)
