@@ -5,7 +5,7 @@
   "c": "3347230659204802029"},
  "log":
  [{"message":
-   ".> LEAN_PATH=/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lvyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lvyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer.lean -o /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.olean -i /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.ilean -c /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer.c --setup /Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer.setup.json --json",
+   ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer.setup.json --json",
    "level": "trace"}],
  "inputs":
  [["Gametheory.Brouwer:deps",
@@ -13,13 +13,13 @@
      [["Gametheory/Gametheory:extraDep", [["@Gametheory:extraDep", "1723"]]],
       ["import oleans",
        [["Mathlib:olean",
-         [["Mathlib:deps", "16368585485951814472"],
-          ["/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
+         [["Mathlib:deps", "9723543983440896081"],
+          ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
            "4012991845282597754"]]],
         ["Gametheory.Scarf:olean",
-         [["Gametheory.Scarf:deps", "13771604610303223211"],
-          ["/Users/lvyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.olean",
-           "16038984355478554582"]]]]]]],
+         [["Gametheory.Scarf:deps", "16797114998398397703"],
+          ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.olean",
+           "13137628764915536927"]]]]]]],
     ["libs",
      [["import dynlibs", "1723"],
       ["package external libraries", "1723"],
@@ -27,8 +27,8 @@
       ["module plugins", "1723"]]]]],
   ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
    "8739116525927611134"],
-  ["/Users/lvyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer.lean",
+  ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer.lean",
    "1560274824320482880"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "3351269636367006100"}
+ "depHash": "15072728640700390674"}
