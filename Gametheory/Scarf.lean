@@ -1451,7 +1451,7 @@ end ImageErase
 variable (c σ C) in
 abbrev NCdoors := {(τ,D) | isNearlyColorful c τ D ∧ isDoorof τ D σ C }
 
--- Helper Lemma: Three-collision cardinality bound
+
 omit [DecidableEq T] [Inhabited T] IST in
 lemma three_collision_card_bound [DecidableEq T] (σ : Finset T) (c : T → I)
     (a b z : T) (ha_in_σ : a ∈ σ) (hb_in_σ : b ∈ σ) (hz_in_σ : z ∈ σ)
@@ -1501,7 +1501,7 @@ lemma three_collision_card_bound [DecidableEq T] (σ : Finset T) (c : T → I)
     _ = (σ_rest.card + 1) + 2     := by ring
     _ ≥ (σ.image c).card + 2      := add_le_add_right h_image_bound 2
 
--- Helper Lemma: Image preservation under collision erasure
+
 omit [DecidableEq T] [Inhabited T] IST in
 lemma image_erase_collision_preserves [DecidableEq T] (σ : Finset T) (c : T → I)
     (x y : T) (hx_in_σ : x ∈ σ) (hy_in_σ : y ∈ σ) (hxy_ne : x ≠ y) (hcxy_eq : c x = c y) :
@@ -1544,7 +1544,7 @@ lemma image_erase_collision_preserves [DecidableEq T] (σ : Finset T) (c : T →
       · use w
         exact ⟨Finset.mem_erase.mpr ⟨h, hw_in_σ⟩, hw_eq⟩
 
--- Helper Lemma: Door validation for collision case
+
 omit [DecidableEq T] [Inhabited T] in
 lemma collision_door_valid [DecidableEq T] (σ : Finset T) (C : Finset I) (_ : T → I)
     (x : T) (h_cell : isCell σ C) (hx_in_σ : x ∈ σ) (h_card_eq : C.card = σ.card) :
