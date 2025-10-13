@@ -1,7 +1,7 @@
 {"synthetic": false,
  "outputs":
- {"o": ["998648957775995552"],
-  "i": "2585755531751902418",
+ {"o": ["4405518913151820007"],
+  "i": "2918270361521151899",
   "c": "5814464661772908657"},
  "log":
  [{"message":
@@ -28,7 +28,7 @@
   ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
    "8739116525927611134"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer_product.lean",
-   "6864916503963769999"],
+   "18220479512621175576"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "16197824838757949078"}
+ "depHash": "2426594311418410227"}

@@ -485,6 +485,117 @@ lemma project_embed_id (y : ProductSimplices card) :
     simpa [hnum, blockWeight] using this
   simpa [h_norm_eq_div] using h_div_cancel
 
+omit [DecidableEq I] [LinearOrder I] in
+lemma blockWeight_pos (i : I) : 0 < blockWeight card i := by
+  unfold blockWeight
+  have htc : 0 < (total_card card : ℝ) := by norm_cast; exact PNat.pos (total_card card)
+  have hci : 0 < (card i : ℝ) := by norm_cast; exact PNat.pos (card i)
+  exact div_pos hci htc
+
+/-- `blockSum card i x` is always nonnegative. -/
+lemma blockSum_nonneg (i : I) (x : BigSimplex card) : 0 ≤ blockSum card i x := by
+  unfold blockSum
+  apply Finset.sum_nonneg
+  intro j _
+  exact x.2.1 _
+
+/-- `deficit card x` is always nonnegative. -/
+lemma deficit_nonneg (x : BigSimplex card) : 0 ≤ deficit card x := by
+  unfold deficit
+  apply Finset.sum_nonneg
+  intro i _
+  exact le_max_left _ _
+
+/-- `tPush card x` is always in `[0, 1]`. -/
+lemma tPush_mem_Icc (x : BigSimplex card) : tPush card x ∈ Set.Icc (0 : ℝ) 1 := by
+  constructor
+  · have hden : 0 ≤ (1 : ℝ) + deficit card x := by
+      have := deficit_nonneg card x; linarith
+    simpa [tPush] using div_nonneg (deficit_nonneg card x) hden
+  · have hdenpos : 0 < (1 : ℝ) + deficit card x := by
+      have := deficit_nonneg card x
+      exact add_pos_of_pos_of_nonneg (by norm_num) this
+    have hle : deficit card x ≤ 1 + deficit card x := by linarith
+    have hinv_nonneg : 0 ≤ (1 + deficit card x)⁻¹ := inv_nonneg.mpr (le_of_lt hdenpos)
+    have := mul_le_mul_of_nonneg_right hle hinv_nonneg
+    have : (deficit card x) / (1 + deficit card x) ≤ (1 + deficit card x) / (1 + deficit card x) := by
+      simpa [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc] using this
+    simpa [tPush, div_self (ne_of_gt hdenpos)] using this
+
+/-- The block sum after pushing towards `z_uniform` follows a linear formula. -/
+lemma blockSum_pushTowardsZ_formula (i : I) (x : BigSimplex card) :
+    blockSum card i (pushTowardsZ card x) =
+      (1 - tPush card x) * blockSum card i x + (tPush card x) * blockWeight card i := by
+  simp [blockSum, pushTowardsZ, sub_eq_add_neg, Finset.sum_add_distrib, Finset.mul_sum,
+        z_uniform, blockWeight, div_eq_mul_inv, mul_left_comm]
+
+/-- The block sum after pushing towards `z_uniform` is always positive. -/
+lemma blockSum_pushTowardsZ_pos (i : I) (x : BigSimplex card) :
+    0 < blockSum card i (pushTowardsZ card x) := by
+  rw [blockSum_pushTowardsZ_formula]
+  have h_bw_pos := blockWeight_pos card i
+  have h_block_nonneg := blockSum_nonneg card i x
+  have ⟨h_t_nonneg, h_t_le_one⟩ := tPush_mem_Icc card x
+  have h_one_minus_nonneg : 0 ≤ 1 - tPush card x := by linarith
+  by_cases ht0 : tPush card x = 0
+  · have h_def0 : deficit card x = 0 := by
+      have hden_pos : 0 < 1 + deficit card x :=
+        add_pos_of_pos_of_nonneg (by norm_num) (deficit_nonneg card x)
+      exact (div_eq_zero_iff.mp ht0).resolve_right (ne_of_gt hden_pos)
+    have h_term_le_sum : max 0 (blockWeight card i - blockSum card i x) ≤ deficit card x := by
+      classical
+      have hnonneg : ∀ i' ∈ (Finset.univ : Finset I),
+          0 ≤ max 0 (blockWeight card i' - blockSum card i' x) := fun i' _ => le_max_left _ _
+      simpa [deficit] using Finset.single_le_sum hnonneg (by simp)
+    have h_bw_le_sum : blockWeight card i ≤ blockSum card i x := by
+      have h_term_zero : max 0 (blockWeight card i - blockSum card i x) = 0 :=
+        le_antisymm (h_term_le_sum.trans (le_of_eq h_def0)) (le_max_left _ _)
+      simpa [sub_nonpos] using (max_eq_left_iff.1 h_term_zero)
+    have : 0 < blockSum card i x := lt_of_lt_of_le h_bw_pos h_bw_le_sum
+    simpa [ht0] using this
+  · have htpos : 0 < tPush card x := lt_of_le_of_ne h_t_nonneg (Ne.symm ht0)
+    have : 0 < (tPush card x) * blockWeight card i := mul_pos htpos h_bw_pos
+    linarith [mul_nonneg h_one_minus_nonneg h_block_nonneg]
+
+/-- Continuity of `blockSum card i`. -/
+lemma blockSum_continuous (i : I) : Continuous (blockSum card i) := by
+  change Continuous (fun x : BigSimplex card =>
+    ∑ j : Fin (card i), x.1 (index_combine card ⟨i, j⟩))
+  apply continuous_finset_sum
+  intro j _
+  exact (continuous_apply _).comp continuous_subtype_val
+
+/-- Continuity of `deficit card`. -/
+lemma deficit_continuous : Continuous (deficit card) := by
+  change Continuous (fun x : BigSimplex card =>
+    ∑ i, max (0 : ℝ) ((blockWeight card i) - blockSum card i x))
+  apply continuous_finset_sum
+  intro i _
+  exact continuous_const.max (continuous_const.sub (blockSum_continuous card i))
+
+/-- Continuity of `tPush card`. -/
+lemma tPush_continuous : Continuous (tPush card) := by
+  have h_denom_cont : Continuous (fun x => (1 : ℝ) + deficit card x) :=
+    continuous_const.add (deficit_continuous card)
+  have h_denom_ne : ∀ x, (1 : ℝ) + deficit card x ≠ 0 := fun x =>
+    ne_of_gt (add_pos_of_pos_of_nonneg (by norm_num) (deficit_nonneg card x))
+  exact Continuous.div (deficit_continuous card) h_denom_cont h_denom_ne
+
+/-- Continuity of `pushTowardsZ card`. -/
+lemma pushTowardsZ_continuous : Continuous (pushTowardsZ card) := by
+  apply Continuous.subtype_mk
+  classical
+  apply continuous_pi
+  intro k
+  have hxk : Continuous (fun x : BigSimplex card => x.1 k) :=
+    (continuous_apply k).comp continuous_subtype_val
+  have hone_minus_t : Continuous (fun x => (1 : ℝ) - tPush card x) :=
+    continuous_const.sub (tPush_continuous card)
+  have hterm1 : Continuous (fun x => ((1 : ℝ) - tPush card x) * x.1 k) :=
+    hone_minus_t.mul hxk
+  have hterm2 : Continuous (fun x => (tPush card x) * (z_uniform card).1 k) :=
+    (tPush_continuous card).mul continuous_const
+  simpa [pushTowardsZ] using hterm1.add hterm2
 
 /-- Continuity of `project_to_product`. -/
 lemma project_continuous : Continuous (project_to_product card) := by
@@ -494,155 +605,21 @@ lemma project_continuous : Continuous (project_to_product card) := by
   apply continuous_pi
   intro j
   let k : Fin (total_card card) := index_combine card ⟨i, j⟩
-  have h_tPush_cont : Continuous (tPush card) := by
-
-    have h_deficit_cont : Continuous (deficit card) := by
-      change Continuous (fun x : BigSimplex card =>
-        ∑ i, max (0 : ℝ) ((blockWeight card i) - blockSum card i x))
-      apply continuous_finset_sum
-      intro i _
-      have h_blockSum_cont : Continuous (blockSum card i) := by
-        change Continuous (fun x : BigSimplex card =>
-          ∑ j : Fin (card i), x.1 (index_combine card ⟨i, j⟩))
-        apply continuous_finset_sum
-        intro j _
-        exact (continuous_apply _).comp continuous_subtype_val
-      have h_const : Continuous (fun _ : BigSimplex card => blockWeight card i) :=
-        continuous_const
-      have h_diff : Continuous (fun x => blockWeight card i - blockSum card i x) :=
-        h_const.sub h_blockSum_cont
-      exact continuous_const.max h_diff
-    have h_denom_cont : Continuous (fun x => (1 : ℝ) + deficit card x) :=
-      continuous_const.add h_deficit_cont
-    have h_denom_ne : ∀ x, (1 : ℝ) + deficit card x ≠ 0 := by
-      intro x
-      have hge0 : 0 ≤ deficit card x := by
-        unfold deficit
-        apply Finset.sum_nonneg
-        intro i _
-        exact le_max_left _ _
-      have : 0 < (1 : ℝ) + deficit card x := add_pos_of_pos_of_nonneg (by norm_num) hge0
-      exact ne_of_gt this
-    exact Continuous.div h_deficit_cont h_denom_cont h_denom_ne
-  have h_push_cont : Continuous (pushTowardsZ card) := by
-    apply Continuous.subtype_mk
-    have hcoord : Continuous (fun x : BigSimplex card =>
-        fun k : Fin (total_card card) =>
-          ((1 : ℝ) - tPush card x) * x.1 k + (tPush card x) * (z_uniform card).1 k) := by
-      classical
-      apply continuous_pi
-      intro k
-      have hxk : Continuous (fun x : BigSimplex card => x.1 k) :=
-        (continuous_apply k).comp continuous_subtype_val
-      have hzk : Continuous (fun _ : BigSimplex card => (z_uniform card).1 k) :=
-        continuous_const
-      have hone_minus_t : Continuous (fun x => (1 : ℝ) - tPush card x) :=
-        continuous_const.sub h_tPush_cont
-      have hterm1 : Continuous (fun x => ((1 : ℝ) - tPush card x) * x.1 k) :=
-        hone_minus_t.mul hxk
-      have hterm2 : Continuous (fun x => (tPush card x) * (z_uniform card).1 k) :=
-        h_tPush_cont.mul hzk
-      simpa [sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using hterm1.add hterm2
-    simpa [pushTowardsZ] using hcoord
-  have h_num_cont : Continuous (fun x : BigSimplex card => (pushTowardsZ card x).1 k) := by
-    exact (continuous_apply k).comp ((continuous_subtype_val).comp h_push_cont)
-  have h_denom_cont : Continuous (fun x : BigSimplex card => blockSum card i (pushTowardsZ card x)) := by
+  have h_num_cont : Continuous (fun x : BigSimplex card => (pushTowardsZ card x).1 k) :=
+    (continuous_apply k).comp (continuous_subtype_val.comp (pushTowardsZ_continuous card))
+  have h_denom_cont : Continuous (fun x : BigSimplex card =>
+      blockSum card i (pushTowardsZ card x)) := by
     change Continuous (fun x : BigSimplex card =>
       ∑ j : Fin (card i), (pushTowardsZ card x).1 (index_combine card ⟨i, j⟩))
     apply continuous_finset_sum
     intro j _
     exact (continuous_apply (index_combine card ⟨i, j⟩)).comp
-      ((continuous_subtype_val).comp h_push_cont)
-  have h_denom_ne : ∀ x : BigSimplex card, blockSum card i (pushTowardsZ card x) ≠ 0 := by
-    intro x
-    classical
-    have h_sum_eq :
-        blockSum card i (pushTowardsZ card x) =
-          (1 - tPush card x) * blockSum card i x +
-          (tPush card x) * blockWeight card i := by
-      simp [blockSum, pushTowardsZ, sub_eq_add_neg, Finset.sum_add_distrib, Finset.mul_sum,
-            z_uniform, blockWeight, div_eq_mul_inv, mul_left_comm]
-    have h_bw_pos : 0 < blockWeight card i := by
-      unfold blockWeight
-      have htc : 0 < (total_card card : ℝ) := by
-        norm_cast; exact PNat.pos (total_card card)
-      have hci : 0 < (card i : ℝ) := by
-        norm_cast; exact PNat.pos (card i)
-      exact div_pos hci htc
-    have h_block_nonneg : 0 ≤ blockSum card i x := by
-      unfold blockSum
-      apply Finset.sum_nonneg
-      intro j _
-      exact x.2.1 _
-    have h_def_nonneg : 0 ≤ deficit card x := by
-      unfold deficit
-      apply Finset.sum_nonneg
-      intro i' _; exact le_max_left _ _
-    have h_t_nonneg : 0 ≤ tPush card x := by
-      have hden : 0 ≤ (1 : ℝ) + deficit card x := by linarith
-      have hnum : 0 ≤ deficit card x := h_def_nonneg
-      simpa [tPush] using div_nonneg hnum (by exact hden)
-    have h_t_le_one : tPush card x ≤ 1 := by
-      have hdenpos : 0 < (1 : ℝ) + deficit card x := by
-        have : 0 ≤ deficit card x := h_def_nonneg
-        exact add_pos_of_pos_of_nonneg (by norm_num) this
-      have hle : deficit card x ≤ 1 + deficit card x := by linarith
-      have :
-          (deficit card x) / (1 + deficit card x) ≤
-            (1 + deficit card x) / (1 + deficit card x) := by
-        have hinv_nonneg : 0 ≤ (1 + deficit card x)⁻¹ :=
-          inv_nonneg.mpr (le_of_lt hdenpos)
-        have := mul_le_mul_of_nonneg_right hle hinv_nonneg
-        simpa [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc] using this
-      simpa [tPush, div_self (ne_of_gt hdenpos)] using this
-    have h_one_minus_nonneg : 0 ≤ 1 - tPush card x := by
-      have := h_t_le_one
-      linarith
-    by_cases ht0 : tPush card x = 0
-    · have h_def0 : deficit card x = 0 := by
-        have hden_pos : 0 < 1 + deficit card x := add_pos_of_pos_of_nonneg (by norm_num) h_def_nonneg
-        exact (div_eq_zero_iff.mp ht0).resolve_right (ne_of_gt hden_pos)
-      have h_term_nonneg : 0 ≤ max (0 : ℝ) ((blockWeight card i) - blockSum card i x) := by
-        exact le_max_left _ _
-      have h_term_le_sum : max (0 : ℝ) ((blockWeight card i) - blockSum card i x) ≤ deficit card x := by
-        classical
-        have hnonneg : ∀ i' ∈ (Finset.univ : Finset I),
-            0 ≤ max (0 : ℝ) ((blockWeight card i') - blockSum card i' x) := by
-          intro i' _; exact le_max_left _ _
-        simpa [deficit] using
-          (Finset.single_le_sum hnonneg (by simp : i ∈ (Finset.univ : Finset I)))
-      have h_term_le_zero :
-          max (0 : ℝ) ((blockWeight card i) - blockSum card i x) ≤ 0 := by
-        simpa [h_def0] using h_term_le_sum
-      have h_term_zero :
-          max (0 : ℝ) ((blockWeight card i) - blockSum card i x) = 0 :=
-        le_antisymm h_term_le_zero (le_max_left _ _)
-      have h_le : (blockWeight card i) - blockSum card i x ≤ 0 := by
-        exact (max_eq_left_iff).1 h_term_zero
-      have h_bw_le_sum : blockWeight card i ≤ blockSum card i x := by
-        simpa [sub_nonpos] using h_le
-      have : 0 < blockSum card i x := lt_of_lt_of_le h_bw_pos h_bw_le_sum
-      have : 0 < blockSum card i (pushTowardsZ card x) := by
-        simpa [h_sum_eq, ht0] using this
-      exact ne_of_gt this
-    · have htpos : 0 < tPush card x :=
-        lt_of_le_of_ne h_t_nonneg (by simpa [eq_comm] using ht0)
-      have : 0 < (tPush card x) * blockWeight card i := mul_pos htpos h_bw_pos
-      have hge : (tPush card x) * blockWeight card i ≤ blockSum card i (pushTowardsZ card x) := by
-        have hfirst : 0 ≤ (1 - tPush card x) * blockSum card i x :=
-          mul_nonneg h_one_minus_nonneg h_block_nonneg
-        have := h_sum_eq
-        have := (le_of_eq this.symm)
-        have := add_le_add_right hfirst ((tPush card x) * blockWeight card i)
-        simpa [h_sum_eq, add_comm, add_left_comm, add_assoc] using this
-      have : 0 < blockSum card i (pushTowardsZ card x) := lt_of_lt_of_le this hge
-      exact ne_of_gt this
-  have h_div : Continuous
-      (fun x : BigSimplex card =>
-        (pushTowardsZ card x).1 k /
-        blockSum card i (pushTowardsZ card x)) := by
-    refine Continuous.div h_num_cont h_denom_cont ?_
-    intro x; exact h_denom_ne x
+      (continuous_subtype_val.comp (pushTowardsZ_continuous card))
+  have h_denom_ne : ∀ x : BigSimplex card, blockSum card i (pushTowardsZ card x) ≠ 0 :=
+    fun x => ne_of_gt (blockSum_pushTowardsZ_pos card i x)
+  have h_div : Continuous (fun x : BigSimplex card =>
+      (pushTowardsZ card x).1 k / blockSum card i (pushTowardsZ card x)) :=
+    Continuous.div h_num_cont h_denom_cont h_denom_ne
   simpa [project_to_product, blockSum] using h_div
 
 
