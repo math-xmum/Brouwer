@@ -1,8 +1,8 @@
 {"synthetic": false,
  "outputs":
- {"o": ["13936809565111002713"],
-  "i": "2018281432856663547",
-  "c": "3347230659204802029"},
+ {"o": ["614816793043006911"],
+  "i": "11343594879753050669",
+  "c": "5206464273581058409"},
  "log":
  [{"message":
    ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer.setup.json --json",
@@ -28,7 +28,7 @@
   ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
    "8739116525927611134"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer.lean",
-   "1560274824320482880"],
+   "2970279943885439262"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "15072728640700390674"}
+ "depHash": "18252727469867126860"}
