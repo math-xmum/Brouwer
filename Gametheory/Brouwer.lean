@@ -1,9 +1,6 @@
 import Mathlib
 import Gametheory.Scarf
 open Classical
-set_option maxHeartbeats 3000000
-
-
 
 section
 /-- A dependent product of finite, indexed by finite, is a finite. -/
@@ -480,24 +477,6 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
 
 end finiteness
 
--- 有界向量的L2范数上界定理
-theorem norm_bound_of_coord_bound (n : ℕ) (v : Fin n → ℝ) (bound : ℝ)
-    (h_nonneg_bound : bound ≥ 0) (h_coord_bound : ∀ i : Fin n, abs (v i) ≤ bound) :
-    Real.sqrt (∑ i, v i ^ 2) ≤ Real.sqrt (n : ℝ) * bound := by
-  calc Real.sqrt (∑ i : Fin n, v i ^ 2)
-    _ ≤ Real.sqrt (∑ i : Fin n, bound ^ 2) := by
-        apply Real.sqrt_le_sqrt
-        apply Finset.sum_le_sum
-        intro i _
-        have hi : abs (v i) ≤ bound := h_coord_bound i
-        rw [← sq_abs (v i)]
-        exact sq_le_sq' (le_trans (neg_nonpos_of_nonneg h_nonneg_bound) (abs_nonneg (v i))) hi
-    _ = Real.sqrt (n * bound ^ 2) := by
-      congr 1
-      simp only [Finset.sum_const, nsmul_eq_mul, Finset.card_univ, Fintype.card_fin]
-    _ = Real.sqrt (n : ℝ) * bound := by
-      rw [Real.sqrt_mul (Nat.cast_nonneg n), Real.sqrt_sq_eq_abs, abs_of_nonneg h_nonneg_bound]
-
 lemma constant_index_set_nonempty : Nonempty {(a, g) :(Finset (Fin n)) × (ℕ ↪o ℕ) | ∀ l', (room_seq f (g l')).1.2 = a } := by
   obtain ⟨a, ha,g,hg⟩ := exists_subseq_constant_of_finite_image (s := Finset.univ)
     (fun x => (room_seq f x).1.2) (by simp)
@@ -717,8 +696,6 @@ theorem f_coords_ge_z_coords (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
 
       have f_y_seq_φ_converges_to_f_z : Filter.Tendsto (f ∘ y_seq ∘ φ) Filter.atTop (𝓝 (f z)) := by
         exact hf.continuousAt.tendsto.comp y_seq_φ_converges_to_z
-
-      -- The coordinates are continuous functions, so the sequences of coordinates also converge.
       have f_y_seq_φ_coord_converges : Filter.Tendsto (fun l' => (f (y_seq (φ l'))).1 idx) Filter.atTop (𝓝 ((f z).1 idx)) := by
         have h_continuous : Continuous (fun x : stdSimplex ℝ (Fin n) => x.1 idx) :=
           Continuous.comp (continuous_apply idx) continuous_subtype_val
