@@ -1,5 +1,5 @@
-import Mathlib
 import Gametheory.Brouwer
+
 open Filter
 
 section Brouwer.ProductRetraction
@@ -54,7 +54,7 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
             (∑ j ∈ Finset.univ.filter (· < i₀), (card j : ℕ)) + (card i₀ : ℕ) := by
       have h_split : Finset.univ.filter (· ≤ i₀) = Finset.univ.filter (· < i₀) ∪ {i₀} := by
         ext j
-        simp [le_iff_lt_or_eq]
+        simp [le_iff_lt_or_eq, or_comm]
       rw [h_split, Finset.sum_union]
       · simp
       · simp
@@ -125,7 +125,7 @@ noncomputable def index_combine (p : Σ i, Fin (card i)) : Fin (total_card card)
       have h_eq : (Finset.univ.filter (· ≤ p.1)).sum (fun j => (card j : ℕ)) =
                    (Finset.univ.filter (· < p.1)).sum (fun j => (card j : ℕ)) + (card p.1 : ℕ) := by
         have h_split : Finset.univ.filter (· ≤ p.1) = Finset.univ.filter (· < p.1) ∪ {p.1} := by
-          ext j; simp [le_iff_lt_or_eq]
+          ext j; simp [le_iff_lt_or_eq, or_comm]
         have h_disj : Disjoint (Finset.univ.filter (· < p.1)) {p.1} := by simp
         rw [h_split, Finset.sum_union h_disj, Finset.sum_singleton]
       rw [← h_eq]
@@ -152,9 +152,9 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
           (Finset.univ.filter (· < a)).sum (fun j => (card j : ℕ)) + (card a : ℕ) := by
         have h_split : Finset.univ.filter (· ≤ a) =
             Finset.univ.filter (· < a) ∪ {a} := by
-          ext j; simp [le_iff_lt_or_eq]
+          ext j; simp [le_iff_lt_or_eq, or_comm]
         have h_disj : Disjoint (Finset.univ.filter (· < a)) {a} := by simp
-        simp [h_split, Finset.sum_union h_disj]
+        simp [h_split, add_comm]
       have h_le : (Finset.univ.filter (· ≤ a)).sum (fun j => (card j : ℕ)) ≤
           (Finset.univ.filter (· < b)).sum (fun j => (card j : ℕ)) :=
         Finset.sum_le_sum_of_subset_of_nonneg h_subset (by

@@ -1,5 +1,5 @@
-import Mathlib
---import LLMlean
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Data.Int.Star
 
 section fiberlemma
 
@@ -8,8 +8,11 @@ open Finset
 
 variable {α : Type u} {β : Type v} [DecidableEq α] [DecidableEq β]
 
-lemma injOn_sdiff (s : Finset α) (f : α → β) (h : s.card = (Finset.image f s).card + 1) : ∃ a b, a ∈ s ∧ b ∈ s ∧ f a = f b ∧ a ≠ b ∧ Set.InjOn f (s \ ({a, b} : Finset α)) := by
-  have of_card_domain_eq_card_image_succ  (s : Finset α) (f : α → β) (h : s.card = (Finset.image f s).card + 1) :
+lemma injOn_sdiff (s : Finset α) (f : α → β) (h : s.card =
+  (Finset.image f s).card + 1) : ∃ a b, a ∈ s ∧ b ∈ s ∧ f a = f b ∧ a ≠ b
+    ∧ Set.InjOn f (s \ ({a, b} : Finset α)) := by
+  have of_card_domain_eq_card_image_succ  (s : Finset α) (f : α → β)
+    (h : s.card = (Finset.image f s).card + 1) :
   ∃ a b, a ∈ s ∧ b ∈ s ∧ f a = f b ∧ a ≠ b := by
     suffices ¬ Set.InjOn f s by
       contrapose! this
@@ -47,7 +50,9 @@ lemma injOn_sdiff (s : Finset α) (f : α → β) (h : s.card = (Finset.image f 
             _ ≤ (s \ {a, b, c}).card + 1 := by
               simp [Finset.card_image_le]
             _ = s.card - 3 + 1 := by
-              rw [Finset.card_sdiff abcss, cardabc]
+              have h : (s \ {a, b, c}).card = s.card - 3 := by
+                rw [Finset.card_sdiff, Finset.inter_eq_left.mpr abcss, cardabc]
+              omega
             _ < _ := by
               have : 2 < s.card := by
                 have := Finset.card_le_card abcss
@@ -71,10 +76,13 @@ lemma injOn_sdiff (s : Finset α) (f : α → β) (h : s.card = (Finset.image f 
           by_cases ceqa : c = a
           · rw [ceqa] at fcx; rw [fcx] at h1'; tauto
           · rw [hf ceqa, ←h1] at fcx; rw [fcx] at h1; tauto
-      rw [aux2, Finset.card_sdiff (by simp; exact ⟨a, as, rfl⟩), card_singleton]
-    rw [this,Finset.card_pair h2, h]
-    simp
-  · exact absub
+      rw [aux2, Finset.card_sdiff]
+      have h_mem : f a ∈ image f s := Finset.mem_image_of_mem f as
+      have h_subset : {f a} ⊆ image f s := by simp [h_mem]
+      simp [Finset.inter_eq_left.mpr h_subset]
+    have h_inter : {a, b} ∩ s = {a, b} := Finset.inter_eq_left.mpr absub
+    rw [this, h_inter, Finset.card_pair h2, h]
+    omega
 
 end fiberlemma
 
@@ -116,8 +124,7 @@ lemma Nonempty_of_Dominant (h : IST.isDominant σ C) : C.Nonempty := by
 omit [Inhabited T] in
 lemma Dominant_of_subset (σ τ : Finset T) (C : Finset I) :
   τ ⊆ σ → isDominant σ C  → isDominant τ C := by
-    intro h1 h2
-    intro y
+    intro h1 h2 y
     obtain ⟨j,hj⟩:= h2 y
     use j,hj.1
     intro x hx
@@ -126,8 +133,7 @@ lemma Dominant_of_subset (σ τ : Finset T) (C : Finset I) :
 omit [Inhabited T] in
 lemma Dominant_of_supset (σ : Finset T) (C D: Finset I) :
   C ⊆ D → isDominant σ C  → isDominant σ D := by
-    intro h1 h2
-    intro y
+    intro h1 h2 y
     obtain ⟨j,hj⟩:= h2 y
     use j,(h1 hj.1)
     intro x hx
@@ -352,14 +358,11 @@ lemma sublemma_3_1 [Fintype T] (τ : Finset T) (D : Finset I)
         use k, hk_in_D, hk_ne_i
     · push_neg at h_case
       obtain ⟨h_i_ne_a, h_i_ne_b⟩ := h_case
-
       have h_a_in_erase : a ∈ D.erase i := Finset.mem_erase.mpr ⟨h_i_ne_a.symm, ha_mem⟩
       have h_b_in_erase : b ∈ D.erase i := Finset.mem_erase.mpr ⟨h_i_ne_b.symm, hb_mem⟩
-
       have h_not_inj : ¬Set.InjOn (mini h_nonempty) (D.erase i : Set I) := by
         intro h_inj
         exact h_ne (h_inj h_a_in_erase h_b_in_erase h_eq_mini)
-
       have h_image_lt : ((D.erase i).image (mini h_nonempty)).card < (D.erase i).card := by
         by_contra h_not_lt
         push_neg at h_not_lt
@@ -389,7 +392,7 @@ lemma sublemma_3_1 [Fintype T] (τ : Finset T) (D : Finset I)
     · exact Finset.mem_erase.mpr ⟨hk_ne_i, hk_mem⟩
     · intro x hx
       letI : LinearOrder T := IST k
-      have h_y_le_mini : y ≤[k] mini h_nonempty k := le_of_not_gt hk_not_lt
+      have h_y_le_mini : y ≤[k] mini h_nonempty k := hk_not_lt
       have h_mini_le_x : mini h_nonempty k ≤[k] x := Finset.min'_le τ x hx
       exact @le_trans _ (IST k).toPreorder _ _ _ h_y_le_mini h_mini_le_x
 
@@ -1464,20 +1467,15 @@ lemma three_collision_card_bound [DecidableEq T] (σ : Finset T) (c : T → I)
     · exact ha_in_σ
     · exact hb_in_σ
     · exact hz_in_σ
-
   have h_partition : σ = {a, b, z} ∪ σ_rest :=
     (Finset.union_sdiff_of_subset h_three_subset_sigma).symm
-
   have h_disjoint : Disjoint ({a, b, z} : Finset T) σ_rest :=
     Finset.disjoint_sdiff
-
   have h_card_partition : σ.card = ({a, b, z} : Finset T).card + σ_rest.card := by
     rw [h_partition, Finset.card_union_of_disjoint h_disjoint]
-
   have h_triple_card : ({a, b, z} : Finset T).card = 3 := by
     rw [Finset.card_eq_three]
     exact ⟨a, b, z, hab_ne, haz_ne, hbz_ne, rfl⟩
-
   have h_image_bound : (σ.image c).card ≤ σ_rest.card + 1 := by
     have h_image_union : σ.image c = insert (c a) (σ_rest.image c) := by
       ext i; simp only [Finset.mem_image, Finset.mem_insert]
@@ -1494,12 +1492,11 @@ lemma three_collision_card_bound [DecidableEq T] (σ : Finset T) (c : T → I)
         · use t; exact ⟨(Finset.mem_sdiff.mp ht_in_rest).1, rfl⟩
     rw [h_image_union]
     linarith [Finset.card_insert_le (c a) (σ_rest.image c), Finset.card_image_le (f := c) (s := σ_rest)]
-
   calc σ.card
-      = 3 + σ_rest.card           := by rw [h_card_partition, h_triple_card]
-    _ = σ_rest.card + 3           := by ring
-    _ = (σ_rest.card + 1) + 2     := by ring
-    _ ≥ (σ.image c).card + 2      := add_le_add_right h_image_bound 2
+      = 3 + σ_rest.card          := by rw [h_card_partition, h_triple_card]
+    _ = σ_rest.card + 3          := by ring
+    _ = (σ_rest.card + 1) + 2    := by ring
+    _ ≥ (σ.image c).card + 2     := by omega
 
 
 omit [DecidableEq T] [Inhabited T] IST in
@@ -2573,8 +2570,8 @@ lemma parity_lemma {a b c d : ℕ } (h1 : Odd a) (h2 : Even b) (h3 : Even d) (h4
 theorem _root_.Finset.card_filter_filter_neg {α : Type*} (s : Finset α) (p : α → Prop) [DecidablePred p]
  : s.card  = (Finset.filter p s).card + (Finset.filter (fun (a : α) => ¬p a) s).card :=
   by
-    nth_rw 1 [<-Finset.filter_union_filter_neg_eq p s]
-    apply Finset.card_union_eq_card_add_card.2 (Finset.disjoint_filter_filter_neg _ _ _)
+    nth_rw 1 [<-Finset.filter_union_filter_not_eq p s]
+    apply Finset.card_union_eq_card_add_card.2 (Finset.disjoint_filter_filter_not _ _ _)
 
 lemma typed_colorful_room_odd  (i : I): Odd (Finset.filter (fun (x: (Finset T× Finset I) × Finset T × Finset I) =>  isColorful c x.2.1 x.2.2) (dbcountingset c i)).card
 := by

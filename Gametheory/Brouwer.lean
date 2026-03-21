@@ -1,5 +1,12 @@
-import Mathlib
 import Gametheory.Scarf
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.Convex.StdSimplex
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Order.PiLex
+import Mathlib.Tactic.Cases
+
 open Classical
 
 section
@@ -32,7 +39,7 @@ instance TT.inhabited : Inhabited (TT n l) where
 
 instance TT.funlike : FunLike (TT n l) (Fin n) (Fin (l+1)) where
   coe := fun a => a.1
-  coe_injective' := by simp
+  coe_injective' := fun _ _ h => Subtype.ext h
 
 variable {n l} in
 def TTtostdSimplex (x : TT n l) : stdSimplex ℝ (Fin n) := ⟨fun i => x i / l, by
@@ -56,15 +63,16 @@ abbrev TT.Ilt ( x y : TT n l) :=
 
 instance TT.IST : IsStrictTotalOrder (TT n l) (TT.Ilt i) where
   trichotomous := by
-    intro a b
-    repeat rw [TT.Ilt]
+    intro a b h_not_lt h_not_gt
+    rw [TT.Ilt] at h_not_lt h_not_gt
     have h1 : toLex (a i, a) <  toLex (b i, b) ∨ toLex (a i, a) = toLex (b i, b) ∨ toLex (b i, b) < toLex (a i, a) :=
-      by apply IsTrichotomous.trichotomous
-    convert h1
-    suffices hh : a = b → a i = b i from
-      by simp;exact hh
-    intro h;rw [h]
-  irrefl := by simp
+      lt_trichotomy _ _
+    rcases h1 with h | heq | h
+    · exact absurd h h_not_lt
+    · have pair_eq : (a i, a) = (b i, b) := Equiv.injective toLex heq
+      exact congrArg Prod.snd pair_eq
+    · exact absurd h h_not_gt
+  irrefl := fun a => by simp [TT.Ilt]; exact lt_irrefl _
   trans := by
     intro a b c
     rw [TT.Ilt]
@@ -87,14 +95,14 @@ lemma TT.Ilt_keyprop (a b : TT n l) :
   a i < b i → a <[i] b := by
   intro h
   rw [TT.Ilt_def,Ilt,Prod.Lex.lt_iff]
-  simp [h]
+  exact Or.inl h
 
 lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C)
 (h2 : σ.Nonempty):
-  l < ∑ k ∈ C, (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty, h2]) + C.card := by
+  l < ∑ k ∈ C, (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty]; exact h2) + C.card := by
   by_contra h_not
   push_neg at h_not
-  let m := fun k => (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty, h2])
+  let m := fun k => (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty]; exact h2)
   have h_sum_bound : ∑ k ∈ C, m k + C.card ≤ l := h_not
   have h_sum_plus_one : ∑ k ∈ C, (m k + 1) ≤ l := by
     rw [Finset.sum_add_distrib, Finset.sum_const, nsmul_one]
@@ -142,11 +150,12 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
     let M_val : Fin n → Fin (l + 1) := fun k => ⟨M_coords k, Nat.lt_succ_of_le (h_M_coords_bound k)⟩
     use ⟨M_val, by simp [M_val, h_M_coords_sum]⟩
     intro k hk_in_C
-    simp only [TT.funlike]
     by_cases h_is_zero : k = 0
     · rw [h_is_zero] at hk_in_C ⊢
-      simp [M_val, M_coords, M', hk_in_C]
-    · simp [M_val, M_coords, h_is_zero, M', hk_in_C]
+      show m 0 + 1 ≤ M_coords 0
+      simp [M_coords, M', hk_in_C]
+    · show m k + 1 ≤ M_coords k
+      simp [M_coords, if_neg h_is_zero, M', hk_in_C]
   obtain ⟨M, hM⟩ := h_exists_point
   have h_min_less : ∀ k ∈ C, ∃ x_min ∈ σ, ∀ x ∈ σ, x_min ≤[k] x := by
     intro k _
@@ -165,7 +174,7 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
     constructor
     · exact Finset.min'_mem σ h2
     · apply TT.Ilt_keyprop
-      have h_min_coord : (x_min k : ℕ) = (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty, h2]) := by
+      have h_min_coord : (x_min k : ℕ) = (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty]; exact h2) := by
         symm
         apply le_antisymm
         · apply Finset.min'_le
@@ -188,24 +197,22 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
         exact Nat.lt_of_succ_le (hM k hk_in_C)
       exact h_nat_lt
   have h_not_dominant : ¬ TT.ILO.isDominant σ C := by
-    unfold isDominant
-    push_neg
-    use M
-    intro k hk
-    rcases h_contradiction k hk with ⟨x, hx, hlt⟩
-    use x, hx
-    letI : LinearOrder (TT n l) := IndexedLOrder.IST k
-    rwa [← lt_iff_not_ge]
+    by_contra h_dom_assumption
+    have h_M := h_dom_assumption M
+    obtain ⟨i, hi_mem, h_M_le⟩ := h_M
+    have h_exist := h_contradiction i hi_mem
+    obtain ⟨x, hx, hlt⟩ := h_exist
+    letI : LinearOrder (TT n l) := IndexedLOrder.IST i
+    have h_le : M ≤[i] x := h_M_le x hx
+    exact not_lt.mpr h_le hlt
   exact h_not_dominant h
-
-
 
 theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C):
     ∀ x ∈ σ, ∀ y ∈ σ, ∀ i : Fin n, abs ((x i : ℤ) - (y i : ℤ)) < 2 * (n + 1)
     := by
   by_cases hσ : σ.Nonempty
   · intro x hx y hy i
-    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty, hσ])
+    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty]; exact hσ)
     let m' i := if h_i : i ∈ C then m i else 0
     have h_le_l_sub_sum : (l : ℕ) - ∑ k ∈ C, m k < C.card := by
       have h_key : l < ∑ k ∈ C, m k + C.card := size_bound_key n l σ C h hσ
@@ -285,13 +292,14 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
         simp only [m'] at this ⊢
         split_ifs at this ⊢ with h_case
         · have : (z i : ℕ) - m i < C.card := this
-          simp
           have h_le : m i ≤ (z i : ℕ) := by
             apply Finset.min'_le
             apply Finset.mem_image_of_mem
             exact hz
-          rw [← Int.ofNat_sub h_le]
-          exact Int.ofNat_lt.mpr this
+          have : ((z i : ℕ) - m i : ℤ) < (C.card : ℤ) := by
+            rw [← Int.ofNat_sub h_le]
+            exact Int.ofNat_lt.mpr this
+          convert this
         · simp only [Int.ofNat_zero, sub_zero]
           exact Int.ofNat_lt.mpr this
       calc
@@ -319,7 +327,7 @@ theorem size_bound_out (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.i
     := by
   by_cases hσ : σ.Nonempty
   · intro x hx i hi_not_C
-    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty, hσ])
+    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty]; exact hσ)
     have h_le_l_sub_sum : l - ∑ k ∈ C, m k < C.card := by
       have h_sum_le_l : ∑ k ∈ C, m k ≤ l := by
         rcases hσ with ⟨x, hx⟩
@@ -380,13 +388,11 @@ instance stdSimplex.upidx (x y : stdSimplex ℝ (Fin n)) : Nonempty { i | x.1 i 
     . intro i _
       have : ¬ (x.1 i ≤ y.1 i) := by
         intro hle
-        apply h
-        use i
-        exact hle
+        let elem : {i | x.1 i ≤ y.1 i} := ⟨i, hle⟩
+        exact IsEmpty.elim h elem
       exact lt_of_not_ge this
   rw [sum_y_eq_1, sum_x_eq_1] at sum_lt
   exact (lt_irrefl 1 sum_lt).elim
-
 
 noncomputable def stdSimplex.pick (x  y : stdSimplex ℝ (Fin n)) := Classical.choice $ stdSimplex.upidx x y
 
@@ -413,7 +419,7 @@ def mk_subseq (f : ℕ → ℕ) (h : ∀ n, n < f n) : ℕ → ℕ
 theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) (he : ∀ n, e n ∈ s ) :
   ∃ a ∈ s, ∃ g : ℕ ↪o ℕ,  (∀ n, e (g n) = a) := by
 
-  have range_subset : Set.range e ⊆ s.toSet := Set.range_subset_iff.mpr he
+  have range_subset : Set.range e ⊆ SetLike.coe s := Set.range_subset_iff.mpr he
   have range_finite : (Set.range e).Finite := (Finset.finite_toSet s).subset range_subset
   let imgs : Finset α := Finset.filter (fun a => ¬(Set.Finite (e ⁻¹' {a}))) s
   have imgs_nonempty : imgs.Nonempty := by
@@ -422,7 +428,7 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
     have preimages_all_finite : ∀ a ∈ s, Set.Finite (e ⁻¹' {a}) := by
       intro a ha
       by_contra hnf
-      have a_in_imgs : a ∈ imgs := by simp [imgs, ha, hnf]
+      have a_in_imgs : a ∈ imgs := by simp only [Finset.mem_filter, imgs]; exact ⟨ha, hnf⟩
       have : imgs ≠ ∅ := Finset.ne_empty_of_mem a_in_imgs
       contradiction
     have nat_finite : Set.Finite (Set.univ : Set ℕ) := by
@@ -526,7 +532,7 @@ lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex �
     have hx_mem : x ∈ σ := (pick_colorful_point colorful_proof).2
     have h_dom : TT.ILO.isDominant σ C_l := colorful_proof.1
     have h_bound := size_bound_out n l_pnat σ C_l h_dom x hx_mem i hiC_l
-    simp only [TT.funlike, TTtostdSimplex, Subtype.coe_mk]
+    simp only [TTtostdSimplex, Subtype.coe_mk]
     have h_eq : (↑l_pnat : ℝ) = ↑(g l') + 1 := by simp [l_pnat, PNat.mk_coe]
     rw [h_eq]
     rw [div_le_div_iff_of_pos_right (by positivity : (0 : ℝ) < ↑(g l') + 1)]
@@ -534,6 +540,7 @@ lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex �
       exact_mod_cast Nat.lt_succ_of_le (Int.ofNat_le.mp (Int.le_of_lt_add_one h_bound))
     exact le_of_lt h_bound_real
 
+@[reducible]
 def hpkg_aux:
   Nonempty {(z , h) : (stdSimplex ℝ  (Fin n)) × (ℕ → ℕ) | StrictMono h ∧ Filter.Tendsto
     ((fun l' => (room_point_seq f (g1 f l'): stdSimplex ℝ (Fin n))) ∘ h)
@@ -555,11 +562,11 @@ Use
 
 theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin n)) :
   Tendsto (fun k =>
-    Metric.diam (((room_seq f (g1 f ((hpkg f).1.2 k))).1.1.image (fun x => TTtostdSimplex x)).toSet : Set (stdSimplex ℝ (Fin n)))) atTop (𝓝 0) := by
+    Metric.diam (SetLike.coe ((room_seq f (g1 f ((hpkg f).1.2 k))).1.1.image (fun x => TTtostdSimplex x)) : Set (stdSimplex ℝ (Fin n)))) atTop (𝓝 0) := by
   let l k := g1 f ((hpkg f).1.2 k)
   let σ k := (room_seq f (l k)).1.1
   let projected_σ k := (σ k).image (fun x => TTtostdSimplex x)
-  have h_diam_bounded : ∃ (C : ℝ), ∀ k, Metric.diam ((projected_σ k).toSet) ≤ C / (l k + 1) := by
+  have h_diam_bounded : ∃ (C : ℝ), ∀ k, Metric.diam (SetLike.coe (projected_σ k)) ≤ C / (l k + 1) := by
     use 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1)
     intro k
     let l_pnat : PNat := ⟨l k + 1, Nat.succ_pos _⟩
@@ -592,7 +599,8 @@ theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
       _ ≤ 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1) / (l k + 1) := by
           rw [div_le_div_iff_of_pos_right (by positivity : (0 : ℝ) < l k + 1)]
           have h_assoc : 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1) = 2 * (Real.sqrt (n : ℝ) * ((n : ℝ) + 1)) := by ring
-          rw [h_assoc, mul_le_mul_left (by positivity)]
+          rw [h_assoc]
+          gcongr
           apply le_mul_of_one_le_left (by positivity)
           apply Real.one_le_sqrt.mpr
           norm_cast
@@ -672,13 +680,13 @@ theorem f_coords_ge_z_coords (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
       have y_seq_φ_converges_to_z : Filter.Tendsto (y_seq ∘ φ) Filter.atTop (𝓝 z) := by
         have h_dist_tends_to_zero : Filter.Tendsto (fun k => dist (y_seq (φ k)) ((fun l' => (room_point_seq f (g1 f l') : stdSimplex ℝ (Fin n))) (φ k))) Filter.atTop (𝓝 0) := by
           have h_bound : ∀ k, dist (y_seq (φ k)) ((room_point_seq f (g1 f (φ k)) : stdSimplex ℝ (Fin n))) ≤
-                Metric.diam (((room_seq f (g1 f (φ k))).1.1.image (fun x => TTtostdSimplex x)).toSet) := by
+                Metric.diam (SetLike.coe ((room_seq f (g1 f (φ k))).1.1.image (fun x => TTtostdSimplex x))) := by
             intro k
             apply Metric.dist_le_diam_of_mem
             · exact Set.Finite.isBounded (Finset.finite_toSet _)
             · exact Finset.mem_image_of_mem TTtostdSimplex (y_seq_spec (φ k)).1
             · exact Finset.mem_image_of_mem TTtostdSimplex (pick_colorful_point ((Finset.mem_filter.1 (room_seq f (g1 f (φ k))).2).2)).2
-          have h_diam_tendsto : Tendsto (fun k => Metric.diam (((room_seq f (g1 f (φ k))).1.1.image TTtostdSimplex).toSet)) atTop (𝓝 0) := by
+          have h_diam_tendsto : Tendsto (fun k => Metric.diam (SetLike.coe ((room_seq f (g1 f (φ k))).1.1.image TTtostdSimplex))) atTop (𝓝 0) := by
             exact tendsto_diam_to_zero f
           exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h_diam_tendsto
             (Eventually.of_forall (fun _ => dist_nonneg)) (Eventually.of_forall h_bound)
@@ -788,7 +796,10 @@ theorem Brouwer (hf : Continuous f): ∃ x , f x = x := by
   ext i_1
   by_cases hi : i_1 ∈ C
   · exact f_coords_eq_z_coords i_1 hi
-  · rw [f_coords_outside_C_zero i_1 hi, coords_outside_C_zero i_1 hi]
+  · have h1 := f_coords_outside_C_zero i_1 hi
+    have h2 := coords_outside_C_zero i_1 hi
+    show (f z).1 i_1 = z.1 i_1
+    rw [h1, h2]
 
 
 end Brouwer

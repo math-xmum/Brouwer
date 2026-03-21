@@ -1,5 +1,3 @@
-import Mathlib
-
 import Gametheory.Brouwer_product
 import Gametheory.Simplex
 
@@ -235,8 +233,12 @@ def map_simplex_equiv {n m : Type*} [Fintype n] [Fintype m] (e : n ≃ m) :
     (stdSimplex ℝ n) ≃ (stdSimplex ℝ m) where
   toFun := map_simplex e
   invFun := map_simplex e.symm
-  left_inv x := by ext i; simp
-  right_inv x := by ext i; simp
+  left_inv x := by
+    ext i
+    exact congrArg x.1 (e.symm_apply_apply i)
+  right_inv x := by
+    ext i
+    exact congrArg x.1 (e.apply_symm_apply i)
 
 /-- Lifts component-wise equivalences to an equivalence on the space of mixed strategies. -/
 def map_mixedS_equiv {G : FinGame} (e : (i : G.I) → G.SS i ≃ Fin (Fintype.card (G.SS i))) :
@@ -244,9 +246,11 @@ def map_mixedS_equiv {G : FinGame} (e : (i : G.I) → G.SS i ≃ Fin (Fintype.ca
   toFun x i := map_simplex (e i) (x i)
   invFun x i := map_simplex (e i).symm (x i)
   left_inv x := by
-    funext i; ext j; simp [map_simplex_apply]
+    funext i; ext j
+    exact congrArg (x i).1 ((e i).symm_apply_apply j)
   right_inv x := by
-    funext i; ext j; simp [map_simplex_apply]
+    funext i; ext j
+    exact congrArg (x i).1 ((e i).apply_symm_apply j)
 
 
 
@@ -283,14 +287,24 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
   let map_idx_inv : ((k : Fin n) → stdSimplex ℝ (Fin (card' k))) → ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) :=
     fun z k => map_simplex (eS k).symm (z k)
   have map_idx_left : ∀ y, map_idx_inv (map_idx y) = y := by
-    intro y; funext k; ext j; simp [map_idx, map_idx_inv]
+    intro y; funext k; ext j
+    exact congrArg (y k).1 ((eS k).symm_apply_apply j)
   have map_idx_right : ∀ z, map_idx (map_idx_inv z) = z := by
-    intro z; funext k; ext j; simp [map_idx, map_idx_inv]
+    intro z; funext k; ext j
+    exact congrArg (z k).1 ((eS k).apply_symm_apply j)
 
   let φ : G.mixedS → ProductSimplices card' := fun x => map_idx (reindex x)
   let φ_inv : ProductSimplices card' → G.mixedS := fun w => reindex_inv (map_idx_inv w)
-  have φ_left : ∀ x, φ_inv (φ x) = x := by intro x; simp [φ, φ_inv, reindex_left, map_idx_left]
-  have φ_right : ∀ w, φ (φ_inv w) = w := by intro w; simp [φ, φ_inv, reindex_right, map_idx_right]
+  have φ_left : ∀ x, φ_inv (φ x) = x := by
+    intro x
+    unfold φ φ_inv
+    rw [map_idx_left]
+    exact reindex_left x
+  have φ_right : ∀ w, φ (φ_inv w) = w := by
+    intro w
+    unfold φ φ_inv
+    rw [reindex_right]
+    exact map_idx_right w
 
   have hφ_cont : Continuous φ := by
     apply continuous_pi; intro k
@@ -320,7 +334,7 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       rw [eqRec_heq_iff_heq]
       congr
       .  symm
-         apply eqRec_heq'
+         apply eqRec_heq_self
 
     have h_map : Continuous (map_simplex eSi.symm) := by
       apply Continuous.subtype_mk
