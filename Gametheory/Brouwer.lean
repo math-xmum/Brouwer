@@ -409,7 +409,7 @@ def mk_subseq (f : ℕ → ℕ) (h : ∀ n, n < f n) : ℕ → ℕ
 theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) (he : ∀ n, e n ∈ s ) :
   ∃ a ∈ s, ∃ g : ℕ ↪o ℕ,  (∀ n, e (g n) = a) := by
 
-  have range_subset : Set.range e ⊆ s.toSet := Set.range_subset_iff.mpr he
+  have range_subset : Set.range e ⊆ SetLike.coe s := Set.range_subset_iff.mpr he
   have range_finite : (Set.range e).Finite := (Finset.finite_toSet s).subset range_subset
   let imgs : Finset α := Finset.filter (fun a => ¬(Set.Finite (e ⁻¹' {a}))) s
   have imgs_nonempty : imgs.Nonempty := by
@@ -551,11 +551,11 @@ Use
 
 theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin n)) :
   Tendsto (fun k =>
-    Metric.diam (((room_seq f (g1 f ((hpkg f).1.2 k))).1.1.image (fun x => TTtostdSimplex x)).toSet : Set (stdSimplex ℝ (Fin n)))) atTop (𝓝 0) := by
+    Metric.diam (SetLike.coe ((room_seq f (g1 f ((hpkg f).1.2 k))).1.1.image (fun x => TTtostdSimplex x)) : Set (stdSimplex ℝ (Fin n)))) atTop (𝓝 0) := by
   let l k := g1 f ((hpkg f).1.2 k)
   let σ k := (room_seq f (l k)).1.1
   let projected_σ k := (σ k).image (fun x => TTtostdSimplex x)
-  have h_diam_bounded : ∃ (C : ℝ), ∀ k, Metric.diam ((projected_σ k).toSet) ≤ C / (l k + 1) := by
+  have h_diam_bounded : ∃ (C : ℝ), ∀ k, Metric.diam (SetLike.coe (projected_σ k)) ≤ C / (l k + 1) := by
     use 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1)
     intro k
     let l_pnat : PNat := ⟨l k + 1, Nat.succ_pos _⟩
@@ -669,13 +669,13 @@ theorem f_coords_ge_z_coords (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
       have y_seq_φ_converges_to_z : Filter.Tendsto (y_seq ∘ φ) Filter.atTop (𝓝 z) := by
         have h_dist_tends_to_zero : Filter.Tendsto (fun k => dist (y_seq (φ k)) ((fun l' => (room_point_seq f (g1 f l') : stdSimplex ℝ (Fin n))) (φ k))) Filter.atTop (𝓝 0) := by
           have h_bound : ∀ k, dist (y_seq (φ k)) ((room_point_seq f (g1 f (φ k)) : stdSimplex ℝ (Fin n))) ≤
-                Metric.diam (((room_seq f (g1 f (φ k))).1.1.image (fun x => TTtostdSimplex x)).toSet) := by
+                Metric.diam (SetLike.coe ((room_seq f (g1 f (φ k))).1.1.image (fun x => TTtostdSimplex x))) := by
             intro k
             apply Metric.dist_le_diam_of_mem
             · exact Set.Finite.isBounded (Finset.finite_toSet _)
             · exact Finset.mem_image_of_mem TTtostdSimplex (y_seq_spec (φ k)).1
             · exact Finset.mem_image_of_mem TTtostdSimplex (pick_colorful_point ((Finset.mem_filter.1 (room_seq f (g1 f (φ k))).2).2)).2
-          have h_diam_tendsto : Tendsto (fun k => Metric.diam (((room_seq f (g1 f (φ k))).1.1.image TTtostdSimplex).toSet)) atTop (𝓝 0) := by
+          have h_diam_tendsto : Tendsto (fun k => Metric.diam (SetLike.coe ((room_seq f (g1 f (φ k))).1.1.image TTtostdSimplex))) atTop (𝓝 0) := by
             exact tendsto_diam_to_zero f
           exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h_diam_tendsto
             (Eventually.of_forall (fun _ => dist_nonneg)) (Eventually.of_forall h_bound)
