@@ -188,17 +188,15 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
         exact Nat.lt_of_succ_le (hM k hk_in_C)
       exact h_nat_lt
   have h_not_dominant : ¬ TT.ILO.isDominant σ C := by
-    unfold isDominant
-    push_neg
-    use M
-    intro k hk
-    rcases h_contradiction k hk with ⟨x, hx, hlt⟩
-    use x, hx
-    letI : LinearOrder (TT n l) := IndexedLOrder.IST k
-    rwa [← lt_iff_not_ge]
+    by_contra h_dom_assumption
+    have h_M := h_dom_assumption M
+    obtain ⟨i, hi_mem, h_M_le⟩ := h_M
+    have h_exist := h_contradiction i hi_mem
+    obtain ⟨x, hx, hlt⟩ := h_exist
+    letI : LinearOrder (TT n l) := IndexedLOrder.IST i
+    have h_le : M ≤[i] x := h_M_le x hx
+    exact not_lt.mpr h_le hlt
   exact h_not_dominant h
-
-
 
 theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C):
     ∀ x ∈ σ, ∀ y ∈ σ, ∀ i : Fin n, abs ((x i : ℤ) - (y i : ℤ)) < 2 * (n + 1)
@@ -380,13 +378,11 @@ instance stdSimplex.upidx (x y : stdSimplex ℝ (Fin n)) : Nonempty { i | x.1 i 
     . intro i _
       have : ¬ (x.1 i ≤ y.1 i) := by
         intro hle
-        apply h
-        use i
-        exact hle
+        let elem : {i | x.1 i ≤ y.1 i} := ⟨i, hle⟩
+        exact IsEmpty.elim h elem
       exact lt_of_not_ge this
   rw [sum_y_eq_1, sum_x_eq_1] at sum_lt
   exact (lt_irrefl 1 sum_lt).elim
-
 
 noncomputable def stdSimplex.pick (x  y : stdSimplex ℝ (Fin n)) := Classical.choice $ stdSimplex.upidx x y
 
@@ -422,7 +418,7 @@ theorem exists_subseq_constant_of_finite_image {s : Finset α} (e : ℕ → α) 
     have preimages_all_finite : ∀ a ∈ s, Set.Finite (e ⁻¹' {a}) := by
       intro a ha
       by_contra hnf
-      have a_in_imgs : a ∈ imgs := by simp [imgs, ha, hnf]
+      have a_in_imgs : a ∈ imgs := by simp only [Finset.mem_filter, imgs]; exact ⟨ha, hnf⟩
       have : imgs ≠ ∅ := Finset.ne_empty_of_mem a_in_imgs
       contradiction
     have nat_finite : Set.Finite (Set.univ : Set ℕ) := by
@@ -592,7 +588,8 @@ theorem tendsto_diam_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin
       _ ≤ 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1) / (l k + 1) := by
           rw [div_le_div_iff_of_pos_right (by positivity : (0 : ℝ) < l k + 1)]
           have h_assoc : 2 * Real.sqrt (n : ℝ) * ((n : ℝ) + 1) = 2 * (Real.sqrt (n : ℝ) * ((n : ℝ) + 1)) := by ring
-          rw [h_assoc, mul_le_mul_left (by positivity)]
+          rw [h_assoc]
+          gcongr
           apply le_mul_of_one_le_left (by positivity)
           apply Real.one_le_sqrt.mpr
           norm_cast
@@ -788,7 +785,10 @@ theorem Brouwer (hf : Continuous f): ∃ x , f x = x := by
   ext i_1
   by_cases hi : i_1 ∈ C
   · exact f_coords_eq_z_coords i_1 hi
-  · rw [f_coords_outside_C_zero i_1 hi, coords_outside_C_zero i_1 hi]
+  · have h1 := f_coords_outside_C_zero i_1 hi
+    have h2 := coords_outside_C_zero i_1 hi
+    show (f z).1 i_1 = z.1 i_1
+    rw [h1, h2]
 
 
 end Brouwer
