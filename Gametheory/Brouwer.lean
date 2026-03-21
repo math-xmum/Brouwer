@@ -39,7 +39,7 @@ instance TT.inhabited : Inhabited (TT n l) where
 
 instance TT.funlike : FunLike (TT n l) (Fin n) (Fin (l+1)) where
   coe := fun a => a.1
-  coe_injective' := by simp
+  coe_injective' := fun _ _ h => Subtype.ext h
 
 variable {n l} in
 def TTtostdSimplex (x : TT n l) : stdSimplex ℝ (Fin n) := ⟨fun i => x i / l, by
@@ -63,15 +63,16 @@ abbrev TT.Ilt ( x y : TT n l) :=
 
 instance TT.IST : IsStrictTotalOrder (TT n l) (TT.Ilt i) where
   trichotomous := by
-    intro a b
-    repeat rw [TT.Ilt]
+    intro a b h_not_lt h_not_gt
+    rw [TT.Ilt] at h_not_lt h_not_gt
     have h1 : toLex (a i, a) <  toLex (b i, b) ∨ toLex (a i, a) = toLex (b i, b) ∨ toLex (b i, b) < toLex (a i, a) :=
-      by apply IsTrichotomous.trichotomous
-    convert h1
-    suffices hh : a = b → a i = b i from
-      by simp;exact hh
-    intro h;rw [h]
-  irrefl := by simp
+      lt_trichotomy _ _
+    rcases h1 with h | heq | h
+    · exact absurd h h_not_lt
+    · have pair_eq : (a i, a) = (b i, b) := Equiv.injective toLex heq
+      exact congrArg Prod.snd pair_eq
+    · exact absurd h h_not_gt
+  irrefl := fun a => by simp [TT.Ilt]; exact lt_irrefl _
   trans := by
     intro a b c
     rw [TT.Ilt]
@@ -94,14 +95,14 @@ lemma TT.Ilt_keyprop (a b : TT n l) :
   a i < b i → a <[i] b := by
   intro h
   rw [TT.Ilt_def,Ilt,Prod.Lex.lt_iff]
-  simp [h]
+  exact Or.inl h
 
 lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isDominant σ C)
 (h2 : σ.Nonempty):
-  l < ∑ k ∈ C, (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty, h2]) + C.card := by
+  l < ∑ k ∈ C, (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty]; exact h2) + C.card := by
   by_contra h_not
   push_neg at h_not
-  let m := fun k => (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty, h2])
+  let m := fun k => (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty]; exact h2)
   have h_sum_bound : ∑ k ∈ C, m k + C.card ≤ l := h_not
   have h_sum_plus_one : ∑ k ∈ C, (m k + 1) ≤ l := by
     rw [Finset.sum_add_distrib, Finset.sum_const, nsmul_one]
@@ -149,11 +150,12 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
     let M_val : Fin n → Fin (l + 1) := fun k => ⟨M_coords k, Nat.lt_succ_of_le (h_M_coords_bound k)⟩
     use ⟨M_val, by simp [M_val, h_M_coords_sum]⟩
     intro k hk_in_C
-    simp only [TT.funlike]
     by_cases h_is_zero : k = 0
     · rw [h_is_zero] at hk_in_C ⊢
-      simp [M_val, M_coords, M', hk_in_C]
-    · simp [M_val, M_coords, h_is_zero, M', hk_in_C]
+      show m 0 + 1 ≤ M_coords 0
+      simp [M_coords, M', hk_in_C]
+    · show m k + 1 ≤ M_coords k
+      simp [M_coords, if_neg h_is_zero, M', hk_in_C]
   obtain ⟨M, hM⟩ := h_exists_point
   have h_min_less : ∀ k ∈ C, ∃ x_min ∈ σ, ∀ x ∈ σ, x_min ≤[k] x := by
     intro k _
@@ -172,7 +174,7 @@ lemma size_bound_key (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.isD
     constructor
     · exact Finset.min'_mem σ h2
     · apply TT.Ilt_keyprop
-      have h_min_coord : (x_min k : ℕ) = (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty, h2]) := by
+      have h_min_coord : (x_min k : ℕ) = (σ.image (fun x => (x k : ℕ))).min' (by simp [Finset.image_nonempty]; exact h2) := by
         symm
         apply le_antisymm
         · apply Finset.min'_le
@@ -210,7 +212,7 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
     := by
   by_cases hσ : σ.Nonempty
   · intro x hx y hy i
-    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty, hσ])
+    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty]; exact hσ)
     let m' i := if h_i : i ∈ C then m i else 0
     have h_le_l_sub_sum : (l : ℕ) - ∑ k ∈ C, m k < C.card := by
       have h_key : l < ∑ k ∈ C, m k + C.card := size_bound_key n l σ C h hσ
@@ -290,13 +292,14 @@ theorem size_bound_in (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.is
         simp only [m'] at this ⊢
         split_ifs at this ⊢ with h_case
         · have : (z i : ℕ) - m i < C.card := this
-          simp
           have h_le : m i ≤ (z i : ℕ) := by
             apply Finset.min'_le
             apply Finset.mem_image_of_mem
             exact hz
-          rw [← Int.ofNat_sub h_le]
-          exact Int.ofNat_lt.mpr this
+          have : ((z i : ℕ) - m i : ℤ) < (C.card : ℤ) := by
+            rw [← Int.ofNat_sub h_le]
+            exact Int.ofNat_lt.mpr this
+          convert this
         · simp only [Int.ofNat_zero, sub_zero]
           exact Int.ofNat_lt.mpr this
       calc
@@ -324,7 +327,7 @@ theorem size_bound_out (σ : Finset (TT n l)) (C : Finset (Fin n)) (h : TT.ILO.i
     := by
   by_cases hσ : σ.Nonempty
   · intro x hx i hi_not_C
-    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty, hσ])
+    let m k := (σ.image (fun z => (z k : ℕ))).min' (by simp [Finset.image_nonempty]; exact hσ)
     have h_le_l_sub_sum : l - ∑ k ∈ C, m k < C.card := by
       have h_sum_le_l : ∑ k ∈ C, m k ≤ l := by
         rcases hσ with ⟨x, hx⟩
@@ -529,7 +532,7 @@ lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex �
     have hx_mem : x ∈ σ := (pick_colorful_point colorful_proof).2
     have h_dom : TT.ILO.isDominant σ C_l := colorful_proof.1
     have h_bound := size_bound_out n l_pnat σ C_l h_dom x hx_mem i hiC_l
-    simp only [TT.funlike, TTtostdSimplex, Subtype.coe_mk]
+    simp only [TTtostdSimplex, Subtype.coe_mk]
     have h_eq : (↑l_pnat : ℝ) = ↑(g l') + 1 := by simp [l_pnat, PNat.mk_coe]
     rw [h_eq]
     rw [div_le_div_iff_of_pos_right (by positivity : (0 : ℝ) < ↑(g l') + 1)]
@@ -537,6 +540,7 @@ lemma dominant_coords_tend_to_zero (f : stdSimplex ℝ (Fin n) → stdSimplex �
       exact_mod_cast Nat.lt_succ_of_le (Int.ofNat_le.mp (Int.le_of_lt_add_one h_bound))
     exact le_of_lt h_bound_real
 
+@[reducible]
 def hpkg_aux:
   Nonempty {(z , h) : (stdSimplex ℝ  (Fin n)) × (ℕ → ℕ) | StrictMono h ∧ Filter.Tendsto
     ((fun l' => (room_point_seq f (g1 f l'): stdSimplex ℝ (Fin n))) ∘ h)

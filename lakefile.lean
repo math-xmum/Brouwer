@@ -2,12 +2,13 @@ import Lake
 open Lake DSL
 
 package «Gametheory» {
-  packageDir := "../.lake/packages"
+  packagesDir := "../.lake/packages"
 }
+
 
 @[default_target]
 lean_lib «Gametheory» {
-  -- add library configuration options here
+
 }
 
 --require llmlean from git
