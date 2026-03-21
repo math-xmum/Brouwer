@@ -1,5 +1,5 @@
-import Mathlib
 import Gametheory.Brouwer
+
 open Filter
 
 section Brouwer.ProductRetraction

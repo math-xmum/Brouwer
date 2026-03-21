@@ -1,5 +1,12 @@
-import Mathlib
 import Gametheory.Scarf
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.Convex.StdSimplex
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Order.PiLex
+import Mathlib.Tactic.Cases
+
 open Classical
 
 section

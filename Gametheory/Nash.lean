@@ -1,5 +1,3 @@
-import Mathlib
-
 import Gametheory.Brouwer_product
 import Gametheory.Simplex
 
