@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 package «Gametheory» {
-  -- add package configuration options here
+  packageDir := "../.lake/packages"
 }
 
 @[default_target]
