@@ -54,7 +54,8 @@ noncomputable instance SInhabited_of_Inhabited [DecidableEq α] [Inhabited α]: 
 noncomputable instance SNonempty_of_Inhabited {α : Type*} [DecidableEq α] [Fintype α] [Inhabited α]: Nonempty (stdSimplex k α) := Nonempty.intro (default : stdSimplex k α)
 
 variable {k α} in
-lemma wsum_magic_ineq [DecidableEq α] [LinearOrder k] [IsOrderedCancelAddMonoid k] [PosMulMono k] [PosMulStrictMono k] {σ : stdSimplex k α} {f : α → k} {c : k} :
+lemma wsum_magic_ineq [DecidableEq α] [LinearOrder k] [IsOrderedCancelAddMonoid k]
+  [PosMulMono k] [PosMulStrictMono k] {σ : stdSimplex k α} {f : α → k} {c : k} :
   ∑ i : α, (σ i) *  f i = c → ∃ i, 0 < σ i ∧ f i ≤ c := by
     intro H1
     by_contra H2
@@ -79,12 +80,12 @@ lemma wsum_magic_ineq [DecidableEq α] [LinearOrder k] [IsOrderedCancelAddMonoid
       · intro i _
         by_cases h_pos : 0 < σ i
         · have h_fi_gt_c : c < f i := H2 i h_pos
-          exact (mul_le_mul_left h_pos).mpr (le_of_lt h_fi_gt_c)
+          exact mul_le_mul_of_nonneg_left (le_of_lt h_fi_gt_c) (le_of_lt h_pos)
         · have h_zero : σ i = 0 := le_antisymm (le_of_not_gt h_pos) (σ.2.1 i)
           simp [h_zero]
       · use i₀, Finset.mem_univ i₀
         have h_fi₀_gt_c : c < f i₀ := H2 i₀ hi₀
-        exact (mul_lt_mul_left hi₀).mpr h_fi₀_gt_c
+        exact mul_lt_mul_of_pos_left h_fi₀_gt_c hi₀
     rw [H1] at h_ge
     exact lt_irrefl c h_ge
 
