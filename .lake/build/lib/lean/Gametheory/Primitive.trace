@@ -1,38 +1,18 @@
 {"synthetic": false,
  "outputs":
- {"o": ["9499711718774475575"],
-  "i": "12094744964769006214",
-  "c": "6589453700688826451"},
+ {"o": ["12748701365000781239"],
+  "i": "12864755362709564008",
+  "c": "4007689957084387696"},
  "log":
  [{"message":
    ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Primitive.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Primitive.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Primitive.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Primitive.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Primitive.setup.json --json",
-   "level": "trace"},
-  {"message":
-   "Gametheory/Primitive.lean:79:0: automatically included section variable(s) unused in theorem 'Primitive.primitive_iff_room':\n  [Inhabited T]\n  [Fintype T]\n  [DecidableEq T]\n  [Inhabited I]\n  [DecidableEq I]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [Inhabited T] [Fintype T] [DecidableEq T] [Inhabited I] [DecidableEq I] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`",
-   "level": "warning"},
-  {"message":
-   "Gametheory/Primitive.lean:111:0: automatically included section variable(s) unused in theorem 'Primitive.almostPrimitive_to_door':\n  [Inhabited T]\n  [Fintype T]\n  [DecidableEq T]\n  [DecidableEq I]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [Inhabited T] [Fintype T] [DecidableEq T] [DecidableEq I] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`",
-   "level": "warning"},
-  {"message": "Gametheory/Primitive.lean:127:8: declaration uses 'sorry'",
-   "level": "warning"},
-  {"message": "Gametheory/Primitive.lean:134:8: declaration uses 'sorry'",
-   "level": "warning"},
-  {"message": "Gametheory/Primitive.lean:147:8: declaration uses 'sorry'",
-   "level": "warning"},
-  {"message": "Gametheory/Primitive.lean:157:8: declaration uses 'sorry'",
-   "level": "warning"},
-  {"message": "Gametheory/Primitive.lean:178:8: declaration uses 'sorry'",
-   "level": "warning"}],
+   "level": "trace"}],
  "inputs":
  [["Gametheory.Primitive:deps",
    [["deps",
      [["Gametheory/Gametheory:extraDep", [["@Gametheory:extraDep", "1723"]]],
       ["import oleans",
-       [["Mathlib:olean",
-         [["Mathlib:deps", "9723543983440896081"],
-          ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
-           "4012991845282597754"]]],
-        ["Gametheory.Brouwer:olean",
+       [["Gametheory.Brouwer:olean",
          [["Gametheory.Brouwer:deps", "6746265029258141342"],
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.olean",
            "3496186042661573841"]]]]]]],
@@ -44,7 +24,7 @@
   ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
    "8739116525927611134"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Primitive.lean",
-   "11740465503262377297"],
+   "17744470421272014662"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "9838518418828862275"}
+ "depHash": "17938178929928494231"}

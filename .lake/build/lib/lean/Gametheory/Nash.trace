@@ -1,18 +1,12 @@
 {"synthetic": false,
  "outputs":
- {"o": ["9776127937455991760"],
-  "i": "15578263311623187045",
+ {"o": ["12651574319334807524"],
+  "i": "2899029908757612",
   "c": "15621571153486258638"},
  "log":
  [{"message":
    ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Nash.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Nash.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Nash.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Nash.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Nash.setup.json --json",
-   "level": "trace"},
-  {"message":
-   "Gametheory/Nash.lean:12:0: Brouwer_Product.{u_1} {I : Type u_1} [Fintype I] [DecidableEq I] [Inhabited I] [LinearOrder I] (card : I → ℕ+)\n  (f : ProductSimplices card → ProductSimplices card) (hf : Continuous f) : ∃ x, f x = x",
-   "level": "info"},
-  {"message":
-   "Gametheory/Nash.lean:64:0: def FinGame.mixed_g.{u_1, u_2} : {G : FinGame} → G.I → ((i : G.I) → ↑(S (G.SS i))) → ℝ :=\nfun {G} i m => ∑ s, (∏ j, (m j) (s j)) * G.g i s",
-   "level": "info"}],
+   "level": "trace"}],
  "inputs":
  [["Gametheory.Nash:deps",
    [["deps",
@@ -23,7 +17,7 @@
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
            "4012991845282597754"]]],
         ["Gametheory.Brouwer_product:olean",
-         [["Gametheory.Brouwer_product:deps", "18054356794439919213"],
+         [["Gametheory.Brouwer_product:deps", "7377826440558671177"],
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer_product.olean",
            "4405518913151820007"]]],
         ["Gametheory.Simplex:olean",
@@ -38,7 +32,7 @@
   ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
    "8739116525927611134"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Nash.lean",
-   "10725559572523562620"],
+   "17718692669309442713"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "11895946481214927916"}
+ "depHash": "16564939699033638104"}

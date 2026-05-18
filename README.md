@@ -13,7 +13,7 @@ The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This reposi
 -   `Gametheory/Brouwer.lean`: From Scarf’s combinatorial lemma, proves Brouwer’s fixed-point theorem on a single simplex. Contains the main theorem `Brouwer` (existence of a fixed point for continuous self-maps on a simplex) and the supporting analytical lemmas (compactness, coordinate-wise continuity, convergence of constructed sequences).
 -   `Gametheory/Brouwer_product.lean`: Lifts the single-simplex result to finite products of simplices. Defines helper conversions between a big simplex and a product of simplices (`BigSimplex`, `ProductSimplices`), constructs the projection/embedding, proves continuity properties, and states the product fixed-point theorem `Brouwer_Product`.
 -   `Gametheory/Nash.lean`: Formalizes finite games `FinGame`, mixed strategies `mixedS`, payoffs, and mixed Nash equilibrium `mixedNashEquilibrium`. Builds a continuous `nash_map` on the product of simplices and applies `Brouwer_Product` to obtain existence: `ExistsNashEq : ∃ σ : G.mixedS, mixedNashEquilibrium σ`.
--   `GameTheory.lean`: Umbrella file that imports `Brouwer`, `Nash`, and `Simplex` for convenience.
+-   `Gametheory.lean`: Umbrella file that imports the main modules for convenience and serves as the Lake library root.
 
 -   Open any of the Lean files in an editor with the Lean server running to see goals and check proofs interactively.
 
@@ -30,5 +30,4 @@ The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This reposi
 
 -   N. V. Ivanov, "Beyond Sperner's Lemma" (source of the Scarf → Brouwer development).
 -   J. F. Nash, "Non-Cooperative Games", Annals of Mathematics (1951).
-
 

@@ -1,0 +1,6 @@
+.lake/
+.DS_Store
+**/.DS_Store
+
+benchmarks/scripts/__pycache__/
+*.pyc

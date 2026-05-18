@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: Gametheory
-// Imports: Init Gametheory.Brouwer Gametheory.Nash Gametheory.Simplex
+// Imports: Init Gametheory.Simplex Gametheory.Scarf Gametheory.Brouwer Gametheory.Brouwer_product Gametheory.Nash Gametheory.Primitive
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -14,9 +14,12 @@
 extern "C" {
 #endif
 lean_object* initialize_Init(uint8_t builtin, lean_object*);
-lean_object* initialize_Gametheory_Brouwer(uint8_t builtin, lean_object*);
-lean_object* initialize_Gametheory_Nash(uint8_t builtin, lean_object*);
 lean_object* initialize_Gametheory_Simplex(uint8_t builtin, lean_object*);
+lean_object* initialize_Gametheory_Scarf(uint8_t builtin, lean_object*);
+lean_object* initialize_Gametheory_Brouwer(uint8_t builtin, lean_object*);
+lean_object* initialize_Gametheory_Brouwer__product(uint8_t builtin, lean_object*);
+lean_object* initialize_Gametheory_Nash(uint8_t builtin, lean_object*);
+lean_object* initialize_Gametheory_Primitive(uint8_t builtin, lean_object*);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_Gametheory(uint8_t builtin, lean_object* w) {
 lean_object * res;
@@ -25,13 +28,22 @@ _G_initialized = true;
 res = initialize_Init(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
+res = initialize_Gametheory_Simplex(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Gametheory_Scarf(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
 res = initialize_Gametheory_Brouwer(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Gametheory_Brouwer__product(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Gametheory_Nash(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_Gametheory_Simplex(builtin, lean_io_mk_world());
+res = initialize_Gametheory_Primitive(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));

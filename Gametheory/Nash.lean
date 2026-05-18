@@ -9,7 +9,6 @@ open Function
 
 noncomputable section
 
-#check Brouwer_Product
 /-
 A game is a set of maps g^i : Πᵢ S i → ℝ
 -/
@@ -60,9 +59,6 @@ variable (G) in
 abbrev mixedS  := (i : G.I) → stdSimplex ℝ (G.SS i)
 
 def mixed_g (i : G.I) (m : Π i, S (G.SS i) ) : ℝ := ∑ s : (Π j, G.SS j) , (∏ j,  m j (s j)) * (G.g i s)
-
-#print mixed_g
-
 
 lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mixed_g i (update x i (stdSimplex.pure s)) := by
   unfold mixed_g
