@@ -23,9 +23,9 @@
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
            "4012991845282597754"]]],
         ["Gametheory.Brouwer_product:olean",
-         [["Gametheory.Brouwer_product:deps", "899517719548987756"],
+         [["Gametheory.Brouwer_product:deps", "18054356794439919213"],
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer_product.olean",
-           "998648957775995552"]]],
+           "4405518913151820007"]]],
         ["Gametheory.Simplex:olean",
          [["Gametheory.Simplex:deps", "16797114998398397703"],
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Simplex.olean",
@@ -41,4 +41,4 @@
    "10725559572523562620"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "17293082177993549188"}
+ "depHash": "11895946481214927916"}

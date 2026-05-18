@@ -17,9 +17,9 @@
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean",
            "4012991845282597754"]]],
         ["Gametheory.Brouwer:olean",
-         [["Gametheory.Brouwer:deps", "17815488196686107162"],
+         [["Gametheory.Brouwer:deps", "6746265029258141342"],
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer.olean",
-           "614816793043006911"]]]]]]],
+           "3496186042661573841"]]]]]]],
     ["libs",
      [["import dynlibs", "1723"],
       ["package external libraries", "1723"],
@@ -31,4 +31,4 @@
    "18220479512621175576"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "12436719073172187461"}
+ "depHash": "7791313326136086528"}

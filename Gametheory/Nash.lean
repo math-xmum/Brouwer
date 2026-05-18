@@ -553,7 +553,6 @@ theorem ExistsNashEq : ∃ σ : G.mixedS , mixedNashEquilibrium σ := by {
       G.mixed_g i σ := by
       rw [← mixed_g_linear]
       simp
-      -- have H2: G.mixed_g i (update σ i (σ i)) = G.mixed_g i σ  := by sorry\
     obtain ⟨s,hs1,hs2⟩:= stdSimplex.wsum_magic_ineq H2
     have : σ i s = σ i s / (∑ b : G.SS i, g_function i σ b) := by
       nth_rw 1 [<-hs]

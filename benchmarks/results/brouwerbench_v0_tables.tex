@@ -1,0 +1,36 @@
+\begin{table}[t]
+\centering
+\caption{Pilot BrouwerBench v0 results for \texttt{qwen3:8b}. Scores use a 0--2 rubric per item.}
+\label{tab:brouwerbench-v0}
+\begin{tabular}{lrrr}
+\toprule
+Section & Tasks & Score & Accuracy \\
+\midrule
+Scarf & 12 & 16/24 & 66.7\% \\
+Brouwer & 10 & 11/20 & 55.0\% \\
+Product Brouwer & 7 & 8/14 & 57.1\% \\
+Nash & 7 & 7/14 & 50.0\% \\
+\midrule
+Total & 36 & 42/72 & 58.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{BrouwerBench v0 scores by task type for \texttt{qwen3:8b}.}
+\label{tab:brouwerbench-v0-task-types}
+\begin{tabular}{lrrr}
+\toprule
+Task type & Tasks & Score & Accuracy \\
+\midrule
+Definition role & 5 & 6/10 & 60.0\% \\
+Proof dependency & 12 & 15/24 & 62.5\% \\
+Parity argument & 3 & 4/6 & 66.7\% \\
+Theorem summary & 3 & 3/6 & 50.0\% \\
+Construction role & 7 & 7/14 & 50.0\% \\
+Analysis step & 4 & 5/8 & 62.5\% \\
+Endpoint connection & 2 & 2/4 & 50.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -104,8 +104,7 @@ namespace IndexedLOrder
 variable (σ : Finset T) (C : Finset I)
 
 /- Definition of Dominant -/
-def isDominant  :=
-  ∀ y, ∃ i ∈ C, ∀ x ∈ σ,  y ≤[i] x
+def isDominant  := ∀ y, ∃ i ∈ C, ∀ x ∈ σ,  y ≤[i] x
 
 variable {σ C} in
 lemma Nonempty_of_Dominant (h : IST.isDominant σ C) : C.Nonempty := by

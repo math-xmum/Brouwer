@@ -1,7 +1,7 @@
 {"synthetic": false,
  "outputs":
- {"o": ["614816793043006911"],
-  "i": "11343594879753050669",
+ {"o": ["3496186042661573841"],
+  "i": "6902985423547098129",
   "c": "5206464273581058409"},
  "log":
  [{"message":
@@ -19,7 +19,7 @@
         ["Gametheory.Scarf:olean",
          [["Gametheory.Scarf:deps", "16797114998398397703"],
           ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.olean",
-           "13137628764915536927"]]]]]]],
+           "12246830838287212621"]]]]]]],
     ["libs",
      [["import dynlibs", "1723"],
       ["package external libraries", "1723"],
@@ -28,7 +28,7 @@
   ["Lean 4.22.0, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
    "8739116525927611134"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer.lean",
-   "2970279943885439262"],
+   "10043338782018592132"],
   ["options", "1723"],
   ["Module.leanArgs: #[]", "1723"]],
- "depHash": "18252727469867126860"}
+ "depHash": "12628172650522555549"}
