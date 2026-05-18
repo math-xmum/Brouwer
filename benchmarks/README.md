@@ -8,6 +8,21 @@ Scarf -> Brouwer -> Product Brouwer -> Nash
 
 The first dataset is `data/brouwerbench_v0.jsonl`. It is intentionally small and hand-checkable: 36 questions covering the main proof chain rather than only the Scarf core.
 
+This is a context-provided proof-structure QA benchmark, not a Lean proof-synthesis benchmark. Each model prompt includes:
+
+- a section-level Lean prelude from `context/` with the relevant `def`, `abbrev`, `structure`, `class`, and `inductive` declarations;
+- a task-specific excerpt in the JSONL row;
+- a natural-language question about the role of the named Lean objects in the formalized proof.
+
+The current preludes are:
+
+| Section | Prelude |
+|---|---|
+| Scarf | `context/Scarf.lean` |
+| Brouwer | `context/Brouwer.lean` |
+| Brouwer_product | `context/Brouwer_product.lean` |
+| Nash | `context/Nash.lean` |
+
 Current section coverage:
 
 | Section | Tasks |
@@ -26,6 +41,7 @@ Each JSONL row has:
 - `task_type`: question category.
 - `source`: source file.
 - `context`: excerpt or compact statement shown to the model.
+- Section prelude: loaded from `context/<section>.lean` by the runner.
 - `question`: prompt to answer.
 - `gold_answer`: reference answer.
 - `evidence`: file-line anchors used to create/check the item.
@@ -68,6 +84,8 @@ python3 benchmarks/scripts/run_ollama_benchmark.py \
   --overwrite
 ```
 
+By default, the runner prepends the section prelude. Use `--no-section-prelude` only for ablations that intentionally omit the Lean definitions and structures.
+
 Run the full v0 dataset:
 
 ```bash
@@ -89,7 +107,7 @@ python3 benchmarks/scripts/score_benchmark.py \
 
 Results are written under `benchmarks/results/`.
 
-The current scored `qwen3:8b` run contains 36 tasks and scores `42/72` (`58.3%`).
+The current scored `qwen3:8b` run contains 36 tasks and scores `44/72` (`61.1%`).
 
 ## Paper Artifacts
 

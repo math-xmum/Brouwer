@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import time
 import urllib.error
@@ -11,8 +12,10 @@ import urllib.request
 from pathlib import Path
 
 
-DEFAULT_DATASET = Path(__file__).resolve().parents[1] / "data" / "brouwerbench_v0.jsonl"
-DEFAULT_RESULTS_DIR = Path(__file__).resolve().parents[1] / "results"
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_DATASET = ROOT / "data" / "brouwerbench_v0.jsonl"
+DEFAULT_CONTEXT_DIR = ROOT / "context"
+DEFAULT_RESULTS_DIR = ROOT / "results"
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -34,13 +37,38 @@ def write_jsonl_row(path: Path, row: dict) -> None:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def build_prompt(row: dict) -> str:
+def section_prelude_path(context_dir: Path, section: str) -> Path:
+    return context_dir / f"{section}.lean"
+
+
+def read_section_prelude(context_dir: Path, section: str) -> tuple[str, Path | None]:
+    path = section_prelude_path(context_dir, section)
+    if not path.exists():
+        return "", None
+    return path.read_text(encoding="utf-8").strip(), path
+
+
+def digest_text(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+
+
+def build_prompt(row: dict, section_prelude: str) -> str:
+    prelude_block = ""
+    if section_prelude:
+        prelude_block = (
+            "Section-level Lean context with relevant definitions, structures, and abbreviations:\n"
+            "```lean\n"
+            f"{section_prelude}\n"
+            "```\n\n"
+        )
     return (
         "You are answering a benchmark question about a Lean 4 formalization.\n"
-        "Use only the provided context. Be concise but specific. Mention Lean names when relevant.\n\n"
+        "Use only the provided section-level Lean context and task-specific context. "
+        "Be concise but specific. Mention Lean names when relevant.\n\n"
         f"Section: {row['section']}\n"
         f"Task type: {row['task_type']}\n\n"
-        "Context:\n"
+        f"{prelude_block}"
+        "Task-specific context:\n"
         f"{row['context']}\n\n"
         "Question:\n"
         f"{row['question']}\n\n"
@@ -96,6 +124,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", default="qwen3:8b", help="Ollama model name.")
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
+    parser.add_argument("--context-dir", type=Path, default=DEFAULT_CONTEXT_DIR)
+    parser.add_argument(
+        "--no-section-prelude",
+        action="store_true",
+        help="Do not prepend section-level Lean definition/structure snippets.",
+    )
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--endpoint", default="http://127.0.0.1:11434")
     parser.add_argument("--limit", type=int, default=None, help="Run only the first N tasks.")
@@ -124,11 +158,16 @@ def main() -> None:
 
     print(f"model={args.model}")
     print(f"dataset={args.dataset}")
+    print(f"context_dir={args.context_dir if not args.no_section_prelude else 'disabled'}")
     print(f"tasks={len(rows)}")
     print(f"output={output}")
 
     for index, row in enumerate(rows, start=1):
-        prompt = build_prompt(row)
+        if args.no_section_prelude:
+            section_prelude, prelude_path = "", None
+        else:
+            section_prelude, prelude_path = read_section_prelude(args.context_dir, row["section"])
+        prompt = build_prompt(row, section_prelude)
         print(f"[{index}/{len(rows)}] {row['id']} {row['section']} ...", flush=True)
         raw, elapsed_s = call_ollama(
             endpoint=args.endpoint,
@@ -148,6 +187,8 @@ def main() -> None:
             "gold_answer": row["gold_answer"],
             "response": raw.get("response", ""),
             "thinking": raw.get("thinking", ""),
+            "context_prelude_path": str(prelude_path.relative_to(ROOT)) if prelude_path else "",
+            "context_prelude_sha256": digest_text(section_prelude) if section_prelude else "",
             "elapsed_s": elapsed_s,
             "ollama": {
                 key: raw.get(key)
