@@ -41,8 +41,14 @@ def section_prelude_path(context_dir: Path, section: str) -> Path:
     return context_dir / f"{section}.lean-snippet"
 
 
-def read_section_prelude(context_dir: Path, section: str) -> tuple[str, Path | None]:
-    path = section_prelude_path(context_dir, section)
+def read_section_prelude(context_dir: Path, row: dict) -> tuple[str, Path | None]:
+    prelude = row.get("section_prelude")
+    if prelude:
+        path = Path(prelude)
+        if not path.is_absolute():
+            path = ROOT.parent / path
+    else:
+        path = section_prelude_path(context_dir, row["section"])
     if not path.exists():
         return "", None
     return path.read_text(encoding="utf-8").strip(), path
@@ -166,7 +172,7 @@ def main() -> None:
         if args.no_section_prelude:
             section_prelude, prelude_path = "", None
         else:
-            section_prelude, prelude_path = read_section_prelude(args.context_dir, row["section"])
+            section_prelude, prelude_path = read_section_prelude(args.context_dir, row)
         prompt = build_prompt(row, section_prelude)
         print(f"[{index}/{len(rows)}] {row['id']} {row['section']} ...", flush=True)
         raw, elapsed_s = call_ollama(

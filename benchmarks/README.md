@@ -42,8 +42,8 @@ Each JSONL row has:
 - `section`: one of `Scarf`, `Brouwer`, `Brouwer_product`, or `Nash`.
 - `task_type`: question category.
 - `source`: source file.
+- `section_prelude`: Lean-style snippet file prepended to the prompt.
 - `context`: excerpt or compact statement shown to the model.
-- Section prelude: loaded from `context/<section>.lean-snippet` by the runner.
 - `question`: prompt to answer.
 - `gold_answer`: reference answer.
 - `evidence`: file-line anchors used to create/check the item.
