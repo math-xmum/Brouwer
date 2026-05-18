@@ -27,3 +27,4 @@ validate:
 		scripts/run_ollama_benchmark.py \
 		scripts/score_benchmark.py
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) -c "import json, pathlib; [json.loads(line) for line in pathlib.Path('$(DATASET)').read_text().splitlines() if line.strip()]; print('dataset ok')"
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) -c "import pathlib; sections={'Scarf','Brouwer','Brouwer_product','Nash'}; missing=[s for s in sections if not pathlib.Path(f'context/{s}.lean-snippet').exists()]; assert not missing, missing; print('context snippets ok')"

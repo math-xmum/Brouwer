@@ -38,7 +38,7 @@ def write_jsonl_row(path: Path, row: dict) -> None:
 
 
 def section_prelude_path(context_dir: Path, section: str) -> Path:
-    return context_dir / f"{section}.lean"
+    return context_dir / f"{section}.lean-snippet"
 
 
 def read_section_prelude(context_dir: Path, section: str) -> tuple[str, Path | None]:

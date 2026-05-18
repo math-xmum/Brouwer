@@ -18,10 +18,12 @@ The current preludes are:
 
 | Section | Prelude |
 |---|---|
-| Scarf | `context/Scarf.lean` |
-| Brouwer | `context/Brouwer.lean` |
-| Brouwer_product | `context/Brouwer_product.lean` |
-| Nash | `context/Nash.lean` |
+| Scarf | `context/Scarf.lean-snippet` |
+| Brouwer | `context/Brouwer.lean-snippet` |
+| Brouwer_product | `context/Brouwer_product.lean-snippet` |
+| Nash | `context/Nash.lean-snippet` |
+
+The `.lean-snippet` files are intentionally not standalone Lean modules. They are prompt context excerpts, so the Lean language server should not try to compile them.
 
 Current section coverage:
 
@@ -41,7 +43,7 @@ Each JSONL row has:
 - `task_type`: question category.
 - `source`: source file.
 - `context`: excerpt or compact statement shown to the model.
-- Section prelude: loaded from `context/<section>.lean` by the runner.
+- Section prelude: loaded from `context/<section>.lean-snippet` by the runner.
 - `question`: prompt to answer.
 - `gold_answer`: reference answer.
 - `evidence`: file-line anchors used to create/check the item.
