@@ -221,17 +221,6 @@ lemma isRoom_of_Door (h1 : isDoorof τ D σ C) : IST.isRoom σ C := by
       rw [h2.2] at h5
       exact Eq.symm $ (add_left_inj _).1 h5
 
-/- TODO formula that every room has |I| doors -/
-/- This can be skipped first-/
-
-/-def door_para : Sum σ C.toSet.compl ≃ {(τ,D): (Finset T)× (Finset I) | IST.isDoorof τ D σ C} where
-  toFun := fun x => match x with
-    | .inl y => ⟨(Finset.erase σ y.1, C), by sorry⟩
-    | .inr y => ⟨(σ, insert y.1 C), by sorry⟩
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry-/
-
 omit [Inhabited T] in
 lemma room_is_not_door (h1 : IST.isRoom σ C) : ∀ τ D,  ¬ (isDoorof σ C τ D) := by
   intro τ D hd
@@ -1194,25 +1183,6 @@ lemma NC_of_TNC (h1 : isTypedNC c i σ C) : isNearlyColorful c σ C := by
     rw [←heq, h_eq]
     exact Finset.card_singleton i
 
-
---Useless lemma, remain sorry first.
-/-section useless_lemma
-lemma door_of_Croom (h1 : isColorful c σ C) (h2 : isDoorof τ D σ C) : isNearlyColorful c τ D := by sorry
-
-lemma unique_type_door_of_Croom (h1 : isColorful c σ C) (i :I) :
-∃! x : Finset T × Finset I , isDoorof x.1 x.2 σ C ∧ isTypedNC c i σ C:= by sorry
-
-lemma type_aux (h : isNearlyColorful c σ C) : ∃! i : I, i ∉ σ.image c ∧ C = insert i (σ.image c) := by
-  sorry
-
-def NCtype (h : isNearlyColorful c σ C) : I :=
-  Classical.choose (type_aux h).exists
-
-structure TypedNC (i : I) (σ : Finset T) (C : Finset I): Prop where
-  nc : isNearlyColorful c σ C
-  t : NCtype nc = i
-end useless_lemma-/
-
 lemma Finset.eq_of_mem_of_card_one {α : Type*} [DecidableEq α] {s : Finset α} {a : α} (h_mem : a ∈ s) (h_card : s.card = 1) : s = {a} :=
   Finset.eq_singleton_iff_unique_mem.mpr ⟨h_mem, fun y hy =>
     let ⟨b, hb⟩ := Finset.card_eq_one.mp h_card
@@ -1257,8 +1227,6 @@ lemma NC_of_outsidedoor (h : isOutsideDoor σ C) : isNearlyColorful c σ C  := b
       rw [he] at h1
       exact h1
 
-/-variable {c σ C} in
-lemma type_unique_of_outsidedoor (h : isOutsideDoor σ C) : ∃! i,  i = isNCtype (NC_of_outsidedoor (c:=c) h)  := sorry-/
 /-Lemma 5-/
 omit [Inhabited T] in
 lemma NC_or_C_of_door (h1 : isTypedNC c i τ D) (h2 : isDoorof τ D σ C) : isTypedNC c i σ C ∨ isColorful c σ C := by

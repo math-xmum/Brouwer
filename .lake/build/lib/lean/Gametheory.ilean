@@ -1,1 +1,0 @@
-{"version":4,"references":{},"module":"Gametheory","directImports":[["Gametheory.Simplex",false,false,false],["Gametheory.Scarf",false,false,false],["Gametheory.Brouwer",false,false,false],["Gametheory.Brouwer_product",false,false,false],["Gametheory.Nash",false,false,false],["Gametheory.Primitive",false,false,false]]}

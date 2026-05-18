@@ -6,6 +6,32 @@ This repository contains a formalization of fundamental theorems in game theory 
 
 The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This repository builds up the necessary mathematical framework from scratch.
 
+## Reproducing The Lean Build
+
+This is a Lake project. To verify the formalization, run:
+
+```bash
+lake build
+```
+
+The library root is `Gametheory.lean`, which imports the main development modules.
+
+## Benchmark Artifacts
+
+The local proof-structure QA benchmark is under `benchmarks/`. To validate the benchmark files, run:
+
+```bash
+make -C benchmarks validate
+```
+
+To rerun the current `qwen3:8b` evaluation, start Ollama with that model available and run:
+
+```bash
+make -C benchmarks qwen3
+```
+
+The benchmark is context-provided QA, not Lean proof synthesis: each prompt includes section-level snippets from `benchmarks/context/` plus a task-specific excerpt.
+
 ### Files
 
 -   `Gametheory/Simplex.lean`: Defines the standard simplex `stdSimplex` over a finite type. Includes constructors like `pure`, evaluation lemmas (`pure_eval_eq`, `pure_eval_neq`), and weighted-sum/typeclass instances needed later for continuity/compactness arguments.
@@ -30,4 +56,3 @@ The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This reposi
 
 -   N. V. Ivanov, "Beyond Sperner's Lemma" (source of the Scarf → Brouwer development).
 -   J. F. Nash, "Non-Cooperative Games", Annals of Mathematics (1951).
-

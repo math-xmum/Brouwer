@@ -146,18 +146,6 @@ notation:999 "μ" rhs:60 => (FinGame2MixedGame rhs)
 
 variable (G : FinGame)
 
---theorem ExistsNashEq : ∃ m :  (i:(μ G).I )→ (μ G).SS i, (μ G).NashEquilibrium m := by sorry
-/-
-@[simp]
-noncomputable def with_hole {G: FinGame} (s : G.mixedS) (i : G.I) (x : S (G.SS i)) := Function.update G.I (fun i =>S (G.SS i)) s i x
-
--- comma_notation for mixed game
-noncomputable instance comma.mixed {G : FinGame} {i : G.I} : CoeOut  ((S (G.SS i))×(@IFun' G.I (fun i => S (G.SS i )) i)) (IFun (fun i => S (G.SS i))) where
-  coe := @combinePair G.I (fun i=> S (G.SS i)) i
--/
-
-
-
 def mixedNashEquilibrium {G: FinGame} (x : G.mixedS) :=
   ∀ (i:G.I), ∀ (y : S (G.SS  i)),
      G.mixed_g i x ≥ G.mixed_g i (update  x i y)
@@ -342,16 +330,6 @@ end Brouwer.mixedGame
 section mixedNashEquilibrium
 variable (G : FinGame)
 open FinGame
-
-/-noncomputable def evaluate_at_mixed (i : G.I) (σ : G.mixedS) : ℝ :=
-  ∑ pureS : (Π i, G.SS i), (∏ i : G.I, σ i (pureS i)) * G.g i pureS
-
-lemma mixed_g_eq_evaluate (i : G.I) (σ : G.mixedS) : evaluate_at_mixed G i σ = mixed_g i σ := by
-  simp [evaluate_at_mixed, mixed_g]
-
-  sorry-/
-
-
 
 variable {G}
 
