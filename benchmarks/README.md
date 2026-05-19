@@ -129,7 +129,7 @@ python3 benchmarks/scripts/score_benchmark.py \
 
 Results are written under `benchmarks/results/`.
 
-The existing scored model-comparison artifacts under `results/` are for the 36-task v0 pilot. Treat them as pilot artifacts; rerun and rescore v1 before reporting final numbers.
+The older `brouwerbench_v0_*` artifacts under `results/` are for the 36-task pilot. Use the reported v1 runs below for current comparisons.
 
 ## Reported v1 Runs
 
@@ -137,8 +137,9 @@ The current v1 comparison uses:
 
 | Model | Raw result | Manual scores | Note |
 |---|---|---|---|
-| `qwen3:8b` | `results/brouwerbench_v1__qwen3_8b.jsonl` | `scores/brouwerbench_v1__qwen3_8b.manual.jsonl` | Small baseline, default `num_predict = 384`. |
 | `gpt-oss:20b` | `results/brouwerbench_v1__gpt-oss_20b_np1024.jsonl` | `scores/brouwerbench_v1__gpt-oss_20b_np1024.manual.jsonl` | Use this `np1024` run for reporting. The default-length GPT run produced empty formal responses and is excluded. |
+| `qwen3:8b` | `results/brouwerbench_v1__qwen3_8b.jsonl` | `scores/brouwerbench_v1__qwen3_8b.manual.jsonl` | Small baseline, default `num_predict = 384`. |
+| `gemma3:12b` | `results/brouwerbench_v1__gemma3_12b.jsonl` | `scores/brouwerbench_v1__gemma3_12b.manual.jsonl` | Newer general open-weight control, default `num_predict = 384`. |
 | `kimina-prover:7b` | `results/brouwerbench_v1__kimina-prover_7b.jsonl` | `scores/brouwerbench_v1__kimina-prover_7b.manual.jsonl` | Prover-style contrast model. |
 
 The main comparison report is:
