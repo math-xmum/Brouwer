@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DATASET = ROOT / "data" / "brouwerbench_v0.jsonl"
+DEFAULT_DATASET = ROOT / "data" / "brouwerbench_v1.jsonl"
 DEFAULT_CONTEXT_DIR = ROOT / "context"
 DEFAULT_RESULTS_DIR = ROOT / "results"
 

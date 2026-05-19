@@ -1,58 +1,81 @@
--- Section prelude excerpt for BrouwerBench prompts.
--- This is prompt context, not a standalone Lean file.
+-- Declaration-only prompt excerpt for BrouwerBench.
+-- This prompt context is not a standalone Lean module.
+
+variable {n : PNat} {l : PNat}
 
 -- Integer grid points of the standard simplex at denominator l.
 abbrev TT (n : PNat) (l : PNat) :=
   {x : PiFinset fun (_ : Fin n) => Fin (l + 1) |
     sum i, (x i : Nat) = l}
 
-def TTtostdSimplex (x : TT n l) : stdSimplex Real (Fin n) :=
-  -- The actual definition maps i to x i / l and proves nonnegativity and sum one.
-  ⟨fun i => x i / l, by
-    constructor
-    · intro i
-      exact div_nonneg (by positivity) (by positivity)
-    · -- sum_i x_i / l = 1 because sum_i x_i = l
-      sorry⟩
+constant TTtostdSimplex :
+  TT n l -> stdSimplex Real (Fin n)
 
 instance TT.CoestdSimplex : CoeOut (TT n l) (stdSimplex Real (Fin n)) where
   coe := TTtostdSimplex
 
--- Coordinate-indexed lexicographic order used to instantiate Scarf.
+-- Coordinate-indexed lexicographic order for the Scarf instance.
 abbrev TT.Ilt (i : Fin n) (x y : TT n l) : Prop :=
   toLex (x i, x) < toLex (y i, y)
 
 instance TT.ILO : IndexedLOrder (Fin n) (TT n l) where
   IST := fun i => linearOrderOfSTO (TT.Ilt i)
 
--- Grid coloring induced by a continuous self-map of the simplex.
-def Fcolor
-    (f : stdSimplex Real (Fin n) -> stdSimplex Real (Fin n))
-    (x : TT n l) : Fin n :=
-  stdSimplex.pick x (f x)
+variable (x y : TT n l) (i : Fin n)
 
--- At grid level l' + 1, Scarf gives a colorful room for Fcolor.
-def room_seq
-    (f : stdSimplex Real (Fin n) -> stdSimplex Real (Fin n))
-    (l' : Nat) :=
-  -- A member of the colorful-cell filter returned by Scarf.
-  Classical.choice (IndexedLOrder.Scarf (c := Fcolor f))
+axiom size_bound_key :
+  dist (TTtostdSimplex x) (TTtostdSimplex y) <= 1 / (l : Real)
 
--- Pick an actual grid point from the colorful room.
-def room_point_seq
-    (f : stdSimplex Real (Fin n) -> stdSimplex Real (Fin n))
-    (l' : Nat) :=
-  pick_colorful_point (Finset.mem_filter.mp (room_seq f l').2).2
+axiom size_bound_in :
+  x.1 i <= y.1 i -> (TTtostdSimplex x).1 i <= (TTtostdSimplex y).1 i
 
--- Subsequence packages used in the limit proof.
-def gpkg
-    (f : stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) :=
-  Classical.choice (constant_index_set_nonempty f)
+axiom size_bound_out :
+  dist (TTtostdSimplex x) (TTtostdSimplex y) <= 2 / (l : Real)
 
-abbrev g1
-    (f : stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) :=
-  (gpkg f).1.2
+-- Grid coloring induced from a continuous self-map of the simplex.
+constant Fcolor :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) -> TT n l -> Fin n
 
-def hpkg
-    (f : stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) :=
-  Classical.choice (hpkg_aux f)
+-- At grid level l' + 1, Scarf supplies a colorful room for Fcolor.
+constant room_seq :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) ->
+    Nat -> Prod (Finset (TT n l)) (Finset (Fin n))
+
+constant room_point_seq :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) ->
+    Nat -> TT n l
+
+-- Limit and subsequence package declarations.
+constant exists_subseq_constant_of_finite_image :
+  (Nat -> Fin n) -> Nonempty {g : Nat -> Nat // StrictMono g}
+
+constant constant_index_set_nonempty :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) -> Nonempty PUnit
+
+constant gpkg :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) -> PUnit
+
+constant g1 :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) -> Nat -> Nat
+
+constant hpkg_aux :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) -> Nonempty PUnit
+
+constant hpkg :
+  (stdSimplex Real (Fin n) -> stdSimplex Real (Fin n)) -> PUnit
+
+variable (f : stdSimplex Real (Fin n) -> stdSimplex Real (Fin n))
+variable (z : stdSimplex Real (Fin n))
+
+axiom dominant_coords_tend_to_zero :
+  Tendsto (fun k => dist (room_point_seq f k) (TTtostdSimplex (room_point_seq f k)))
+    atTop (nhds 0)
+
+axiom tendsto_diam_to_zero :
+  Tendsto (fun k => dist (room_point_seq f k) z) atTop (nhds 0)
+
+axiom f_coords_ge_z_coords :
+  forall i, z.1 i <= (f z).1 i
+
+axiom Brouwer :
+  Continuous f -> exists x : stdSimplex Real (Fin n), f x = x

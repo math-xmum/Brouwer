@@ -1,4 +1,4 @@
-# BrouwerBench v0
+# BrouwerBench
 
 This directory contains a small benchmark dataset for the Lean formalization pipeline:
 
@@ -6,7 +6,7 @@ This directory contains a small benchmark dataset for the Lean formalization pip
 Scarf -> Brouwer -> Product Brouwer -> Nash
 ```
 
-The first dataset is `data/brouwerbench_v0.jsonl`. It is intentionally small and hand-checkable: 36 questions covering the main proof chain rather than only the Scarf core.
+The current dataset is `data/brouwerbench_v1.jsonl`: 54 hand-checkable questions covering the main proof chain rather than only the Scarf core. The original 36-question pilot dataset is preserved as `data/brouwerbench_v0.jsonl` so previous scored runs remain reproducible.
 
 This is a context-provided proof-structure QA benchmark, not a Lean proof-synthesis benchmark. Each model prompt includes:
 
@@ -29,10 +29,10 @@ Current section coverage:
 
 | Section | Tasks |
 |---|---:|
-| Scarf | 12 |
-| Brouwer | 10 |
-| Brouwer_product | 7 |
-| Nash | 7 |
+| Scarf | 16 |
+| Brouwer | 15 |
+| Brouwer_product | 11 |
+| Nash | 12 |
 
 ## Schema
 
@@ -47,7 +47,17 @@ Each JSONL row has:
 - `question`: prompt to answer.
 - `gold_answer`: reference answer.
 - `evidence`: file-line anchors used to create/check the item.
-- `rubric`: lightweight 0-2 scoring guidance.
+- `rubric`: per-task 0-2 scoring guidance with `score_0`, `score_1`, `score_2`, and `must_mention`.
+
+## Validation
+
+Before running or reporting results, validate the dataset and prompt context:
+
+```bash
+make -C benchmarks validate
+```
+
+This checks JSONL parsing, unique ids, rubric keys, source/prelude links, evidence line anchors, declaration-only Lean snippets, and task contexts that do not leak proof routes or Lean proof-body tokens.
 
 ## Scoring
 
@@ -88,13 +98,23 @@ python3 benchmarks/scripts/run_ollama_benchmark.py \
 
 By default, the runner prepends the section prelude. Use `--no-section-prelude` only for ablations that intentionally omit the Lean definitions and structures.
 
-Run the full v0 dataset:
+Run model outputs for the full current dataset:
+
+```bash
+make -C benchmarks run MODEL=qwen3:8b
+```
+
+This writes raw outputs under `results/`. After creating the matching manual score file under `scores/`, run:
+
+```bash
+make -C benchmarks score MODEL=qwen3:8b
+```
+
+To run and score in one command once the score file already exists:
 
 ```bash
 make -C benchmarks qwen3
 ```
-
-This runs the model, merges the manual scores in `scores/`, and writes a Markdown report under `results/`.
 
 You can also run the steps separately:
 
@@ -104,22 +124,50 @@ python3 benchmarks/scripts/run_ollama_benchmark.py \
   --overwrite
 
 python3 benchmarks/scripts/score_benchmark.py \
-  --results benchmarks/results/brouwerbench_v0__qwen3_8b.jsonl
+  --results benchmarks/results/brouwerbench_v1__qwen3_8b.jsonl
 ```
 
 Results are written under `benchmarks/results/`.
 
-The current scored `qwen3:8b` run contains 36 tasks and scores `44/72` (`61.1%`).
+The existing scored model-comparison artifacts under `results/` are for the 36-task v0 pilot. Treat them as pilot artifacts; rerun and rescore v1 before reporting final numbers.
+
+## Reported v1 Runs
+
+The current v1 comparison uses:
+
+| Model | Raw result | Manual scores | Note |
+|---|---|---|---|
+| `qwen3:8b` | `results/brouwerbench_v1__qwen3_8b.jsonl` | `scores/brouwerbench_v1__qwen3_8b.manual.jsonl` | Small baseline, default `num_predict = 384`. |
+| `gpt-oss:20b` | `results/brouwerbench_v1__gpt-oss_20b_np1024.jsonl` | `scores/brouwerbench_v1__gpt-oss_20b_np1024.manual.jsonl` | Use this `np1024` run for reporting. The default-length GPT run produced empty formal responses and is excluded. |
+| `kimina-prover:7b` | `results/brouwerbench_v1__kimina-prover_7b.jsonl` | `scores/brouwerbench_v1__kimina-prover_7b.manual.jsonl` | Prover-style contrast model. |
+
+The main comparison report is:
+
+```text
+results/brouwerbench_v1_model_comparison.md
+```
 
 ## Paper Artifacts
 
-After scoring, the paper-ready pilot evaluation draft is:
+The paper-ready v1 evaluation draft is:
+
+```text
+results/brouwerbench_v1_paper_section.md
+```
+
+LaTeX tables for v1 are in:
+
+```text
+results/brouwerbench_v1_tables.tex
+```
+
+The older pilot evaluation draft for v0 is preserved as:
 
 ```text
 results/brouwerbench_v0_paper_section.md
 ```
 
-LaTeX tables are in:
+Older v0 LaTeX tables are in:
 
 ```text
 results/brouwerbench_v0_tables.tex

@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DATASET = ROOT / "data" / "brouwerbench_v0.jsonl"
+DEFAULT_DATASET = ROOT / "data" / "brouwerbench_v1.jsonl"
 DEFAULT_RESULTS_DIR = ROOT / "results"
 DEFAULT_SCORES_DIR = ROOT / "scores"
 
@@ -139,15 +139,17 @@ def score_table(rows_by_group: dict[str, list[dict]]) -> list[str]:
     return lines
 
 
-def write_report(path: Path, scored_rows: list[dict], result_path: Path, score_path: Path) -> None:
+def write_report(path: Path, scored_rows: list[dict], result_path: Path, score_path: Path, dataset_path: Path) -> None:
     summary = summarize(scored_rows)
     model = scored_rows[0].get("model", "unknown") if scored_rows else "unknown"
+    dataset_name = dataset_path.stem
     lines: list[str] = []
-    lines.append(f"# {model} BrouwerBench v0 Report")
+    lines.append(f"# {model} {dataset_name} Report")
     lines.append("")
     lines.append("## Summary")
     lines.append("")
     lines.append(f"- Model: `{model}`")
+    lines.append(f"- Dataset: `{dataset_path}`")
     lines.append(f"- Raw results: `{result_path}`")
     lines.append(f"- Manual scores: `{score_path}`")
     lines.append(f"- Tasks: {summary['tasks']}")
@@ -205,7 +207,7 @@ def main() -> None:
     scores = load_scores(score_path)
     scored_rows = merge_rows(dataset_rows, result_rows, scores)
     write_jsonl(scored_output, scored_rows)
-    write_report(report_output, scored_rows, args.results, score_path)
+    write_report(report_output, scored_rows, args.results, score_path, args.dataset)
 
     summary = summarize(scored_rows)
     print(f"wrote {scored_output}")

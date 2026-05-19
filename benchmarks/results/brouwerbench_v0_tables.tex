@@ -1,36 +1,47 @@
 \begin{table}[t]
 \centering
-\caption{Pilot BrouwerBench v0 results for \texttt{qwen3:8b}. Scores use a 0--2 rubric per item.}
-\label{tab:brouwerbench-v0}
-\begin{tabular}{lrrr}
+\caption{Pilot BrouwerBench v0 results. Scores use a 0--2 rubric per item.}
+\label{tab:brouwerbench-v0-models}
+\begin{tabular}{lrrrr}
 \toprule
-Section & Tasks & Score & Accuracy \\
+Model & Score & Accuracy & Runtime (s) & Avg. / task (s) \\
 \midrule
-Scarf & 12 & 16/24 & 66.7\% \\
-Brouwer & 10 & 12/20 & 60.0\% \\
-Product Brouwer & 7 & 8/14 & 57.1\% \\
-Nash & 7 & 8/14 & 57.1\% \\
-\midrule
-Total & 36 & 44/72 & 61.1\% \\
+\texttt{gpt-oss:20b} & 48/72 & 66.7\% & 485.17 & 13.48 \\
+\texttt{qwen3:8b} & 46/72 & 63.9\% & 194.18 & 5.39 \\
+\texttt{qwen3:14b} & 44/72 & 61.1\% & 302.93 & 8.41 \\
+\texttt{kimina-prover:7b} & 25/72 & 34.7\% & 697.00 & 19.36 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[t]
 \centering
-\caption{BrouwerBench v0 scores by task type for \texttt{qwen3:8b}.}
-\label{tab:brouwerbench-v0-task-types}
-\begin{tabular}{lrrr}
+\caption{BrouwerBench v0 scores by formalization section.}
+\label{tab:brouwerbench-v0-sections}
+\begin{tabular}{lrrrr}
 \toprule
-Task type & Tasks & Score & Accuracy \\
+Model & Scarf & Brouwer & Product Brouwer & Nash \\
 \midrule
-Definition role & 5 & 5/10 & 50.0\% \\
-Proof dependency & 12 & 17/24 & 70.8\% \\
-Parity argument & 3 & 4/6 & 66.7\% \\
-Theorem summary & 3 & 3/6 & 50.0\% \\
-Construction role & 7 & 9/14 & 64.3\% \\
-Analysis step & 4 & 4/8 & 50.0\% \\
-Endpoint connection & 2 & 2/4 & 50.0\% \\
+\texttt{gpt-oss:20b} & 19/24 & 12/20 & 10/14 & 7/14 \\
+\texttt{qwen3:8b} & 15/24 & 13/20 & 9/14 & 9/14 \\
+\texttt{qwen3:14b} & 17/24 & 12/20 & 8/14 & 7/14 \\
+\texttt{kimina-prover:7b} & 7/24 & 6/20 & 5/14 & 7/14 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{BrouwerBench v0 scores by task type.}
+\label{tab:brouwerbench-v0-task-types}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Model & Def. & Dep. & Parity & Summary & Constr. & Analysis & Endpoint \\
+\midrule
+\texttt{gpt-oss:20b} & 7/10 & 17/24 & 4/6 & 3/6 & 10/14 & 5/8 & 2/4 \\
+\texttt{qwen3:8b} & 5/10 & 18/24 & 3/6 & 3/6 & 11/14 & 4/8 & 2/4 \\
+\texttt{qwen3:14b} & 6/10 & 17/24 & 3/6 & 4/6 & 9/14 & 4/8 & 1/4 \\
+\texttt{kimina-prover:7b} & 4/10 & 10/24 & 2/6 & 0/6 & 6/14 & 2/8 & 1/4 \\
 \bottomrule
 \end{tabular}
 \end{table}

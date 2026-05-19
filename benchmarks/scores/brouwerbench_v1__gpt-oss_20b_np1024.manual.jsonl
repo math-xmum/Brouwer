@@ -1,0 +1,54 @@
+{"id":"scarf_001","score":2,"score_note":"Correctly explains dominance, cell/room/door hierarchy, and cardinality conditions."}
+{"id":"scarf_002","score":1,"score_note":"Identifies the minimum-image/cardinality-bound role, but incorrectly suggests image gives a bijection/cardinality equality."}
+{"id":"scarf_003","score":1,"score_note":"Explains point insertion and index insertion, but does not connect the constructors to incidence counting."}
+{"id":"scarf_004","score":2,"score_note":"Correctly distinguishes colorful, nearly colorful, and typed missing-color predicates and connects typedness to counting."}
+{"id":"scarf_005","score":2,"score_note":"Correctly explains that room_of_colorful supplies room/cardinality/nonempty structure needed for pick_colorful_point."}
+{"id":"scarf_006","score":1,"score_note":"Recognizes incidence counting and outside/internal parity, but the partition and typed_colorful_room_odd role are imprecise."}
+{"id":"scarf_007","score":2,"score_note":"Correctly explains the singleton outside-door filter and odd cardinality."}
+{"id":"scarf_008","score":2,"score_note":"Correctly identifies parity_lemma as the arithmetic step forcing an odd, hence nonempty, colorful-room count."}
+{"id":"scarf_009","score":2,"score_note":"Correctly states colorful nonemptiness and explains the use of Inhabited I/default for typed_colorful_room_odd."}
+{"id":"brouwer_001","score":2,"score_note":"Correctly connects Fcolor on finite grids, Scarf colorful rooms, room_seq, and room_point_seq."}
+{"id":"brouwer_002","score":1,"score_note":"Understands finite-image subsequence extraction, but treats the stabilized object as a single color rather than the room color set C."}
+{"id":"brouwer_003","score":1,"score_note":"Correctly notes outside-C coordinates tend to zero, but does not explain how this pairs with inside-C inequalities to force the fixed point."}
+{"id":"brouwer_004","score":1,"score_note":"Identifies compactness and shrinking diameter, but overstates diameter as giving common-room membership rather than transferring inequalities."}
+{"id":"brouwer_005","score":2,"score_note":"Correctly explains the finite colored-witness inequality and its passage to the limit using continuity."}
+{"id":"brouwer_006","score":1,"score_note":"Covers grid/Scarf/subsequence at a high level, but the answer is truncated before the full diameter/continuity/sum argument."}
+{"id":"product_001","score":1,"score_note":"Explains deficit/tPush/pushTowardsZ as block correction, but misses that the key goal is positive block sums for normalization."}
+{"id":"product_002","score":1,"score_note":"States the projection-embedding retraction role, but only gestures at the lifted map and project-back fixed-point transfer."}
+{"id":"product_003","score":1,"score_note":"Mentions f_lifted, continuity, Brouwer, and projection back, but uses the retraction identity in the wrong direction."}
+{"id":"nash_001","score":1,"score_note":"Describes finite mixed strategies and expected payoff, but omits the unilateral-deviation Nash condition."}
+{"id":"nash_002","score":1,"score_note":"Explains normalization, continuity, and fixed points, but does not clearly identify payoff-improvement weights."}
+{"id":"nash_003","score":1,"score_note":"Connects Brouwer.mixedGame and a fixed point of nash_map, but misses the pure-deviation contradiction and mixed_g_linear extension."}
+{"id":"scarf_010","score":2,"score_note":"Correctly connects internal doors, two incident rooms, size-two fibers, and evenness."}
+{"id":"scarf_011","score":2,"score_note":"Correctly states the typed nearly colorful versus colorful partition with the same missing type."}
+{"id":"scarf_012","score":2,"score_note":"Correctly explains two nearly colorful doors, the size-two fiber, and even incidence contribution."}
+{"id":"brouwer_007","score":2,"score_note":"Correctly explains TT finite grids, division by l, and indexed orders for Scarf."}
+{"id":"brouwer_008","score":1,"score_note":"Recognizes quantitative grid estimates, but misstates size_bound_in/out and misses the outside-C role."}
+{"id":"brouwer_009","score":1,"score_note":"Explains stabilizing a constant C subsequence, but misses the outside-C vanishing and inside-C inequalities that require it."}
+{"id":"brouwer_010","score":2,"score_note":"Correctly explains outside-C zero, sum-one constraints, coordinate inequalities, and extensionality."}
+{"id":"product_004","score":2,"score_note":"Correctly explains flat indices, block/local indices, inverse lemmas, and their role in blockwise constructions."}
+{"id":"product_005","score":2,"score_note":"Correctly explains blockWeight scaling, sum-to-one preservation, block sums, and project_embed_id."}
+{"id":"product_006","score":2,"score_note":"Correctly identifies division by blockSum, continuity of numerator/denominator, positive denominator, and division continuity."}
+{"id":"product_007","score":1,"score_note":"Recognizes the tPush case split and blockWeight positivity, but gets the tPush=0 branch wrong by missing zero deficit."}
+{"id":"nash_004","score":2,"score_note":"Correctly explains mixed_g_linear as the convex-combination bridge from pure to mixed deviations."}
+{"id":"nash_005","score":1,"score_note":"Captures representation transport broadly, but misses Fintype.equivFin/ProductSimplices and gives an inaccurate single-simplex description."}
+{"id":"nash_006","score":2,"score_note":"Correctly explains g_function nonnegativity, denominator at least one, normalization, and nash_map_cert."}
+{"id":"nash_007","score":1,"score_note":"Mentions H1 and fixed-point contradiction, but the explanation of self_div_lemma and the contradiction is not correct."}
+{"id":"scarf_013","score":2,"score_note":"Correctly characterizes outside doors as empty tau with singleton color and uniqueness for the count."}
+{"id":"scarf_014","score":2,"score_note":"Correctly explains that internal_door_two_rooms becomes a size-two fiber and hence an even contribution."}
+{"id":"scarf_015","score":2,"score_note":"Correctly explains NC_of_outsidedoor and NC_or_C_of_door as the typed parity classification bridge."}
+{"id":"scarf_016","score":0,"score_note":"Incorrectly treats typed nearly colorful as colorful and misses odd cardinality, positive cardinality, choice, and default."}
+{"id":"brouwer_011","score":2,"score_note":"Correctly explains stdSimplex.pick selecting a coordinate/color with x_i <= f(x)_i."}
+{"id":"brouwer_012","score":1,"score_note":"Explains fixed C and subsequence g1, but misses outside-C vanishing and inside-C coordinate inequalities."}
+{"id":"brouwer_013","score":1,"score_note":"Explains y_seq as carrying finite inequalities through diameter and continuity, but does not identify the colored witness role clearly."}
+{"id":"brouwer_014","score":1,"score_note":"Mentions outside-C zero, nonnegativity, and sum one, but does not clearly explain how equality of sums forces coordinate equality."}
+{"id":"brouwer_015","score":2,"score_note":"Correctly explains C's inside-C inequality role, outside-C zero role, and the extensionality endpoint."}
+{"id":"product_008","score":1,"score_note":"Identifies why tPush=0 loses the positive push term, but misses the zero-deficit argument that gives blockWeight <= blockSum."}
+{"id":"product_009","score":2,"score_note":"Correctly identifies the blockSum denominator, nonzero positivity, and division-continuity issue."}
+{"id":"product_010","score":2,"score_note":"Correctly explains embedded block sums, blockWeight, deficit zero, push identity, and recovery of y."}
+{"id":"product_011","score":1,"score_note":"Mentions BigSimplex, f_lifted, projection back, and project_embed_id, but misnames the applied theorem on the lifted map."}
+{"id":"nash_008","score":1,"score_note":"Correctly identifies positive payoff improvement from a pure deviation, but omits normalization into nash_map weights."}
+{"id":"nash_009","score":1,"score_note":"Explains denominator positivity, nonnegativity, and sum one, but omits nash_map_cert packaging."}
+{"id":"nash_010","score":2,"score_note":"Correctly explains mixed_g_linear as a weighted-sum bridge from pure to arbitrary mixed deviations."}
+{"id":"nash_011","score":2,"score_note":"Correctly states H1's sum_g > 1 contradiction with self_div_lemma forcing sum_g = 1 at a fixed point."}
+{"id":"nash_012","score":2,"score_note":"Correctly explains reindexing via phi/phi_inv into ProductSimplices and transporting the fixed point back."}
