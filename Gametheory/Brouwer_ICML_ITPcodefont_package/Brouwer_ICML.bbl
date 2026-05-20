@@ -1,0 +1,63 @@
+\begin{thebibliography}{9}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Border(1985)]{border1985fixed}
+Border, K.~C.
+\newblock \emph{Fixed point theorems with applications to economics and game
+  theory}.
+\newblock Cambridge university press, 1985.
+
+\bibitem[Brouwer(1911)]{brouwer1911beweis}
+Brouwer, L.~E.
+\newblock Beweis der invarianz der dimensionenzahl.
+\newblock \emph{Mathematische Annalen}, 70\penalty0 (2):\penalty0 161--165,
+  1911.
+
+\bibitem[Ivanov(2019)]{ivanov2019beyond}
+Ivanov, N.~V.
+\newblock Beyond {S}perner's lemma.
+\newblock \emph{arXiv preprint arXiv:1902.00827}, 2019.
+
+\bibitem[Moura \& Ullrich(2021)Moura and Ullrich]{moura2021lean}
+Moura, L.~d. and Ullrich, S.
+\newblock The lean 4 theorem prover and programming language.
+\newblock In \emph{International Conference on Automated Deduction}, pp.\
+  625--635. Springer, 2021.
+
+\bibitem[Nash(2024)]{nash2024non}
+Nash, J.~F.
+\newblock Non-cooperative games.
+\newblock In \emph{The Foundations of Price Theory Vol 4}, pp.\  329--340.
+  Routledge, 2024.
+
+\bibitem[Polu \& Sutskever(2020)Polu and Sutskever]{polu2020generative}
+Polu, S. and Sutskever, I.
+\newblock Generative language modeling for automated theorem proving.
+\newblock \emph{arXiv preprint arXiv:2009.03393}, 2020.
+
+\bibitem[Scarf(1982)]{scarf1982computation}
+Scarf, H.~E.
+\newblock The computation of equilibrium prices: an exposition.
+\newblock \emph{Handbook of mathematical economics}, 2:\penalty0 1007--1061,
+  1982.
+
+\bibitem[{The mathlib Community}(2020)]{mathlib2020}
+{The mathlib Community}.
+\newblock The {L}ean {M}athematical {L}ibrary.
+\newblock In \emph{Proceedings of the 9th {ACM} {SIGPLAN} International
+  Conference on Certified Programs and Proofs}, CPP 2020, New Orleans, LA, USA,
+  January 2020. ACM.
+\newblock \doi{10.1145/3372885.3373824}.
+\newblock URL \url{https://doi.org/10.1145/3372885.3373824}.
+
+\bibitem[Zheng et~al.(2021)Zheng, Han, and Polu]{zheng2021minif2f}
+Zheng, K., Han, J.~M., and Polu, S.
+\newblock Minif2f: a cross-system benchmark for formal olympiad-level
+  mathematics.
+\newblock \emph{arXiv preprint arXiv:2109.00110}, 2021.
+
+\end{thebibliography}

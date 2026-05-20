@@ -6,7 +6,7 @@ This directory contains a small benchmark dataset for the Lean formalization pip
 Scarf -> Brouwer -> Product Brouwer -> Nash
 ```
 
-The current dataset is `data/brouwerbench_v1.jsonl`: 54 hand-checkable questions covering the main proof chain rather than only the Scarf core. The original 36-question pilot dataset is preserved as `data/brouwerbench_v0.jsonl` so previous scored runs remain reproducible.
+The current dataset is `data/brouwerbench_v1.jsonl`: 54 hand-checkable questions covering the main proof chain rather than only the Scarf core. The original 36-question pilot dataset and its scored runs are archived under `archive/v0/` for reproducibility.
 
 This is a context-provided proof-structure QA benchmark, not a Lean proof-synthesis benchmark. Each model prompt includes:
 
@@ -129,7 +129,7 @@ python3 benchmarks/scripts/score_benchmark.py \
 
 Results are written under `benchmarks/results/`.
 
-The older `brouwerbench_v0_*` artifacts under `results/` are for the 36-task pilot. Use the reported v1 runs below for current comparisons.
+Older `brouwerbench_v0_*` pilot artifacts are archived under `benchmarks/archive/v0/`. Use the reported v1 runs below for current comparisons.
 
 ## Reported v1 Runs
 
@@ -162,14 +162,12 @@ LaTeX tables for v1 are in:
 results/brouwerbench_v1_tables.tex
 ```
 
-The older pilot evaluation draft for v0 is preserved as:
+## Archived Pilot
+
+The 36-task v0 pilot is retained only for reproducibility:
 
 ```text
-results/brouwerbench_v0_paper_section.md
-```
-
-Older v0 LaTeX tables are in:
-
-```text
-results/brouwerbench_v0_tables.tex
+archive/v0/data/brouwerbench_v0.jsonl
+archive/v0/results/
+archive/v0/scores/
 ```

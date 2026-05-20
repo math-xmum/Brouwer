@@ -1,0 +1,590 @@
+\documentclass{article}
+
+% ICML 2026 template.  Use \usepackage[accepted]{icml2026} only for the
+% camera-ready version after acceptance.
+\usepackage{hyperref}
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+\usepackage{icml2026}
+
+% Basic math and theorem packages.
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{tikz-cd}
+\usepackage{float}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{fontawesome5}
+
+% Match the LIPIcs/ITP template's monospaced Lean-code font.
+% ICML loads the times package, which makes \ttfamily use Courier;
+% LIPIcs uses Latin Modern, so we restore Latin Modern Typewriter for code.
+\renewcommand{\ttdefault}{lmtt}
+
+% Unicode characters that may occur in Lean listings or prose when using pdfLaTeX.
+\DeclareUnicodeCharacter{2200}{$\forall$}
+\DeclareUnicodeCharacter{220F}{$\prod$}
+\DeclareUnicodeCharacter{2211}{$\sum$}
+\DeclareUnicodeCharacter{2203}{$\exists$}
+\DeclareUnicodeCharacter{2192}{$\rightarrow$}
+\DeclareUnicodeCharacter{2265}{$\geq$}
+\DeclareUnicodeCharacter{03A0}{\ensuremath{\Pi}}
+\DeclareUnicodeCharacter{2097}{\textsubscript{l}}
+\DeclareUnicodeCharacter{2019}{'}
+\DeclareUnicodeCharacter{2013}{--}
+\DeclareUnicodeCharacter{2014}{---}
+
+% Theorem environments.  ICML does not provide the LIPIcs theorem setup.
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{examples}[theorem]{Examples}
+
+% Common notation retained from the LIPIcs version.
+\newcommand{\A}{\mathbb{A}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\def\crys{{\text{\upshape cris}}}
+\newcommand*{\lbra}{\mathopen{[\![}}
+\newcommand*{\rbra}{\mathclose{]\!]}}
+\def\coeff{\operatorname{coeff}\nolimits}
+\def\eval{\operatorname{eval}\nolimits}
+\newcommand*{\unitball}[1]{{#1}^\circ}
+\newcommand*{\Fp}[1][p]{\mathbb{F}_{#1}}
+\newcommand*{\laurentseries}[1][\Fp]{{#1}(\!(X)\!)}
+\newcommand*{\primeid}[1][p]{\mathfrak{#1}}
+
+% Lean listings.
+\definecolor{lightblue}{rgb}{0.8,0.85,1}
+\definecolor{keywordcolor}{rgb}{0.7, 0.1, 0.1}
+\definecolor{tacticcolor}{rgb}{0.0, 0.1, 0.6}
+\definecolor{commentcolor}{rgb}{0.4, 0.4, 0.4}
+\definecolor{symbolcolor}{rgb}{0.0, 0.1, 0.6}
+\definecolor{sortcolor}{rgb}{0.1, 0.5, 0.1}
+\definecolor{attributecolor}{rgb}{0.7, 0.1, 0.1}
+
+\lstset{basicstyle=\small\ttfamily,%
+  backgroundcolor=\color{lightblue},%
+  frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep,%
+  captionpos=t}
+\newcommand{\code}[1]{\lstinline{#1}}
+\newcommand{\mcode}[1]{\mathtt{\ #1\ }}
+\newcommand{\extlink}{~\ensuremath{{}^\text{\faExternalLink*}}}
+\def\lstlanguagefiles{lstlean-acl.tex}
+\lstset{language=lean}
+
+% For double-blind ICML submission, replace identity-revealing GitHub URLs
+% with anonymous supplementary material links before submission.
+\icmltitlerunning{Formalizing Scarf, Brouwer, and Nash in Lean}
+
+\begin{document}
+
+\twocolumn[
+\icmltitle{Formalizing Brouwer's Fixed Point Theorem via Scarf's Lemma in Lean}
+
+\begin{icmlauthorlist}
+\icmlauthor{Anonymous Authors}{anon}
+\end{icmlauthorlist}
+
+\icmlaffiliation{anon}{Anonymous Institution, Anonymous City, Anonymous Region, Anonymous Country}
+\icmlcorrespondingauthor{Anonymous Author}{anon.email@domain.com}
+
+\vskip 0.3in
+]
+
+\printAffiliationsAndNotice{}
+
+\begin{abstract}
+We formalize in Lean 4 a combinatorial route from Scarf's theorem to Brouwer's fixed point theorem and the existence of mixed Nash equilibria in finite games. The development follows Ivanov's abstract framework of finite sets equipped with indexed linear orders and colorings, formalizing dominant sets, cells, rooms, doors, and the parity argument for colorful rooms. We then derive Brouwer's fixed point theorem for the standard simplex through finite grid approximations, compactness, continuity, and vanishing-diameter estimates, and extend the result to finite products of simplices via an explicit embedding--projection construction satisfying a retraction identity. Finally, we apply the product version to mixed strategy spaces of finite games by defining a continuous Nash map whose fixed points are Nash equilibria. The formalization integrates combinatorial, analytic, and game-theoretic reasoning in a unified Lean 4 development.
+\end{abstract}
+
+\section{Introduction}
+
+Brouwer's fixed point theorem originated as a fundamental result in topology~\cite{brouwer1911beweis}
+and has since become a central existence tool in analysis, economics, and game theory~\cite{border1985fixed}.
+One of its most important applications is the existence of mixed Nash equilibria in finite games~\cite{nash2024non}: the mixed strategy space of a finite game is a finite product of simplices, and a suitably constructed continuous self-map of this space has a fixed point precisely when the corresponding mixed strategy profile is an equilibrium. Classical proofs of Brouwer's theorem often rely on topological tools such as homology, degree theory, or simplicial approximation. For a formal proof, however, it is useful to expose a route whose finite combinatorial core can be separated from the analytic limiting argument.
+
+This paper follows such a route through Scarf's combinatorial theorem~\cite{scarf1982computation}. In Ivanov's abstract formulation~\cite{ivanov2019beyond}, Scarf's theorem concerns a finite set equipped with indexed linear orders and a coloring. The proof is organized around dominant sets, cells, rooms, and doors. The key structural fact is a room--door incidence property: outside doors are incident to exactly one room, while internal doors are incident to exactly two rooms. This incidence structure supports a parity argument, which yields the existence of a colorful room. Applying Scarf's theorem to increasingly fine grids of the standard simplex gives the finite combinatorial input for Brouwer's fixed point theorem. The passage from colorful rooms to a fixed point is then obtained by compactness, continuity, and vanishing-diameter estimates. Finally, Brouwer's theorem for the standard simplex is extended to finite products of simplices by an explicit embedding--projection construction, giving the fixed-point principle needed for the game-theoretic application.
+
+
+\subsection{Lean and Mathlib}
+Throughout the paper, we use Lean 4~\cite{moura2021lean} as the proof assistant in which all definitions, theorem statements, and proofs are checked, and Mathlib~\cite{mathlib2020} as the underlying mathematical library. 
+
+Our development builds on Mathlib's infrastructure for finite types and finite sets, real numbers, continuity, compactness, finite-dimensional spaces, and the standard simplex, while introducing the Scarf-specific objects needed for the formalization, including indexed linear orders, dominant sets, cells, rooms, doors, colorful rooms, and the room--door incidence relation. 
+
+Throughout the text, we use the clickable symbol~\faExternalLink*{} to link mathematical statements to their corresponding Lean source code.
+
+\subsection{Paper Outline}
+
+In \S\ref{sec:Scarf}, we describe the formalization of Scarf's combinatorial theorem: after introducing the indexed-order setting and the basic notions of dominant sets, cells, rooms, and doors, we prove the room--door incidence properties and use them to develop the coloring and parity argument for colorful rooms. \S\ref{sec:Brouwer} is devoted to the derivation of Brouwer's fixed point theorem from Scarf's theorem: in \S\ref{subsec:brouwer-standard}, we treat the standard simplex by finite grid approximation, compactness, and continuity, and in \S\ref{subsec:brouwer-product}, we extend the result to finite products of simplices through an explicit embedding--projection construction. In \S\ref{sec:Nash}, we apply the product version of Brouwer's theorem to the mixed strategy spaces of finite games and derive the existence of mixed Nash equilibria. Finally, we conclude with implementation remarks and future work in \S\ref{sec:discuss}.
+
+\section{Formalizing Scarf's Combinatorial Theorem}\label{sec:Scarf}
+This section contains the finite combinatorial part of the development. We follow Ivanov's abstract formulation of Scarf's theorem~\cite{ivanov2019beyond}, where the input is a finite set equipped with a family of indexed linear orders and a coloring. The proof is organized around three layers. First, dominance turns order-theoretic data into finite cells. Second, rooms and doors provide the incidence structure used for counting. Third, colorings and nearly colorful cells turn this incidence structure into a parity argument producing a colorful room.
+
+\subsection{Orders, Dominant Sets, and Cells}\label{subsec:scarf-orders}
+
+We work with a finite type $T$ together with a finite index type $I$. For each $i \in I$, we are given a linear order $<_i$ on $T$. The indexed family of orders is the basic object from which dominance is defined. In Lean, this data is bundled as a typeclass\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L88-L93}{\extlink}, so that the notation for comparisons can depend on the index.
+
+\begin{definition}[Indexed family of linear orders]\label{def:linearorder}
+A family of linear orders on $T$ indexed by $I$ is a collection $(<_i)_{i \in I}$ such that each $<_i$ is a linear order on $T$.
+\end{definition}
+
+\begin{lstlisting}[caption={Indexed families of linear orders.},label=code:indexed-lorder]
+class IndexedLOrder (I T : Type*) where
+  IST : I → LinearOrder T
+\end{lstlisting}
+
+Given a nonempty subset $\sigma \subseteq T$ and an index $i \in I$, we write $\min_i \sigma$ for the minimum of $\sigma$ with respect to $<_i$. Dominance says that every point of $T$ is controlled by at least one of the orders indexed by $C$. This is the order-theoretic condition that later forces the relevant finite sets to have the correct cardinalities.
+
+\begin{definition}[Dominant set]
+Let $C$ be a nonempty subset of $I$. A subset $\sigma$ of $T$ is dominant with respect to $C$ if, for every element $y$ of $T$, one can find an index $i$ in $C$ such that $y$ is below every element of $\sigma$ in the order $<_i$.
+
+When $\sigma$ is nonempty, this is equivalent to saying that no element of $T$ is strictly larger than all the minima $\min_i \sigma$ for $i$ in $C$.
+\end{definition}
+
+\begin{lstlisting}[caption={Dominance.},label=code:dominant]
+def isDominant := ∀ y, ∃ i ∈ C, ∀ x ∈ σ,
+                  y ≤[i] x
+\end{lstlisting}
+
+We adopt the convention that $\emptyset \subset T$ is dominant with respect to every non-empty subset $C \subset I$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L167-L175}{\extlink}. The following lemma collects the basic closure and cardinality facts about dominant sets. These facts are used repeatedly when passing between cells, rooms, and doors.
+
+\begin{lemma}[Basic properties of dominant sets]\label{def:Lemma1}
+    If $\sigma$ is nonempty and dominant with respect to $C$, then $\sigma = \{\min_i \sigma \mid i \in C\},$
+and hence $|\sigma| \le |C|$.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L138-L157}{\extlink} and hence $|\sigma| \leq |C|$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L159-L165}{\extlink}. If $\tau \subset \sigma$, then $\tau$ is dominant with respect to $C$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L115-L124}{\extlink}, and if $C \subset D$, then $\sigma$ is dominant with respect to $D$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L126-L134}{\extlink}.
+\end{lemma}
+
+The preceding lemma allows us to treat dominant pairs $(\sigma,C)$ as cells of a finite combinatorial object. Rooms are the full-dimensional cells, while doors are their codimension-one boundaries in the counting argument.
+
+\begin{definition}[Cells, rooms, and doors]\label{def:Cells, rooms, and doors}
+A \emph{cell} is a pair $(\sigma, C)$ where $\sigma$ is dominant with respect to $C$. A cell is called a \emph{room} if $|C| = |\sigma|$, and a \emph{door} if $|C| = |\sigma| + 1$.
+\end{definition}
+
+\begin{lstlisting}[caption={Cells, rooms, and doors.},label=code:cells]
+abbrev isCell := isDominant σ C
+
+abbrev isRoom := isCell σ C ∧ C.card = σ.card
+
+abbrev isDoor := isCell σ C ∧ C.card 
+               = σ.card + 1
+\end{lstlisting}
+
+\subsection{Rooms, Doors, and the Two-Room Property}\label{subsec:scarf-doors}
+
+The next step is to make precise how rooms meet along doors. In the formalization, this is captured by the predicate \verb|isDoorof|\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L193-L195}{\extlink}, which records that a door is obtained from a room either by removing an element from the underlying set or by adding a color. This relation is the local incidence relation used later in the parity count.
+
+\begin{definition}[Outside and internal doors]\label{def:Outside and internal doors}
+A door $(\tau,D)$ is called an \emph{outside door} if $\tau = \emptyset$, and an \emph{internal door} otherwise.
+\end{definition}
+
+\begin{lstlisting}[caption={outside door and internal door.},label=code:outside door and internal door]
+variable (τ D) in
+abbrev isOutsideDoor := IST.isDoor τ D ∧ τ 
+                      = Finset.empty
+
+variable (τ D) in
+abbrev isInternalDoor := IST.isDoor τ D 
+                       ∧ τ.Nonempty
+\end{lstlisting}
+
+The following two lemmas give the degree structure of this incidence relation. Outside doors behave as boundary objects: they have degree one. Internal doors behave as shared faces: they have degree two.
+
+\begin{lemma}[Outside-door property]\label{lemma:outsidedoor-property}
+Suppose that $|D| = 1$. Then $(\varnothing, D)$ is an outside door\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L258-L271}{\extlink} and is a door of exactly one room. Every outside door has this form\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L274-L283}{\extlink}.
+\end{lemma}
+
+\begin{lemma}[Two-room property]\label{lemma:two-room-property}
+Every internal door belongs to exactly two rooms\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L760-L1148}{\extlink}.
+\end{lemma}
+
+Thus the rooms and doors form a finite graph-like incidence structure: starting from an outside door, one enters a unique room, and every time one crosses an internal door there is a unique other room on the opposite side. This is the combinatorial shape behind the later path-following and parity argument.
+
+The proof of the two-room property is the most involved local part of the Scarf formalization. It analyzes an internal door $(\tau, D)$ via two complementary constructions: either removing a color from $D$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L318-L394}{\extlink}, or extending $\tau$ by a suitable element\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L396-L595}{\extlink}. These are implemented in Lean via the auxiliary constructions \verb|M_set|\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L289-L291}{\extlink} and maximal elements \verb|m_element|\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L297-L316}{\extlink}, which ensure that both constructions yield valid rooms. In the paper, we use the two-room property as a black-box incidence theorem; in Lean, the proof supplies the exact finite-set witnesses needed to make the incidence count well typed.
+
+\subsection{Colorings and the Parity Argument}\label{subsec:scarf-colorings}
+
+We now add the coloring data. The coloring selects, for each element of $T$, an index in $I$. A colorful cell is one whose index set is exactly the image of its underlying set under this coloring. Nearly colorful cells differ from being colorful by exactly one missing color; the missing color is recorded as the type. This typed version is useful because the parity argument counts objects of a fixed type.
+
+\begin{definition}[Coloring]\label{def:coloring}
+Fix a coloring $c:T\to I$. A cell $(\sigma,C)$ is called \emph{colorful} if
+$C=c(\sigma),$
+and \emph{nearly colorful} if
+$|C\setminus c(\sigma)|=1.$
+For a nearly colorful cell $(\sigma,C)$, the unique element of $C\setminus c(\sigma)$ is called its \emph{type}.
+\end{definition}
+
+\begin{lstlisting}[caption={Colorful and nearly colorful cells.},label=code:coloring]
+def isColorful : Prop := IST.isCell σ C 
+                ∧ σ.image c = C
+
+def isNearlyColorful : Prop := IST.isCell σ C 
+                     ∧ (C \ σ.image c).card = 1
+
+def isTypedNC (i : I) (σ : Finset T) 
+(C : Finset I) : Prop := IST.isCell σ C 
+               ∧ (C \ (σ.image c)) = {i}
+\end{lstlisting}
+
+The next lemmas connect the uncolored incidence structure with the coloring data. They identify the boundary terms, describe how colorful rooms contribute nearly colorful doors, and show that nearly colorful rooms have the expected number of nearly colorful doors.
+
+\begin{lemma}[Outside doors and doors of colorful rooms]\label{lemma:4}
+For every $i \in I$ there is exactly one outside door of the type $i$. Every door of a
+colorful room is nearly colorful and there is exactly one door of each type among them.
+\end{lemma}
+
+\begin{lemma}[Nearly colorful door transition]\label{lemma:5}
+Suppose that $(\tau, D)$ is a nearly colorful door of a room $(\sigma, C)$. Then $(\sigma, C)$
+is either colorful, or nearly colorful of the same type as $(\tau, D)$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L1263-L1341}{\extlink}.
+\end{lemma}
+
+\begin{lemma}[Nearly colorful cardinality properties]\label{lemma:6}
+If $(\sigma, C)$ is a nearly colorful room, then $|c(\sigma)|$ is equal either to $|\sigma|$ or to
+$|\sigma| - 1$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L1370-L1394}{\extlink}. If $(\sigma, C)$ is a nearly colorful door, then $c(\sigma) \subset C$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L1396-L1420}{\extlink}.
+\end{lemma}
+
+\begin{lemma}[Doors of nearly colorful rooms]\label{lemma:7}
+If $(\sigma, C)$ is a nearly colorful room, then $(\sigma, C)$ has two nearly colorful doors\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L1562-L2211}{\extlink}.
+\end{lemma}
+
+Together, these lemmas turn the room--door incidence relation into a parity count. Fixing a type $i$, the unique outside door of type $i$ contributes one boundary term\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L2223-L2343}{\extlink}. Internal nearly colorful doors are counted twice because of the two-room property\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L2345-L2457}{\extlink}. Nearly colorful rooms also contribute an even number of typed doors\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L2470-L2562}{\extlink}. Therefore the remaining contribution comes from colorful rooms, forcing the relevant colorful-room count to be odd\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L2579-L2585}{\extlink}.
+
+\begin{theorem}[Scarf's combinatorial theorem]\label{thm:Scarf}
+For every coloring $c : T \to I$, there exists a colorful room. Moreover, the number of colorful rooms is odd\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L2587-L2595}{\extlink}.
+\end{theorem}
+
+This theorem completes the finite combinatorial core of the formalization. In the next section, the finite set $T$ will be instantiated by a grid in the standard simplex. The colorful rooms supplied by Scarf's theorem then become the discrete approximations from which Brouwer fixed points are obtained by a limiting argument.
+
+
+
+
+
+
+
+\section{From Scarf's Theorem to Brouwer's Fixed Point Theorem}\label{sec:Brouwer}
+
+This section derives Brouwer's fixed point theorem from the formalized Scarf theorem. The argument has two stages. We first prove Brouwer's theorem for the standard simplex by applying Scarf's theorem to increasingly fine finite grids and then passing to a limit. We then obtain the corresponding theorem for finite products of simplices by reducing the product case to the standard-simplex case through an explicit embedding--projection construction.
+
+\subsection{Brouwer's Theorem on the Standard Simplex}\label{subsec:brouwer-standard}
+
+Fix a positive integer $n$, and let $\Delta^{n-1}$ be the standard simplex with coordinates indexed by $\mathrm{Fin}\ n$. The goal is to prove that every continuous self-map
+$$
+f : \Delta^{n-1} \to \Delta^{n-1}
+$$
+has a fixed point. The proof does not use Scarf's theorem directly on the simplex itself. Instead, for each positive integer $l$, we work with a finite grid $T_l$ of rational points whose coordinates have denominator $l$. Informally,
+$$
+T_l =
+\left\{
+  x \in \Delta^{n-1}
+  \mid
+  x_i \in \frac{1}{l}\mathbb{Z}
+  \text{ for all } i
+\right\}.
+$$
+In Lean, the grid is represented by integer coordinates in \verb|Fin (l+1)| whose sum is $l$; the corresponding point of the simplex is obtained by dividing each coordinate by $l$. The subtype \verb|TT| defines the finite grid, while \verb|TTtostdSimplex| and the coercion instance \verb|TT.CoestdSimplex| realize a grid point as an element of the standard simplex\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L16-L50}{\extlink}.
+
+\begin{lstlisting}[caption={The discrete grid used to approximate the simplex.},label=code:TT]
+abbrev TT := {x : Πₗ (_ : Fin n), Fin (l+1) | ∑ i, (x i : ℕ) = l}
+
+def TTtostdSimplex (x : TT n l) : stdSimplex ℝ (Fin n)
+\end{lstlisting}
+
+\subsubsection{The ordered grid and dominance estimates}
+
+To apply Scarf's theorem, each grid $T_l$ is equipped with an indexed family of linear orders, one order for each coordinate. For a fixed coordinate $i$, the order first compares the $i$-th coordinate and then uses a lexicographic tie-breaker on the whole grid point. This is encoded by \verb|TT.Ilt| and assembled into the indexed linear order \verb|TT.ILO|\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L53-L76}{\extlink}. These orders are chosen so that dominance in the sense of Scarf's theorem imposes strong metric restrictions on the corresponding grid points. This is the point at which the abstract combinatorial theorem becomes a quantitative statement about the simplex.
+
+\begin{lstlisting}[caption={The indexed linear orders on the grid.},label=code:TT-ILO]
+abbrev TT.Ilt (x y : TT n l) :=
+  toLex (x i, x) < toLex (y i, y)
+
+instance TT.ILO : IndexedLOrder (Fin n) (TT n l)
+\end{lstlisting}
+The key quantitative input is that dominance on the grid gives metric control. A dominant set has small diameter, and the coordinates outside its color set are uniformly small. These estimates are the bridge between the finite combinatorial theorem and the limiting argument.
+
+\begin{theorem}[Dominance estimates on the grid]
+Let $\sigma \subseteq T_l$ and $C \subseteq \mathrm{Fin}\ n$. If $\sigma$ is dominant with respect to $C$, then
+$$
+|x_i-y_i| < \frac{2(n+1)}{l}
+$$
+for every $x,y\in \sigma$ and every $i \in \mathrm{Fin}\ n$
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L203-L315}{\extlink}.
+Moreover, if $i\notin C$, then
+$$
+x_i < \frac{n+1}{l}
+$$
+for every $x\in\sigma$
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L317-L362}{\extlink}.
+\end{theorem}
+
+Thus, as $l$ tends to infinity, dominant rooms become small, and the coordinates not belonging to their color sets vanish in the limit.
+
+\subsubsection{The coloring induced by a self-map}
+
+Let $f:\Delta^{n-1}\to\Delta^{n-1}$ be continuous. For any point $x\in\Delta^{n-1}$, the coordinate sums of $x$ and $f(x)$ are both equal to $1$. Hence not all coordinates can strictly decrease: there exists an index $i$ such that
+$$
+x_i \leq f(x)_i.
+$$
+The formalization packages this elementary observation as the nonemptiness lemma \verb|stdSimplex.upidx| and the choice function \verb|stdSimplex.pick| on the simplex. Restricting this choice to the grid $T_l$ gives the coloring required by Scarf's theorem, namely \verb|Fcolor|.
+
+\begin{lstlisting}[caption={The coloring induced by a continuous self-map.},label=code:Fcolor]
+noncomputable def stdSimplex.pick
+  (x y : stdSimplex ℝ (Fin n))
+
+def Fcolor (x : TT n l) : Fin n := stdSimplex.pick x (f x)
+\end{lstlisting}
+
+Applying the formalized Scarf theorem to \verb|Fcolor| produces a colorful room on each grid $T_l$. In Lean, these rooms are chosen as a sequence \verb|room_seq|, and a representative point from each room is chosen as \verb|room_point_seq|. This sequence of rooms is the bridge between the finite combinatorial theorem and the limiting proof of Brouwer's theorem.
+
+\begin{lstlisting}[caption={Choosing colorful rooms and representative points.},label=code:room-seq]
+def room_seq (l' : ℕ) :=
+  let l : PNat := ⟨l'+1,Nat.zero_lt_succ _⟩
+  Classical.choice (TT.ILO.Scarf (@Fcolor n l f)).to_subtype
+
+def room_point_seq (l' : ℕ) := pick_colorful_point
+(Finset.mem_filter.1 (room_seq f l').2).2 |>.1
+\end{lstlisting}
+
+\subsubsection{Compactness and the limiting argument}
+
+Choose one representative point from the colorful room obtained at each grid level. Since there are only finitely many possible color sets, we first pass to a subsequence on which the color set of the chosen colorful rooms is constant. This finite-image subsequence extraction is formalized by
+\texttt{exists\_subseq\_constant\_of\_finite\_image}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L408-L414}{\extlink};
+the resulting constant color set and order embedding are packaged as \verb|gpkg| and \verb|g1|
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L480-L489}{\extlink}.
+We then use compactness of the standard simplex to extract a convergent subsequence of the corresponding room points; this step is packaged in Lean as \verb|hpkg_aux| and \verb|hpkg|
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L537-L548}{\extlink}.
+Let $z\in\Delta^{n-1}$ denote the resulting limit, and write the constant color set as $C$.
+
+The dominance estimates now control the limit. First, the diameters of the selected colorful rooms tend to zero\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L556-L614}{\extlink}. Therefore every point in the same selected room converges to the same limit $z$. Second, for each coordinate $i\notin C$, the outside-coordinate estimate gives convergence to zero, and hence
+$$
+z_i=0
+\qquad\text{for all } i\notin C\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L497-L535}{\extlink}.
+$$
+Since $z$ lies in the simplex, it follows that
+$$
+\sum_{i\in C} z_i = 1.
+$$
+On the other hand, the coloring rule says that for each color $i\in C$, the chosen room contains grid points whose $i$-th coordinate does not decrease under $f$. Passing to the limit and using continuity of $f$ gives
+$$
+f(z)_i \ge z_i
+\qquad\text{for all } i\in C\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L616-L708}{\extlink}.
+$$
+Finally, $f(z)$ is also a point of the simplex. The inequalities on $C$, together with $\sum_{i\in C}z_i=1$, force equality on all coordinates in $C$ and force all coordinates outside $C$ to be zero. Hence $f(z)=z$.
+
+\begin{theorem}[Brouwer's fixed point theorem for the standard simplex]
+Every continuous map $f:\Delta^{n-1}\to\Delta^{n-1}$ has a fixed point\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L710-L791}{\extlink}.
+\end{theorem}
+
+
+
+
+\subsection{Brouwer's Theorem on Products of Simplices}
+\label{subsec:brouwer-product}
+
+We next extend Brouwer's fixed point theorem from the standard simplex to finite products of simplices. This is the form needed for the game-theoretic application, where a mixed strategy profile is a point in a product of simplices. The formal proof reduces the product case to the standard-simplex case by constructing an explicit embedding--projection pair between the product and a larger simplex.
+
+\subsubsection{Reducing products to a standard simplex}
+
+Let $I$ be a finite index type, and let $\mathrm{card}(i)$ be a positive integer for each $i\in I$. The product space considered in Lean is
+$$
+\prod_{i\in I}\Delta^{\mathrm{card}(i)-1}.
+$$
+It is represented by the type \texttt{ProductSimplices card}. The ambient simplex has total coordinate number
+$$
+N=\sum_{i\in I}\mathrm{card}(i),
+$$
+and is represented by \texttt{BigSimplex card}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L8-L18}{\extlink}.
+
+The main bookkeeping issue is that coordinates in the ambient simplex are indexed by a single flat index, while coordinates in the product are indexed by a pair consisting of a component $i\in I$ and a coordinate inside the $i$-th simplex. In Lean, this conversion is handled by \texttt{index\_split} and \texttt{index\_combine}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L105-L203}{\extlink}.
+These maps allow the formalization to move between the block decomposition of the product and the flat coordinate system of the larger simplex.
+
+\subsubsection{The embedding-projection construction}
+
+The embedding sends a point of the product of simplices to a point of the ambient simplex by placing each component simplex into its corresponding coordinate block. The $i$-th block is rescaled by the weight $\mathrm{card}(i)/N$, so that the total sum of all coordinates is one. This construction is formalized as \texttt{embed\_from\_product}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L374-L411}{\extlink}.
+
+The projection in the opposite direction is more delicate. Starting from a point of the ambient simplex, the natural idea is to recover each component simplex by normalizing the corresponding coordinate block. However, this normalization is not well-defined if one of the blocks has total mass zero. To avoid this degenerate case, the formal construction first pushes the ambient point toward a fixed uniform point \texttt{z\_uniform}. This auxiliary operation is implemented by \texttt{pushTowardsZ}, together with the definitions \texttt{deficit} and \texttt{tPush}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L223-L292}{\extlink}.
+The key property is that after this push, every coordinate block has positive total mass
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L525-L558}{\extlink}.
+The projection is then obtained by normalizing each block, and is formalized as \texttt{project\_to\_product}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L294-L372}{\extlink}.
+
+The central property of the construction is the retraction identity
+$$
+\texttt{project\_to\_product}\circ \texttt{embed\_from\_product}
+=
+\mathrm{id}.
+$$
+For points already coming from the product, each coordinate block has the prescribed positive total mass, so the projection recovers the original product point. This identity is formalized by \texttt{project\_embed\_id}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L413-L486}{\extlink}.
+
+\subsubsection{The product fixed-point theorem}
+
+It remains to transfer Brouwer's theorem from the ambient simplex back to the product. The embedding and projection are proved continuous as \texttt{embed\_continuous} and \texttt{project\_continuous}
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L560-L652}{\extlink}
+.
+Given a continuous map
+$$
+f:\prod_{i\in I}\Delta^{\mathrm{card}(i)-1}
+\to
+\prod_{i\in I}\Delta^{\mathrm{card}(i)-1},
+$$
+we form a continuous self-map of the ambient simplex by composing projection, $f$, and embedding:
+$$
+F =
+\texttt{embed\_from\_product}\circ f\circ \texttt{project\_to\_product}.
+$$
+The standard-simplex version of Brouwer's theorem gives a fixed point of $F$. Projecting this fixed point back to the product and using the retraction identity gives a fixed point of $f$.
+
+\begin{theorem}[Brouwer fixed point theorem for products of simplices]
+Every continuous self-map of a finite product of simplices has a fixed point
+\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer_product.lean#L654-L669}{\extlink}.
+\end{theorem}
+
+
+\section{Nash Equilibrium Existence in Finite Games}\label{sec:Nash}
+We now apply the product version of Brouwer's fixed point theorem to finite strategic-form games.  The main point is that, after passing from pure strategies to mixed strategies, the strategy space becomes a finite product of simplices.  We then construct the standard Nash map on this product, prove that it is continuous, and show that every fixed point of this map satisfies the mixed Nash equilibrium condition.
+
+\subsection{Finite Games and Mixed Strategy Profiles}
+A strategic-form game consists of a nonempty type of players, a nonempty type of pure strategies for each player, and a payoff function for each player.  In Lean, the basic structure is kept deliberately general: finiteness is added only in the derived structure \texttt{FinGame}.  This separation allows the same notion of game to be reused before and after passing to mixed strategies.
+
+\begin{lstlisting}[caption={Strategic-form games},label=code:game-structure]
+structure Game where
+  I : Type*
+  HI : Inhabited I
+  SS : I → Type*
+  HSS (i : I) : Inhabited (SS i)
+  g : I → (Π i, SS i) → ℝ
+
+attribute [instance] Game.HI Game.HSS
+\end{lstlisting}
+
+For a game $G=(I,(S^i)_{i\in I},(g^i)_{i\in I})$, a pure Nash equilibrium is a strategy profile $s=(s^i)_{i\in I}$ such that no player can improve their payoff by changing only their own strategy: for every player $i$ and every alternative pure strategy $t^i\in S^i$,
+$$
+  g^i(t^i,s^{-i}) \leq g^i(s^i,s^{-i}).
+$$
+This condition is formalized as the basic equilibrium predicate for games.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L33}{\extlink}
+
+For the fixed-point argument we restrict to finite games.  A finite game has finitely many players and finitely many pure strategies for each player.  Its mixed strategy space is the product of standard simplices
+$$
+  \Delta(G) = \prod_{i\in I} \Delta(S^i),
+$$
+where a point $\sigma\in\Delta(G)$ assigns to every player $i$ a probability distribution $\sigma^i$ over $S^i$.  In Lean this is represented by the dependent function type \texttt{mixedS}.
+
+\begin{lstlisting}[caption={Finite games and mixed strategy profiles},label=code:finite-game-space]
+structure FinGame extends Game where
+  FinI : Fintype I
+  FinSS : ∀ i : I, Fintype (SS i)
+
+attribute [instance] FinGame.FinI FinGame.FinSS
+
+variable {G : FinGame}
+
+instance {G : FinGame} : Fintype G.I := G.FinI
+instance {G : FinGame} {i : G.I} : Fintype (G.SS i) := G.FinSS i
+
+variable (G) in
+abbrev mixedS := (i : G.I) → stdSimplex ℝ (G.SS i)
+\end{lstlisting}
+
+The pure payoff function extends to mixed profiles by taking expected payoff.  For a player $i$, the mixed payoff \texttt{mixed\_g i $\sigma$} is the multilinear extension of the pure payoff function, obtained by summing over pure strategy profiles with weights given by the players' mixed strategies.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L62}{\extlink}  The formalization also proves the algebraic lemmas needed to treat this extension as linear in the relevant coordinates.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L67-L134}{\extlink}
+
+It is convenient to package the mixed extension itself as another game, whose strategy type for player $i$ is the simplex over $S^i$ and whose payoff function is the expected payoff.
+
+\begin{lstlisting}[caption={The mixed extension of a finite game},label=code:finite-mixed-game]
+def FinGame2MixedGame (G : FinGame) : Game := {
+  I := G.I
+  HI := G.HI
+  SS := fun i => S (G.SS i)
+  HSS := inferInstance
+  g := mixed_g
+}
+\end{lstlisting}
+
+A mixed Nash equilibrium is then a Nash equilibrium of this mixed game: a mixed profile $\sigma^*$ such that no player can obtain a larger expected payoff by replacing $\sigma^{*i}$ with another mixed strategy while all other players keep their components fixed.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L165-L167}{\extlink}
+
+\subsection{The Nash Map}
+Following the standard Brouwer proof of Nash's theorem, we define a continuous self-map on the mixed strategy space.  For a mixed profile $\sigma$, player $i$, and pure strategy $s^i\in S^i$, let
+$$
+  A_i(s^i,\sigma) = \bigl(g^i(s^i,\sigma^{-i}) - g^i(\sigma)\bigr)^+,
+  \qquad a^+ = \max(a,0).
+$$
+The Nash map $F:\Delta(G)\to\Delta(G)$ is defined coordinatewise by
+$$
+  F(\sigma)^i(s^i)
+  =
+  \frac{\sigma^i(s^i)+A_i(s^i,\sigma)}
+       {1+\sum_{t^i\in S^i} A_i(t^i,\sigma)}.
+$$
+The denominator is positive, and the coordinates in each player block sum to one; hence $F(\sigma)^i$ is again a mixed strategy.  The Lean definition mirrors this formula by first defining the unnormalized numerator and then normalizing it inside the simplex certificate.
+
+\begin{lstlisting}[caption={The Nash map},label=code:nash-map]
+noncomputable abbrev g_function (i : G.I) (σ : G.mixedS) (a : G.SS i) : ℝ :=
+  σ i a + max 0 (mixed_g i (Function.update σ i (stdSimplex.pure a)) - mixed_g i σ)
+
+noncomputable abbrev nash_map_aux (σ : G.mixedS) (i : G.I) (a : G.SS i) : ℝ :=
+  g_function i σ a / ∑ b : G.SS i, g_function i σ b
+
+noncomputable def nash_map (σ : G.mixedS) : G.mixedS :=
+  fun i ↦ ⟨nash_map_aux σ i, nash_map_cert σ i⟩
+\end{lstlisting}
+
+The proof has two parts.  First, we prove that \texttt{nash\_map} is continuous.  Mathematically this follows from the finiteness of the strategy sets and the fact that the formula is built from finite sums, subtraction, \texttt{max}, and division by a positive denominator.  In Lean, the main work is to make the continuity of the expected payoff function explicit before assembling the continuity proof for the whole map.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L459-L474}{\extlink}
+
+Second, applying the product version of Brouwer's theorem to \texttt{nash\_map} gives a fixed point $\sigma$.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L258-L343}{\extlink}  It remains to show that this fixed point is a mixed Nash equilibrium.  If all positive payoff improvements vanish, then every pure deviation has payoff at most $g^i(\sigma)$, and therefore no mixed deviation can improve the payoff.  If some positive improvement were available at a fixed point, the normalization equation defining the Nash map would force a contradiction with the expected payoff identity.  Thus every fixed point of the Nash map satisfies the mixed Nash equilibrium condition.
+\begin{theorem}[Existence of mixed Nash equilibria]
+Every finite strategic-form game has a mixed Nash equilibrium.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L477-L581}{\extlink}
+\end{theorem}
+
+
+
+\section{Discussion}
+\label{sec:discuss}
+
+\subsection{Implementation Remarks}
+
+The formalization is organized as a chain of reusable components, moving from finite combinatorics to fixed-point theory and then to equilibrium existence. 
+The Scarf part is the most combinatorial. Although the informal proof is guided by an intuitive room--door picture, the Lean development requires explicit definitions of indexed orders, dominant sets, cells, rooms, doors, and the incidence relation between them. Many steps that are implicit on paper become finite-set and cardinality arguments in Lean. In particular, the two-room property requires a careful case analysis of outside and internal doors, together with explicit witnesses for the possible rooms adjacent to a given door.
+
+The Brouwer part illustrates a different kind of formalization difficulty. The proof must connect the finite output of Scarf's theorem with an analytic limiting argument. This requires defining finite grid approximations of the simplex, constructing the coloring induced by a continuous self-map, proving quantitative diameter estimates, extracting convergent subsequences, and transporting coordinate inequalities to the limit. The product-of-simplices version adds further bookkeeping: points in a product of simplices must be related to points in a larger ambient simplex, and the projection back to the product must avoid degenerate zero-block cases. Our embedding--projection construction makes this reduction explicit and proves the required retraction identity inside Lean.
+
+The Nash part then uses the product version of Brouwer's theorem as a reusable fixed-point principle. Once mixed strategy profiles are represented as products of simplices, the remaining tasks are to define expected payoffs, construct the Nash map, prove its continuity, and show that its fixed points satisfy the mixed Nash equilibrium condition. This separation is useful: the game-theoretic proof can be developed mostly in terms of payoff functions and best-response inequalities, while the topological fixed-point argument is isolated in the preceding Brouwer formalization.
+
+\subsection{Future Work}
+
+A natural direction for future work is to use this development as the starting point for a broader Lean library of game theory. The present formalization establishes several foundational components: finite games, mixed strategies as products of simplices, expected payoffs, Nash equilibria, and the fixed-point argument needed for equilibrium existence. These components could serve as a formal backbone for later developments covering zero-sum games, extensive-form games, repeated games, equilibrium refinements, and mechanism-design-style constructions.
+
+Our longer-term goal is to formalize the material of a full textbook on game theory. A textbook-scale project would require not only more theorems, but also a more systematic hierarchy of reusable definitions, so that later chapters can build on earlier formalized notions without repeatedly rebuilding the same infrastructure. The Scarf--Brouwer--Nash pipeline provides a useful test case because it combines finite combinatorics, topology, analysis, and game theory in a single proof development.
+
+Auto-formalization is an important tool for making such a project feasible. Recent work on neural theorem proving and formal-mathematics benchmarks has shown that language models can contribute to proof search, statement translation, and proof repair, while still relying on proof assistants as the final checkers~\cite{polu2020generative,zheng2021minif2f}. In our setting, a possible workflow is to combine human-written mathematical outlines with model-generated Lean drafts: the system would translate textbook definitions and proof sketches into Lean, retrieve relevant Mathlib lemmas and previously formalized game-theoretic results, generate auxiliary lemmas when direct proof attempts fail, and iteratively repair proof scripts using Lean error messages.
+
+In addition to expanding the library itself, future work will involve building benchmarks from the formalization process. Each definition, theorem statement, and proof step in a game theory text can be treated as an evaluation unit for statement translation, lemma retrieval, proof synthesis, and proof repair. In this way, the project can contribute both to the formalization of game theory and to the development of practical auto-formalization methods for large mathematical texts.
+
+
+
+%%
+%% Bibliography
+%%
+
+%% Please use bibtex, 
+
+\section*{Impact Statement}
+
+This paper contributes to formalized mathematics and machine-checkable reasoning in proof assistants. Its results are primarily foundational and theoretical, focusing on the formal verification of a route from Scarf's combinatorial theorem to Brouwer's fixed point theorem and Nash equilibrium existence. We do not anticipate direct negative societal impacts from the results themselves. More broadly, the work may support the development of reliable mathematical libraries and auto-formalization tools; as with other formal reasoning technologies, their downstream use should be evaluated in the context of the systems in which they are deployed.
+\bibliography{Brouwer}
+\bibliographystyle{icml2026}
+
+\end{document}

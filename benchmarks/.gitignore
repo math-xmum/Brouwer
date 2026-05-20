@@ -1,6 +1,6 @@
 scripts/__pycache__/
 *.pyc
 local_models/
-results/*_smoke*.jsonl
-results/*_fix.jsonl
+**/results/*_smoke*.jsonl
+**/results/*_fix.jsonl
 results/brouwerbench_v1__gpt-oss_20b.jsonl
