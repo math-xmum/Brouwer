@@ -1,4 +1,4 @@
-\begin{thebibliography}{10}
+\begin{thebibliography}{9}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -34,12 +34,6 @@ Moura, L.~d. and Ullrich, S.
 \newblock The lean 4 theorem prover and programming language.
 \newblock In \emph{International Conference on Automated Deduction}, pp.\
   625--635. Springer, 2021.
-
-\bibitem[Nash(2024)]{nash2024non}
-Nash, J.~F.
-\newblock Non-cooperative games.
-\newblock In \emph{The Foundations of Price Theory Vol 4}, pp.\  329--340.
-  Routledge, 2024.
 
 \bibitem[Polu \& Sutskever(2020)Polu and Sutskever]{polu2020generative}
 Polu, S. and Sutskever, I.

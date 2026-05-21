@@ -106,19 +106,16 @@
 \printAffiliationsAndNotice{}
 
 \begin{abstract}
-We formalize in Lean 4 a combinatorial route from Scarf's theorem to Brouwer's fixed point theorem and the existence of mixed Nash equilibria in finite games. The development follows Ivanov's indexed-order formulation of Scarf's theorem, derives Brouwer's theorem for the standard simplex through finite grids, compactness, continuity, and vanishing-diameter estimates, and extends the result to finite products of simplices by an explicit embedding--projection construction. We then apply the product theorem to mixed strategy spaces of finite games via a continuous Nash map whose fixed points are Nash equilibria. In addition, we introduce BrouwerBench, an 80-item Lean-grounded benchmark built from the formalization to evaluate whether language models can explain the roles of definitions, lemmas, and proof endpoints in the Scarf--Brouwer--Nash pipeline. The project thus contributes both a machine-checked formalization and a small evaluation suite for proof-structure understanding in Lean developments.
+We formalize in Lean 4 a complete combinatorial route from Scarf’s theorem to Brouwer’s fixed point theorem and to the existence of mixed Nash equilibria in finite games. The development follows Ivanov’s indexed-order formulation of Scarf’s theorem, formalizes the room–door incidence and parity argument, instantiates the theorem on finite grids of the standard simplex, and carries out the compactness and continuity argument needed to obtain a fixed point. We further extend the result to finite products of simplices by an explicit embedding–projection construction and use this product theorem to prove mixed Nash equilibrium existence via the Nash map. As a secondary contribution, we derive BrouwerBench, an 80-item Lean-grounded benchmark for proof-structure understanding, from the same development.
 \end{abstract}
 
 \section{Introduction}
 
 Brouwer's fixed point theorem originated as a fundamental result in topology~\cite{brouwer1911beweis}
 and has since become a central existence tool in analysis, economics, and game theory~\cite{border1985fixed}.
-One of its most important applications is the existence of mixed Nash equilibria in finite games~\cite{nash2024non}: the mixed strategy space of a finite game is a finite product of simplices, and a suitably constructed continuous self-map of this space has a fixed point precisely when the corresponding mixed strategy profile is an equilibrium. Classical proofs of Brouwer's theorem often rely on topological tools such as homology, degree theory, or simplicial approximation. For a formal proof, however, it is useful to expose a route whose finite combinatorial core can be separated from the analytic limiting argument and then reused in the game-theoretic endpoint.
+One of its most important applications is the existence of mixed Nash equilibria in finite games~\cite{nash1950equilibrium}: the mixed strategy space of a finite game is a finite product of simplices, and a suitably constructed continuous self-map of this space has a fixed point precisely when the corresponding mixed strategy profile is an equilibrium. Classical proofs of Brouwer's theorem often rely on topological tools such as homology, degree theory, or simplicial approximation. For a formal proof, however, it is useful to expose a route whose finite combinatorial core can be separated from the analytic limiting argument and then reused in the game-theoretic endpoint.
 
 This paper follows such a route through Scarf's combinatorial theorem~\cite{scarf1982computation}. In Ivanov's abstract formulation~\cite{ivanov2019beyond}, Scarf's theorem concerns a finite set equipped with indexed linear orders and a coloring. The proof is organized around dominant sets, cells, rooms, and doors. The key structural fact is a room--door incidence property: outside doors are incident to exactly one room, while internal doors are incident to exactly two rooms. This incidence structure supports a parity argument, which yields the existence of a colorful room. Applying Scarf's theorem to increasingly fine grids of the standard simplex gives the finite combinatorial input for Brouwer's fixed point theorem. The passage from colorful rooms to a fixed point is then obtained by compactness, continuity, and vanishing-diameter estimates. Finally, Brouwer's theorem for the standard simplex is extended to finite products of simplices by an explicit embedding--projection construction, giving the fixed-point principle needed for the game-theoretic application.
-
-The paper has two main contributions. First, it gives a Lean 4 formalization of the full Scarf--Brouwer--Nash pipeline, including the combinatorial parity argument, the analytic limiting step, the product-of-simplices reduction, and the Nash-map endpoint. Second, it turns the resulting proof development into BrouwerBench, a small benchmark for Lean-grounded proof-structure understanding. Rather than asking models to generate complete Lean proofs, BrouwerBench asks them to explain the roles of local definitions, lemmas, and proof endpoints using the formal context supplied by the development. This provides an intermediate evaluation target for auto-formalization workflows, where models often need to read existing Lean code and reason about proof architecture before producing kernel-checkable terms.
-
 
 \subsection{Lean and Mathlib}
 Throughout the paper, we use Lean 4~\cite{moura2021lean} as the proof assistant in which all definitions, theorem statements, and proofs are checked, and Mathlib~\cite{mathlib2020} as the underlying mathematical library. 
@@ -126,7 +123,9 @@ Throughout the paper, we use Lean 4~\cite{moura2021lean} as the proof assistant 
 Our development builds on Mathlib's infrastructure for finite types and finite sets, real numbers, continuity, compactness, finite-dimensional spaces, and the standard simplex, while introducing the Scarf-specific objects needed for the formalization, including indexed linear orders, dominant sets, cells, rooms, doors, colorful rooms, and the room--door incidence relation. 
 
 Throughout the text, we use the clickable symbol~\faExternalLink*{} to link mathematical statements to their corresponding Lean source code.
+\subsection{Contributions}
 
+This paper makes a formalization-first contribution.  We formalize in Lean 4 a complete Scarf--Brouwer--Nash proof pipeline: starting from Ivanov's indexed-order formulation of Scarf's combinatorial theorem, we formalize dominant sets, cells, rooms, doors, the two-room incidence property, and the parity argument for colorful rooms; we then instantiate this finite theorem on increasingly fine grids of the standard simplex and formalize the compactness, continuity, and vanishing-diameter arguments needed to derive Brouwer's fixed point theorem; finally, we extend the result to finite products of simplices by an explicit embedding--projection construction and apply the product theorem to prove the existence of mixed Nash equilibria in finite games via the Nash map.  As a secondary contribution, we derive BrouwerBench, an 80-item Lean-grounded benchmark from the same development, aimed at evaluating whether language models can explain the roles of definitions, lemmas, and proof endpoints in an existing formal proof architecture.
 \subsection{Paper Outline}
 
 In \S\ref{sec:related}, we situate the work relative to Scarf-style combinatorial fixed-point arguments, formalized mathematics in Lean, and formal-mathematics benchmarks. In \S\ref{sec:Scarf}, we describe the formalization of Scarf's combinatorial theorem: after introducing the indexed-order setting and the basic notions of dominant sets, cells, rooms, and doors, we prove the room--door incidence properties and use them to develop the coloring and parity argument for colorful rooms. \S\ref{sec:Brouwer} is devoted to the derivation of Brouwer's fixed point theorem from Scarf's theorem: in \S\ref{subsec:brouwer-standard}, we treat the standard simplex by finite grid approximation, compactness, and continuity, and in \S\ref{subsec:brouwer-product}, we extend the result to finite products of simplices through an explicit embedding--projection construction. In \S\ref{sec:Nash}, we apply the product version of Brouwer's theorem to the mixed strategy spaces of finite games and derive the existence of mixed Nash equilibria. In \S\ref{sec:benchmark}, we introduce BrouwerBench and report model results. Finally, we conclude with implementation remarks, limitations, and future work in \S\ref{sec:discuss}.
@@ -135,17 +134,17 @@ In \S\ref{sec:related}, we situate the work relative to Scarf-style combinatoria
 \label{sec:related}
 
 \paragraph{Combinatorial fixed-point arguments.}
-Brouwer's fixed point theorem is a classical cornerstone of topology~\cite{brouwer1911beweis} and a standard tool in economics and game theory~\cite{border1985fixed}. The equilibrium application goes back to Nash's proof of existence for finite games~\cite{nash2024non}, where mixed strategy profiles live in products of simplices. Our formalization follows the combinatorial tradition represented by Scarf's theorem~\cite{scarf1982computation}: instead of proving Brouwer by homological or degree-theoretic methods, it derives the fixed-point theorem from finite cells, rooms, doors, and a parity argument. Ivanov's indexed-order formulation~\cite{ivanov2019beyond} is especially well suited to formalization because it isolates the finite combinatorial structure before the analytic limiting step.
+Brouwer's fixed point theorem is a classical cornerstone of topology~\cite{brouwer1911beweis} and a standard tool in economics and game theory~\cite{border1985fixed}.  The equilibrium application goes back to Nash's existence proof for finite games~\cite{nash1950equilibrium}, where mixed strategy profiles live in finite products of simplices.  Our formalization follows the combinatorial tradition represented by Scarf's theorem~\cite{scarf1982computation}: instead of proving Brouwer's theorem by homological or degree-theoretic methods, it derives the fixed-point theorem from finite cells, rooms, doors, and a parity argument.  Ivanov's indexed-order formulation~\cite{ivanov2019beyond} is especially well suited to formalization because it isolates the finite combinatorial structure before the analytic limiting step.
 
 \paragraph{Game theory and fixed points.}
-Fixed-point methods are central in mathematical game theory, and product-of-simplices arguments are the standard bridge from topology to mixed Nash equilibria. Textbook treatments develop finite games, mixed strategies, expected payoffs, and equilibrium existence as part of a broader mathematical theory~\cite{Laraki2019}. Our contribution is narrower but more formal: we build the specific fixed-point pipeline needed for finite games inside Lean, including the product-of-simplices reduction and the Nash map whose fixed points are equilibria.
+Fixed-point methods are central in mathematical game theory, and products of simplices provide the standard strategy spaces for mixed equilibria in finite games.  Textbook treatments develop finite games, mixed strategies, expected payoffs, and equilibrium existence as part of a broader mathematical theory~\cite{Laraki2019}.  Our contribution is narrower but fully formal: we build the specific fixed-point pipeline needed for finite games inside Lean, including the product-of-simplices reduction and the Nash map whose fixed points are mixed Nash equilibria.
 
 \paragraph{Lean formalization.}
-The development is written in Lean 4~\cite{moura2021lean} and builds on Mathlib~\cite{mathlib2020}. Mathlib provides the surrounding infrastructure for finite types, finite sets, real analysis, compactness, continuity, finite-dimensional spaces, and standard simplices. The new material in this work lies in assembling these components into a full proof chain: Scarf's finite incidence argument, the grid-to-limit proof of Brouwer, the explicit product embedding and projection, and the mixed-game endpoint.
+The development is written in Lean 4~\cite{moura2021lean} and builds on Mathlib~\cite{mathlib2020}.  Mathlib provides the surrounding infrastructure for finite types, finite sets, real analysis, compactness, continuity, finite-dimensional spaces, and standard simplices.  The new material in this work lies in assembling these components into a complete proof chain: Scarf's finite incidence argument, the grid-to-limit derivation of Brouwer's theorem, the explicit product embedding and projection, and the mixed-game endpoint.  Unlike an isolated formalization of a single fixed-point statement or a single game-theoretic definition, our development formalizes the full route from a finite combinatorial parity theorem to an analytic fixed-point theorem and finally to an equilibrium existence result.
 
 \paragraph{Formal-mathematics benchmarks and auto-formalization.}
-Recent work on neural theorem proving and formal-mathematics benchmarks has emphasized tasks such as proof search, theorem proving, and olympiad-style formal problem solving~\cite{polu2020generative,zheng2021minif2f}. BrouwerBench is complementary to these end-to-end evaluations. It does not ask a model to produce a complete Lean proof. Instead, it evaluates whether a model can read local Lean-grounded context and explain how definitions and lemmas function inside an existing proof development. This targets a practical intermediate capability for auto-formalization: understanding and navigating a formal library before attempting proof synthesis or proof repair.
-
+Recent work on neural theorem proving and formal-mathematics benchmarks has emphasized end-to-end proof search, theorem proving, and olympiad-style formal problem solving~\cite{polu2020generative, zheng2021minif2f}.  Other systems and datasets study related capabilities such as premise retrieval, interaction with Lean environments, and proof generation in large formal libraries.  BrouwerBench is complementary to these evaluations.  It is not intended as a general theorem-proving benchmark and does not ask models to produce complete Lean proofs.  Instead, it is a small benchmark derived from our formalization, designed to test whether a model can read local Lean-grounded context and explain how definitions, lemmas, and proof endpoints function inside an existing proof development.  This targets an intermediate capability that is useful in auto-formalization workflows: understanding and navigating a formal library before attempting proof synthesis or proof repair.
+%nash
 \section{Formalizing Scarf's Combinatorial Theorem}\label{sec:Scarf}
 This section contains the finite combinatorial part of the development. We follow Ivanov's abstract formulation of Scarf's theorem~\cite{ivanov2019beyond}, where the input is a finite set equipped with a family of indexed linear orders and a coloring. The proof is organized around three layers. First, dominance turns order-theoretic data into finite cells. Second, rooms and doors provide the incidence structure used for counting. Third, colorings and nearly colorful cells turn this incidence structure into a parity argument producing a colorful room.
 
@@ -170,11 +169,6 @@ Let $C$ be a nonempty subset of $I$. A subset $\sigma$ of $T$ is dominant with r
 When $\sigma$ is nonempty, this is equivalent to saying that no element of $T$ is strictly larger than all the minima $\min_i \sigma$ for $i$ in $C$.
 \end{definition}
 
-\begin{lstlisting}[caption={Dominance.},label=code:dominant]
-def isDominant := ∀ y, ∃ i ∈ C, ∀ x ∈ σ,
-                  y ≤[i] x
-\end{lstlisting}
-
 We adopt the convention that $\emptyset \subset T$ is dominant with respect to every non-empty subset $C \subset I$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L167-L175}{\extlink}. The following lemma collects the basic closure and cardinality facts about dominant sets. These facts are used repeatedly when passing between cells, rooms, and doors.
 
 \begin{lemma}[Basic properties of dominant sets]\label{def:Lemma1}
@@ -188,15 +182,6 @@ The preceding lemma allows us to treat dominant pairs $(\sigma,C)$ as cells of a
 A \emph{cell} is a pair $(\sigma, C)$ where $\sigma$ is dominant with respect to $C$. A cell is called a \emph{room} if $|C| = |\sigma|$, and a \emph{door} if $|C| = |\sigma| + 1$.
 \end{definition}
 
-\begin{lstlisting}[caption={Cells, rooms, and doors.},label=code:cells]
-abbrev isCell := isDominant σ C
-
-abbrev isRoom := isCell σ C ∧ C.card = σ.card
-
-abbrev isDoor := isCell σ C ∧ C.card 
-               = σ.card + 1
-\end{lstlisting}
-
 \subsection{Rooms, Doors, and the Two-Room Property}\label{subsec:scarf-doors}
 
 The next step is to make precise how rooms meet along doors. In the formalization, this is captured by the predicate \verb|isDoorof|\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L193-L195}{\extlink}, which records that a door is obtained from a room either by removing an element from the underlying set or by adding a color. This relation is the local incidence relation used later in the parity count.
@@ -205,15 +190,6 @@ The next step is to make precise how rooms meet along doors. In the formalizatio
 A door $(\tau,D)$ is called an \emph{outside door} if $\tau = \emptyset$, and an \emph{internal door} otherwise.
 \end{definition}
 
-\begin{lstlisting}[caption={outside door and internal door.},label=code:outside door and internal door]
-variable (τ D) in
-abbrev isOutsideDoor := IST.isDoor τ D ∧ τ 
-                      = Finset.empty
-
-variable (τ D) in
-abbrev isInternalDoor := IST.isDoor τ D 
-                       ∧ τ.Nonempty
-\end{lstlisting}
 
 The following two lemmas give the degree structure of this incidence relation. Outside doors behave as boundary objects: they have degree one. Internal doors behave as shared faces: they have degree two.
 
@@ -240,18 +216,6 @@ and \emph{nearly colorful} if
 $|C\setminus c(\sigma)|=1.$
 For a nearly colorful cell $(\sigma,C)$, the unique element of $C\setminus c(\sigma)$ is called its \emph{type}.
 \end{definition}
-
-\begin{lstlisting}[caption={Colorful and nearly colorful cells.},label=code:coloring]
-def isColorful : Prop := IST.isCell σ C 
-                ∧ σ.image c = C
-
-def isNearlyColorful : Prop := IST.isCell σ C 
-                     ∧ (C \ σ.image c).card = 1
-
-def isTypedNC (i : I) (σ : Finset T) 
-(C : Finset I) : Prop := IST.isCell σ C 
-               ∧ (C \ (σ.image c)) = {i}
-\end{lstlisting}
 
 The next lemmas connect the uncolored incidence structure with the coloring data. They identify the boundary terms, describe how colorful rooms contribute nearly colorful doors, and show that nearly colorful rooms have the expected number of nearly colorful doors.
 
