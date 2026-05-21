@@ -139,6 +139,11 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--endpoint", default="http://127.0.0.1:11434")
     parser.add_argument("--limit", type=int, default=None, help="Run only the first N tasks.")
+    parser.add_argument(
+        "--ids",
+        default="",
+        help="Comma-separated task ids for a targeted rerun.",
+    )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--num-predict", type=int, default=384)
     parser.add_argument(
@@ -152,6 +157,13 @@ def main() -> None:
     args = parser.parse_args()
 
     rows = read_jsonl(args.dataset)
+    if args.ids:
+        requested_ids = {task_id.strip() for task_id in args.ids.split(",") if task_id.strip()}
+        rows_by_id = {row["id"]: row for row in rows}
+        missing_ids = sorted(requested_ids - set(rows_by_id))
+        if missing_ids:
+            raise SystemExit(f"Unknown task ids: {missing_ids}")
+        rows = [row for row in rows if row["id"] in requested_ids]
     if args.limit is not None:
         rows = rows[: args.limit]
 

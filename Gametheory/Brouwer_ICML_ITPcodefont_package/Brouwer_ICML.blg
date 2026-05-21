@@ -3,44 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: Brouwer_ICML.aux
 The style file: icml2026.bst
 Database file #1: Brouwer.bib
-You've used 9 entries,
+You've used 10 entries,
             2773 wiz_defined-function locations,
-            649 strings with 6168 characters,
-and the built_in function-call counts, 3677 in all, are:
-= -- 347
-> -- 132
+            657 strings with 6335 characters,
+and the built_in function-call counts, 4127 in all, are:
+= -- 388
+> -- 162
 < -- 10
-+ -- 48
-- -- 39
-* -- 237
-:= -- 558
-add.period$ -- 32
-call.type$ -- 9
-change.case$ -- 39
-chr.to.int$ -- 9
-cite$ -- 18
-duplicate$ -- 206
-empty$ -- 349
-format.name$ -- 52
-if$ -- 796
++ -- 58
+- -- 48
+* -- 276
+:= -- 634
+add.period$ -- 38
+call.type$ -- 10
+change.case$ -- 44
+chr.to.int$ -- 10
+cite$ -- 20
+duplicate$ -- 227
+empty$ -- 382
+format.name$ -- 62
+if$ -- 890
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 10
-newline$ -- 55
-num.names$ -- 36
-pop$ -- 88
+missing$ -- 12
+newline$ -- 62
+num.names$ -- 40
+pop$ -- 98
 preamble$ -- 1
-purify$ -- 31
+purify$ -- 36
 quote$ -- 0
-skip$ -- 145
+skip$ -- 159
 stack$ -- 0
-substring$ -- 138
-swap$ -- 29
+substring$ -- 140
+swap$ -- 30
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 94
+type$ -- 100
 warning$ -- 0
-while$ -- 37
+while$ -- 40
 width$ -- 0
-write$ -- 128
+write$ -- 146

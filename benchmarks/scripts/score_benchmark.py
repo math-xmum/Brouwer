@@ -95,6 +95,8 @@ def merge_rows(dataset_rows: list[dict], result_rows: list[dict], score_rows: di
         task_id = dataset_row["id"]
         result_row = dict(result_by_id[task_id])
         score_row = score_rows[task_id]
+        result_row["question"] = dataset_row.get("question", result_row.get("question", ""))
+        result_row["gold_answer"] = dataset_row.get("gold_answer", result_row.get("gold_answer", ""))
         result_row["score"] = score_row["score"]
         result_row["score_note"] = score_row.get("score_note") or score_row.get("note", "")
         result_row["score_max"] = 2

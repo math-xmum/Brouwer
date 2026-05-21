@@ -1,13 +1,13 @@
-# BrouwerBench v1 Score Review
+# BrouwerBench v1 Manual Score Review
 
-Manual scoring used the per-item 0--2 rubrics in `benchmarks/data/brouwerbench_v1.jsonl`. Borderline cases were scored conservatively: answers that named the right theorem but missed the formal bridge received 1, and answers that asserted a wrong formal mechanism received 0 even if the surrounding prose was plausible.
+Manual scoring used the per-item 0--2 rubrics in `benchmarks/data/brouwerbench_v1.jsonl`. Borderline cases were scored conservatively: answers that named the right theorem but missed the formal bridge received 1, and answers that asserted a wrong formal mechanism received 0 even if the surrounding prose was plausible. The expanded 80-item pass kept the same policy for the appended proof-role questions.
 
 ## Sanity Checks
 
-- `gpt-oss:20b`: 81/108 (75.0%); score distribution 0=1, 1=25, 2=28.
-- `qwen3:8b`: 69/108 (63.9%); score distribution 0=2, 1=35, 2=17.
-- `gemma3:12b`: 63/108 (58.3%); score distribution 0=5, 1=35, 2=14.
-- `kimina-prover:7b`: 38/108 (35.2%); score distribution 0=19, 1=32, 2=3.
+- `gpt-oss:20b`: 122/160 (76.2%); score distribution 0=2, 1=34, 2=44. The uniform `np4096` run leaves `product_008` as an empty response after a thinking-budget exhaustion, so it is scored 0.
+- `qwen3:8b`: 101/160 (63.1%); score distribution 0=2, 1=55, 2=23.
+- `gemma3:12b`: 89/160 (55.6%); score distribution 0=10, 1=51, 2=19.
+- `kimina-prover:7b`: 58/160 (36.2%); score distribution 0=30, 1=42, 2=8.
 
 ## Borderline Policy
 

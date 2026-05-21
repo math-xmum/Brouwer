@@ -3,14 +3,14 @@
 \caption{BrouwerBench v1 results. Scores use a 0--2 rubric per item.}
 \label{tab:brouwerbench-v1-models}
 \begin{tabular}{lrrrr}
-\toprule
+\hline
 Model & Score & Accuracy & Runtime (s) & Avg. / task (s) \\
-\midrule
-\texttt{gpt-oss:20b} & 81/108 & 75.0\% & 880.62 & 16.31 \\
-\texttt{qwen3:8b} & 69/108 & 63.9\% & 256.40 & 4.75 \\
-\texttt{gemma3:12b} & 63/108 & 58.3\% & 459.24 & 8.50 \\
-\texttt{kimina-prover:7b} & 38/108 & 35.2\% & 619.10 & 11.46 \\
-\bottomrule
+\hline
+\texttt{gpt-oss:20b} & 122/160 & 76.2\% & 1448.1 & 18.10 \\
+\texttt{qwen3:8b} & 101/160 & 63.1\% & 428.1 & 5.35 \\
+\texttt{gemma3:12b} & 89/160 & 55.6\% & 822.8 & 10.29 \\
+\texttt{kimina-prover:7b} & 58/160 & 36.2\% & 986.4 & 12.33 \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -19,14 +19,14 @@ Model & Score & Accuracy & Runtime (s) & Avg. / task (s) \\
 \caption{BrouwerBench v1 scores by formalization section.}
 \label{tab:brouwerbench-v1-sections}
 \begin{tabular}{lrrrr}
-\toprule
+\hline
 Model & Scarf & Brouwer & Product Brouwer & Nash \\
-\midrule
-\texttt{gpt-oss:20b} & 27/32 & 21/30 & 16/22 & 17/24 \\
-\texttt{qwen3:8b} & 21/32 & 17/30 & 14/22 & 17/24 \\
-\texttt{gemma3:12b} & 19/32 & 16/30 & 15/22 & 13/24 \\
-\texttt{kimina-prover:7b} & 9/32 & 8/30 & 9/22 & 12/24 \\
-\bottomrule
+\hline
+\texttt{gpt-oss:20b} & 40/48 & 25/40 & 29/36 & 28/36 \\
+\texttt{qwen3:8b} & 30/48 & 22/40 & 25/36 & 24/36 \\
+\texttt{gemma3:12b} & 25/48 & 21/40 & 24/36 & 19/36 \\
+\texttt{kimina-prover:7b} & 14/48 & 12/40 & 14/36 & 18/36 \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -35,13 +35,13 @@ Model & Scarf & Brouwer & Product Brouwer & Nash \\
 \caption{BrouwerBench v1 scores by task type.}
 \label{tab:brouwerbench-v1-task-types}
 \begin{tabular}{lrrrrrrr}
-\toprule
+\hline
 Model & Def. & Dep. & Parity & Summary & Constr. & Analysis & Endpoint \\
-\midrule
-\texttt{gpt-oss:20b} & 7/10 & 27/34 & 5/6 & 4/6 & 19/22 & 10/16 & 9/14 \\
-\texttt{qwen3:8b} & 5/10 & 26/34 & 3/6 & 3/6 & 16/22 & 9/16 & 7/14 \\
-\texttt{gemma3:12b} & 3/10 & 24/34 & 3/6 & 2/6 & 14/22 & 9/16 & 8/14 \\
-\texttt{kimina-prover:7b} & 4/10 & 13/34 & 1/6 & 0/6 & 10/22 & 6/16 & 4/14 \\
-\bottomrule
+\hline
+\texttt{gpt-oss:20b} & 9/14 & 45/56 & 7/8 & 6/6 & 26/34 & 15/22 & 14/20 \\
+\texttt{qwen3:8b} & 8/14 & 38/56 & 5/8 & 4/6 & 23/34 & 13/22 & 10/20 \\
+\texttt{gemma3:12b} & 5/14 & 34/56 & 5/8 & 4/6 & 20/34 & 11/22 & 10/20 \\
+\texttt{kimina-prover:7b} & 6/14 & 20/56 & 1/8 & 1/6 & 16/34 & 9/22 & 5/20 \\
+\hline
 \end{tabular}
 \end{table}

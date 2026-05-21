@@ -6,7 +6,7 @@ This directory contains a small benchmark dataset for the Lean formalization pip
 Scarf -> Brouwer -> Product Brouwer -> Nash
 ```
 
-The current dataset is `data/brouwerbench_v1.jsonl`: 54 hand-checkable questions covering the main proof chain rather than only the Scarf core. The original 36-question pilot dataset and its scored runs are archived under `archive/v0/` for reproducibility.
+The current dataset is `data/brouwerbench_v1.jsonl`: 80 hand-checkable questions covering the main proof chain rather than only the Scarf core. The original 36-question pilot dataset and its scored runs are archived under `archive/v0/` for reproducibility.
 
 This is a context-provided proof-structure QA benchmark, not a Lean proof-synthesis benchmark. Each model prompt includes:
 
@@ -29,10 +29,10 @@ Current section coverage:
 
 | Section | Tasks |
 |---|---:|
-| Scarf | 16 |
-| Brouwer | 15 |
-| Brouwer_product | 11 |
-| Nash | 12 |
+| Scarf | 24 |
+| Brouwer | 20 |
+| Brouwer_product | 18 |
+| Nash | 18 |
 
 ## Schema
 
@@ -137,7 +137,7 @@ The current v1 comparison uses:
 
 | Model | Raw result | Manual scores | Note |
 |---|---|---|---|
-| `gpt-oss:20b` | `results/brouwerbench_v1__gpt-oss_20b_np1024.jsonl` | `scores/brouwerbench_v1__gpt-oss_20b_np1024.manual.jsonl` | Use this `np1024` run for reporting. The default-length GPT run produced empty formal responses and is excluded. |
+| `gpt-oss:20b` | `results/brouwerbench_v1__gpt-oss_20b_np4096.jsonl` | `scores/brouwerbench_v1__gpt-oss_20b_np4096.manual.jsonl` | Uniform full run with `num_predict = 4096`; `product_008` exhausted the thinking budget, so its empty response is retained and scored as a failure. |
 | `qwen3:8b` | `results/brouwerbench_v1__qwen3_8b.jsonl` | `scores/brouwerbench_v1__qwen3_8b.manual.jsonl` | Small baseline, default `num_predict = 384`. |
 | `gemma3:12b` | `results/brouwerbench_v1__gemma3_12b.jsonl` | `scores/brouwerbench_v1__gemma3_12b.manual.jsonl` | Newer general open-weight control, default `num_predict = 384`. |
 | `kimina-prover:7b` | `results/brouwerbench_v1__kimina-prover_7b.jsonl` | `scores/brouwerbench_v1__kimina-prover_7b.manual.jsonl` | Prover-style contrast model. |
@@ -146,6 +146,12 @@ The main comparison report is:
 
 ```text
 results/brouwerbench_v1_model_comparison.md
+```
+
+The manual-score sanity review is:
+
+```text
+results/brouwerbench_v1_score_review.md
 ```
 
 ## Paper Artifacts

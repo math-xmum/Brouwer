@@ -1,4 +1,4 @@
-\begin{thebibliography}{9}
+\begin{thebibliography}{10}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -21,6 +21,13 @@ Brouwer, L.~E.
 Ivanov, N.~V.
 \newblock Beyond {S}perner's lemma.
 \newblock \emph{arXiv preprint arXiv:1902.00827}, 2019.
+
+\bibitem[Laraki et~al.(2019)Laraki, Renault, and Sorin]{Laraki2019}
+Laraki, R., Renault, J., and Sorin, S.
+\newblock \emph{Mathematical Foundations of Game Theory}.
+\newblock Universitext. Springer, Cham, 2019.
+\newblock ISBN 978-3-030-26645-5.
+\newblock \doi{10.1007/978-3-030-26646-2}.
 
 \bibitem[Moura \& Ullrich(2021)Moura and Ullrich]{moura2021lean}
 Moura, L.~d. and Ullrich, S.
