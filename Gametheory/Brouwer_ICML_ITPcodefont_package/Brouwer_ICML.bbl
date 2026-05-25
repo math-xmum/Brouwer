@@ -22,18 +22,18 @@ Ivanov, N.~V.
 \newblock Beyond {S}perner's lemma.
 \newblock \emph{arXiv preprint arXiv:1902.00827}, 2019.
 
-\bibitem[Laraki et~al.(2019)Laraki, Renault, and Sorin]{Laraki2019}
-Laraki, R., Renault, J., and Sorin, S.
-\newblock \emph{Mathematical Foundations of Game Theory}.
-\newblock Universitext. Springer, Cham, 2019.
-\newblock ISBN 978-3-030-26645-5.
-\newblock \doi{10.1007/978-3-030-26646-2}.
-
 \bibitem[Moura \& Ullrich(2021)Moura and Ullrich]{moura2021lean}
 Moura, L.~d. and Ullrich, S.
 \newblock The lean 4 theorem prover and programming language.
 \newblock In \emph{International Conference on Automated Deduction}, pp.\
   625--635. Springer, 2021.
+
+\bibitem[Nash(1950)]{nash1950equilibrium}
+Nash, J.~F.
+\newblock Equilibrium points in n-person games.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 36\penalty0
+  (1):\penalty0 48--49, 1950.
+\newblock \doi{10.1073/pnas.36.1.48}.
 
 \bibitem[Polu \& Sutskever(2020)Polu and Sutskever]{polu2020generative}
 Polu, S. and Sutskever, I.

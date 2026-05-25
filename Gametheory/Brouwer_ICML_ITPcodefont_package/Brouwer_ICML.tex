@@ -11,8 +11,10 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{mathtools}
+\usepackage{booktabs}
 \usepackage{tikz-cd}
 \usepackage{float}
+\usepackage{placeins}
 \usepackage{color}
 \usepackage{xcolor}
 \usepackage{listings}
@@ -91,7 +93,7 @@
 \begin{document}
 
 \twocolumn[
-\icmltitle{Formalizing Brouwer's Fixed Point Theorem via Scarf's Lemma in Lean}
+\icmltitle{Formalizing Brouwer's Fixed Point Theorem via Scarf's Combinatorial Theorem in Lean}
 
 \begin{icmlauthorlist}
 \icmlauthor{Anonymous Authors}{anon}
@@ -106,45 +108,64 @@
 \printAffiliationsAndNotice{}
 
 \begin{abstract}
-We formalize in Lean 4 a complete combinatorial route from Scarf’s theorem to Brouwer’s fixed point theorem and to the existence of mixed Nash equilibria in finite games. The development follows Ivanov’s indexed-order formulation of Scarf’s theorem, formalizes the room–door incidence and parity argument, instantiates the theorem on finite grids of the standard simplex, and carries out the compactness and continuity argument needed to obtain a fixed point. We further extend the result to finite products of simplices by an explicit embedding–projection construction and use this product theorem to prove mixed Nash equilibrium existence via the Nash map. As a secondary contribution, we derive BrouwerBench, an 80-item Lean-grounded benchmark for proof-structure understanding, from the same development.
+We formalize in Lean 4 a complete combinatorial route from Scarf’s theorem to Brouwer’s fixed point theorem and to the existence of mixed Nash equilibria in finite games. The development follows Ivanov’s indexed-order formulation of Scarf’s theorem, formalizes the room–door incidence and parity argument, instantiates the theorem on finite grids of the standard simplex, and carries out the compactness and continuity argument needed to obtain a fixed point. We further extend the result to finite products of simplices by an explicit embedding–projection construction and use this product theorem to prove mixed Nash equilibrium existence via the Nash map. As a secondary contribution, we derive BrouwerBench, an 80-item Lean-grounded benchmark for evaluating proof-structure understanding within this formal development.
 \end{abstract}
 
 \section{Introduction}
 
-Brouwer's fixed point theorem originated as a fundamental result in topology~\cite{brouwer1911beweis}
-and has since become a central existence tool in analysis, economics, and game theory~\cite{border1985fixed}.
-One of its most important applications is the existence of mixed Nash equilibria in finite games~\cite{nash1950equilibrium}: the mixed strategy space of a finite game is a finite product of simplices, and a suitably constructed continuous self-map of this space has a fixed point precisely when the corresponding mixed strategy profile is an equilibrium. Classical proofs of Brouwer's theorem often rely on topological tools such as homology, degree theory, or simplicial approximation. For a formal proof, however, it is useful to expose a route whose finite combinatorial core can be separated from the analytic limiting argument and then reused in the game-theoretic endpoint.
+Brouwer's fixed point theorem is a fundamental existence result in topology~\cite{brouwer1911beweis} and a standard tool in analysis, economics, and game theory~\cite{border1985fixed}.  A central application is Nash's theorem for finite games~\cite{nash1950equilibrium}: mixed strategy profiles form a finite product of simplices, and an appropriately defined continuous self-map has a fixed point exactly at a mixed Nash equilibrium.  For formalization, it is useful to avoid treating Brouwer's theorem as a black-box topological principle.  Instead, we expose a route in which the finite combinatorial core, the analytic limiting argument, the product-of-simplices reduction, and the game-theoretic endpoint can be checked separately.
 
-This paper follows such a route through Scarf's combinatorial theorem~\cite{scarf1982computation}. In Ivanov's abstract formulation~\cite{ivanov2019beyond}, Scarf's theorem concerns a finite set equipped with indexed linear orders and a coloring. The proof is organized around dominant sets, cells, rooms, and doors. The key structural fact is a room--door incidence property: outside doors are incident to exactly one room, while internal doors are incident to exactly two rooms. This incidence structure supports a parity argument, which yields the existence of a colorful room. Applying Scarf's theorem to increasingly fine grids of the standard simplex gives the finite combinatorial input for Brouwer's fixed point theorem. The passage from colorful rooms to a fixed point is then obtained by compactness, continuity, and vanishing-diameter estimates. Finally, Brouwer's theorem for the standard simplex is extended to finite products of simplices by an explicit embedding--projection construction, giving the fixed-point principle needed for the game-theoretic application.
+This paper formalizes that route in Lean 4.  We start from Ivanov's indexed-order formulation of Scarf's combinatorial theorem~\cite{ivanov2019beyond,scarf1982computation}, where a finite set is equipped with indexed linear orders and a coloring.  The proof builds a finite incidence structure of dominant sets, cells, rooms, and doors: outside doors are incident to one room, internal doors are incident to two rooms, and the resulting parity argument produces a colorful room.  We then instantiate this theorem on increasingly fine grids of the standard simplex.  The colorful rooms give discrete approximations, while compactness, continuity, and vanishing-diameter estimates yield a Brouwer fixed point.  Finally, we extend the standard-simplex theorem to finite products of simplices by an explicit embedding--projection construction and apply the product theorem to the Nash map for finite games.
 
-\subsection{Lean and Mathlib}
-Throughout the paper, we use Lean 4~\cite{moura2021lean} as the proof assistant in which all definitions, theorem statements, and proofs are checked, and Mathlib~\cite{mathlib2020} as the underlying mathematical library. 
+The development is written in Lean 4~\cite{moura2021lean} and builds on Mathlib~\cite{mathlib2020} for finite types, finite sets, real analysis, compactness, continuity, finite-dimensional spaces, and standard simplices.  To keep the main text focused on the mathematical and formalization architecture, we separate the presentation of the Lean development into two layers.  The body of the paper describes the proof pipeline and highlights the main formalization choices, while Appendix~\ref{app:selected-interfaces} collects representative Lean interfaces for the Scarf combinatorics, the standard-simplex Brouwer proof, the product-simplex construction, and the Nash endpoint.  The checked development consists of 4,768 lines of Lean across five files, covering the Scarf combinatorics, the standard-simplex Brouwer proof, the product-simplex reduction, the Nash endpoint, and simplex infrastructure; Appendix~\ref{app:formalization-overview} gives the file-level breakdown.  The complete source is available at \url{https://github.com/Solo-ary/Game-Theory-Formalization}; throughout the paper, the clickable symbol~\faExternalLink*{} links mathematical statements to their full definitions and proofs in the source files, while the appendix records the key formal interfaces needed to understand the structure of the development.  Because each stage of the proof is represented by named Lean definitions and lemmas, the development also yields local proof-understanding tasks that can be used to evaluate whether models can navigate a nontrivial formal proof architecture.
 
-Our development builds on Mathlib's infrastructure for finite types and finite sets, real numbers, continuity, compactness, finite-dimensional spaces, and the standard simplex, while introducing the Scarf-specific objects needed for the formalization, including indexed linear orders, dominant sets, cells, rooms, doors, colorful rooms, and the room--door incidence relation. 
+Our contributions are threefold.  First, we formalize Ivanov's indexed-order version of Scarf's theorem, including the room--door incidence structure and parity proof.  Second, we derive Brouwer's fixed point theorem on the standard simplex and on finite products of simplices from this finite theorem.  Third, we apply the product theorem to prove mixed Nash equilibrium existence for finite games.  As a secondary by-product, we derive BrouwerBench, an 80-item Lean-grounded pilot benchmark for evaluating proof-structure understanding in this formal development.
 
-Throughout the text, we use the clickable symbol~\faExternalLink*{} to link mathematical statements to their corresponding Lean source code.
-\subsection{Contributions}
-
-This paper makes a formalization-first contribution.  We formalize in Lean 4 a complete Scarf--Brouwer--Nash proof pipeline: starting from Ivanov's indexed-order formulation of Scarf's combinatorial theorem, we formalize dominant sets, cells, rooms, doors, the two-room incidence property, and the parity argument for colorful rooms; we then instantiate this finite theorem on increasingly fine grids of the standard simplex and formalize the compactness, continuity, and vanishing-diameter arguments needed to derive Brouwer's fixed point theorem; finally, we extend the result to finite products of simplices by an explicit embedding--projection construction and apply the product theorem to prove the existence of mixed Nash equilibria in finite games via the Nash map.  As a secondary contribution, we derive BrouwerBench, an 80-item Lean-grounded benchmark from the same development, aimed at evaluating whether language models can explain the roles of definitions, lemmas, and proof endpoints in an existing formal proof architecture.
-\subsection{Paper Outline}
-
-In \S\ref{sec:related}, we situate the work relative to Scarf-style combinatorial fixed-point arguments, formalized mathematics in Lean, and formal-mathematics benchmarks. In \S\ref{sec:Scarf}, we describe the formalization of Scarf's combinatorial theorem: after introducing the indexed-order setting and the basic notions of dominant sets, cells, rooms, and doors, we prove the room--door incidence properties and use them to develop the coloring and parity argument for colorful rooms. \S\ref{sec:Brouwer} is devoted to the derivation of Brouwer's fixed point theorem from Scarf's theorem: in \S\ref{subsec:brouwer-standard}, we treat the standard simplex by finite grid approximation, compactness, and continuity, and in \S\ref{subsec:brouwer-product}, we extend the result to finite products of simplices through an explicit embedding--projection construction. In \S\ref{sec:Nash}, we apply the product version of Brouwer's theorem to the mixed strategy spaces of finite games and derive the existence of mixed Nash equilibria. In \S\ref{sec:benchmark}, we introduce BrouwerBench and report model results. Finally, we conclude with implementation remarks, limitations, and future work in \S\ref{sec:discuss}.
 
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Combinatorial fixed-point arguments.}
-Brouwer's fixed point theorem is a classical cornerstone of topology~\cite{brouwer1911beweis} and a standard tool in economics and game theory~\cite{border1985fixed}.  The equilibrium application goes back to Nash's existence proof for finite games~\cite{nash1950equilibrium}, where mixed strategy profiles live in finite products of simplices.  Our formalization follows the combinatorial tradition represented by Scarf's theorem~\cite{scarf1982computation}: instead of proving Brouwer's theorem by homological or degree-theoretic methods, it derives the fixed-point theorem from finite cells, rooms, doors, and a parity argument.  Ivanov's indexed-order formulation~\cite{ivanov2019beyond} is especially well suited to formalization because it isolates the finite combinatorial structure before the analytic limiting step.
+\paragraph{Formalized mathematics in Lean.}
+Lean and Mathlib have supported increasingly large formalized mathematics
+projects, from undergraduate algebra and topology to research-level
+developments~\cite{moura2021lean,mathlib2020}.  These projects show that
+modern proof assistants can serve not only as proof checkers, but also as
+environments for organizing reusable mathematical infrastructure.  Our work
+follows this tradition, but focuses on a proof route whose structure is both
+combinatorial and analytic: a finite Scarf-style parity argument is first
+formalized, then transported to Brouwer's fixed point theorem by approximation
+and compactness, and finally applied to Nash equilibria.
 
-\paragraph{Game theory and fixed points.}
-Fixed-point methods are central in mathematical game theory, and products of simplices provide the standard strategy spaces for mixed equilibria in finite games.  Textbook treatments develop finite games, mixed strategies, expected payoffs, and equilibrium existence as part of a broader mathematical theory~\cite{Laraki2019}.  Our contribution is narrower but fully formal: we build the specific fixed-point pipeline needed for finite games inside Lean, including the product-of-simplices reduction and the Nash map whose fixed points are mixed Nash equilibria.
+\paragraph{Fixed-point and equilibrium theorems.}
+Brouwer's fixed point theorem is a classical result with many proofs and
+applications, including the standard proof of existence of mixed Nash
+equilibria in finite games~\cite{brouwer1911beweis,border1985fixed,nash1950equilibrium}.
+In proof assistants, one can often use Brouwer's theorem as an existing library
+result and then formalize downstream applications.  By contrast, our
+development makes the proof route itself visible: we formalize Scarf's
+combinatorial theorem~\cite{scarf1982computation,ivanov2019beyond}, derive
+Brouwer's theorem on the standard simplex, extend it to products of simplices,
+and then obtain Nash equilibria.  This exposes the finite room--door incidence
+argument, dominance estimates, and limiting construction as reusable formal
+components rather than treating Brouwer as a black box.
 
-\paragraph{Lean formalization.}
-The development is written in Lean 4~\cite{moura2021lean} and builds on Mathlib~\cite{mathlib2020}.  Mathlib provides the surrounding infrastructure for finite types, finite sets, real analysis, compactness, continuity, finite-dimensional spaces, and standard simplices.  The new material in this work lies in assembling these components into a complete proof chain: Scarf's finite incidence argument, the grid-to-limit derivation of Brouwer's theorem, the explicit product embedding and projection, and the mixed-game endpoint.  Unlike an isolated formalization of a single fixed-point statement or a single game-theoretic definition, our development formalizes the full route from a finite combinatorial parity theorem to an analytic fixed-point theorem and finally to an equilibrium existence result.
+\paragraph{Autoformalization and benchmarks.}
+Recent work on neural theorem proving and autoformalization studies how
+language models translate mathematical text into formal statements and proofs,
+retrieve useful lemmas, and construct or repair proof scripts~\cite{polu2020generative,zheng2021minif2f}.
+Many benchmarks in this area consist of independent problem instances or
+theorem statements.  BrouwerBench is different in that it is extracted from a
+single kernel-checked development: each task is tied to a concrete definition,
+dependency, lemma role, or design decision in the Scarf--Brouwer--Nash pipeline.
+Unlike theorem-proving benchmarks that primarily evaluate whether a model can
+produce a kernel-checked proof, BrouwerBench focuses on proof-structure
+understanding inside a single coherent Lean development.  This makes it closer
+to an evaluation of formalization literacy: the model must recognize the role
+of definitions, intermediate lemmas, and design choices before attempting proof
+synthesis.  The benchmark is therefore intended not as a large standalone
+dataset, but as a structured probe of whether models can understand and
+navigate a coherent formal proof architecture.
 
-\paragraph{Formal-mathematics benchmarks and auto-formalization.}
-Recent work on neural theorem proving and formal-mathematics benchmarks has emphasized end-to-end proof search, theorem proving, and olympiad-style formal problem solving~\cite{polu2020generative, zheng2021minif2f}.  Other systems and datasets study related capabilities such as premise retrieval, interaction with Lean environments, and proof generation in large formal libraries.  BrouwerBench is complementary to these evaluations.  It is not intended as a general theorem-proving benchmark and does not ask models to produce complete Lean proofs.  Instead, it is a small benchmark derived from our formalization, designed to test whether a model can read local Lean-grounded context and explain how definitions, lemmas, and proof endpoints function inside an existing proof development.  This targets an intermediate capability that is useful in auto-formalization workflows: understanding and navigating a formal library before attempting proof synthesis or proof repair.
-%nash
 \section{Formalizing Scarf's Combinatorial Theorem}\label{sec:Scarf}
 This section contains the finite combinatorial part of the development. We follow Ivanov's abstract formulation of Scarf's theorem~\cite{ivanov2019beyond}, where the input is a finite set equipped with a family of indexed linear orders and a coloring. The proof is organized around three layers. First, dominance turns order-theoretic data into finite cells. Second, rooms and doors provide the incidence structure used for counting. Third, colorings and nearly colorful cells turn this incidence structure into a parity argument producing a colorful room.
 
@@ -155,11 +176,6 @@ We work with a finite type $T$ together with a finite index type $I$. For each $
 \begin{definition}[Indexed family of linear orders]\label{def:linearorder}
 A family of linear orders on $T$ indexed by $I$ is a collection $(<_i)_{i \in I}$ such that each $<_i$ is a linear order on $T$.
 \end{definition}
-
-\begin{lstlisting}[caption={Indexed families of linear orders.},label=code:indexed-lorder]
-class IndexedLOrder (I T : Type*) where
-  IST : I → LinearOrder T
-\end{lstlisting}
 
 Given a nonempty subset $\sigma \subseteq T$ and an index $i \in I$, we write $\min_i \sigma$ for the minimum of $\sigma$ with respect to $<_i$. Dominance says that every point of $T$ is controlled by at least one of the orders indexed by $C$. This is the order-theoretic condition that later forces the relevant finite sets to have the correct cardinalities.
 
@@ -172,8 +188,13 @@ When $\sigma$ is nonempty, this is equivalent to saying that no element of $T$ i
 We adopt the convention that $\emptyset \subset T$ is dominant with respect to every non-empty subset $C \subset I$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L167-L175}{\extlink}. The following lemma collects the basic closure and cardinality facts about dominant sets. These facts are used repeatedly when passing between cells, rooms, and doors.
 
 \begin{lemma}[Basic properties of dominant sets]\label{def:Lemma1}
-    If $\sigma$ is nonempty and dominant with respect to $C$, then $\sigma = \{\min_i \sigma \mid i \in C\},$
-and hence $|\sigma| \le |C|$.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L138-L157}{\extlink} and hence $|\sigma| \leq |C|$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L159-L165}{\extlink}. If $\tau \subset \sigma$, then $\tau$ is dominant with respect to $C$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L115-L124}{\extlink}, and if $C \subset D$, then $\sigma$ is dominant with respect to $D$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L126-L134}{\extlink}.
+If $\sigma$ is nonempty and dominant with respect to $C$, then
+$\sigma = \{\min_i \sigma \mid i \in C\}$, and hence
+$|\sigma| \le |C|$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L138-L165}{\extlink}.
+If $\tau \subset \sigma$, then $\tau$ is dominant with respect to
+$C$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L115-L124}{\extlink},
+and if $C \subset D$, then $\sigma$ is dominant with respect to
+$D$\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Scarf.lean#L126-L134}{\extlink}.
 \end{lemma}
 
 The preceding lemma allows us to treat dominant pairs $(\sigma,C)$ as cells of a finite combinatorial object. Rooms are the full-dimensional cells, while doors are their codimension-one boundaries in the counting argument.
@@ -274,22 +295,10 @@ T_l =
 $$
 In Lean, the grid is represented by integer coordinates in \verb|Fin (l+1)| whose sum is $l$; the corresponding point of the simplex is obtained by dividing each coordinate by $l$. The subtype \verb|TT| defines the finite grid, while \verb|TTtostdSimplex| and the coercion instance \verb|TT.CoestdSimplex| realize a grid point as an element of the standard simplex\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L16-L50}{\extlink}.
 
-\begin{lstlisting}[caption={The discrete grid used to approximate the simplex.},label=code:TT]
-abbrev TT := {x : Πₗ (_ : Fin n), Fin (l+1) | ∑ i, (x i : ℕ) = l}
-
-def TTtostdSimplex (x : TT n l) : stdSimplex ℝ (Fin n)
-\end{lstlisting}
-
 \subsubsection{The ordered grid and dominance estimates}
 
 To apply Scarf's theorem, each grid $T_l$ is equipped with an indexed family of linear orders, one order for each coordinate. For a fixed coordinate $i$, the order first compares the $i$-th coordinate and then uses a lexicographic tie-breaker on the whole grid point. This is encoded by \verb|TT.Ilt| and assembled into the indexed linear order \verb|TT.ILO|\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Brouwer.lean#L53-L76}{\extlink}. These orders are chosen so that dominance in the sense of Scarf's theorem imposes strong metric restrictions on the corresponding grid points. This is the point at which the abstract combinatorial theorem becomes a quantitative statement about the simplex.
 
-\begin{lstlisting}[caption={The indexed linear orders on the grid.},label=code:TT-ILO]
-abbrev TT.Ilt (x y : TT n l) :=
-  toLex (x i, x) < toLex (y i, y)
-
-instance TT.ILO : IndexedLOrder (Fin n) (TT n l)
-\end{lstlisting}
 The key quantitative input is that dominance on the grid gives metric control. A dominant set has small diameter, and the coordinates outside its color set are uniformly small. These estimates are the bridge between the finite combinatorial theorem and the limiting argument.
 
 \begin{theorem}[Dominance estimates on the grid]
@@ -317,23 +326,9 @@ x_i \leq f(x)_i.
 $$
 The formalization packages this elementary observation as the nonemptiness lemma \verb|stdSimplex.upidx| and the choice function \verb|stdSimplex.pick| on the simplex. Restricting this choice to the grid $T_l$ gives the coloring required by Scarf's theorem, namely \verb|Fcolor|.
 
-\begin{lstlisting}[caption={The coloring induced by a continuous self-map.},label=code:Fcolor]
-noncomputable def stdSimplex.pick
-  (x y : stdSimplex ℝ (Fin n))
-
-def Fcolor (x : TT n l) : Fin n := stdSimplex.pick x (f x)
-\end{lstlisting}
 
 Applying the formalized Scarf theorem to \verb|Fcolor| produces a colorful room on each grid $T_l$. In Lean, these rooms are chosen as a sequence \verb|room_seq|, and a representative point from each room is chosen as \verb|room_point_seq|. This sequence of rooms is the bridge between the finite combinatorial theorem and the limiting proof of Brouwer's theorem.
 
-\begin{lstlisting}[caption={Choosing colorful rooms and representative points.},label=code:room-seq]
-def room_seq (l' : ℕ) :=
-  let l : PNat := ⟨l'+1,Nat.zero_lt_succ _⟩
-  Classical.choice (TT.ILO.Scarf (@Fcolor n l f)).to_subtype
-
-def room_point_seq (l' : ℕ) := pick_colorful_point
-(Finset.mem_filter.1 (room_seq f l').2).2 |>.1
-\end{lstlisting}
 
 \subsubsection{Compactness and the limiting argument}
 
@@ -437,99 +432,57 @@ Every continuous self-map of a finite product of simplices has a fixed point
 
 
 \section{Nash Equilibrium Existence in Finite Games}\label{sec:Nash}
-We now apply the product version of Brouwer's fixed point theorem to finite strategic-form games.  The main point is that, after passing from pure strategies to mixed strategies, the strategy space becomes a finite product of simplices.  We then construct the standard Nash map on this product, prove that it is continuous, and show that every fixed point of this map satisfies the mixed Nash equilibrium condition.
+The final layer of the development turns the product fixed-point theorem into the classical existence theorem for finite games.  This section is deliberately small: once Brouwer has been established for products of simplices, the remaining work is to define the mixed payoff function, construct the Nash self-map, and prove that fixed points of this map are exactly mixed equilibria.
 
-\subsection{Finite Games and Mixed Strategy Profiles}
-A strategic-form game consists of a nonempty type of players, a nonempty type of pure strategies for each player, and a payoff function for each player.  In Lean, the basic structure is kept deliberately general: finiteness is added only in the derived structure \texttt{FinGame}.  This separation allows the same notion of game to be reused before and after passing to mixed strategies.
-
-\begin{lstlisting}[caption={Strategic-form games},label=code:game-structure]
-structure Game where
-  I : Type*
-  HI : Inhabited I
-  SS : I → Type*
-  HSS (i : I) : Inhabited (SS i)
-  g : I → (Π i, SS i) → ℝ
-
-attribute [instance] Game.HI Game.HSS
-\end{lstlisting}
-
-For a game $G=(I,(S^i)_{i\in I},(g^i)_{i\in I})$, a pure Nash equilibrium is a strategy profile $s=(s^i)_{i\in I}$ such that no player can improve their payoff by changing only their own strategy: for every player $i$ and every alternative pure strategy $t^i\in S^i$,
-$$
-  g^i(t^i,s^{-i}) \leq g^i(s^i,s^{-i}).
-$$
-This condition is formalized as the basic equilibrium predicate for games.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L33}{\extlink}
-
-For the fixed-point argument we restrict to finite games.  A finite game has finitely many players and finitely many pure strategies for each player.  Its mixed strategy space is the product of standard simplices
+\subsection{Finite Games and Mixed Profiles}
+A strategic-form game is represented by a type of players $I$, a dependent family of pure strategy types $S^i$, and payoff functions $g^i : (\Pi_i S^i) \to \mathbb{R}$.  The base structure \texttt{Game} only assumes that the player and strategy types are inhabited; the finite assumptions are isolated in \texttt{FinGame}.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L16-L49}{\extlink}  For a finite game, the mixed strategy space is the dependent product
 $$
   \Delta(G) = \prod_{i\in I} \Delta(S^i),
 $$
-where a point $\sigma\in\Delta(G)$ assigns to every player $i$ a probability distribution $\sigma^i$ over $S^i$.  In Lean this is represented by the dependent function type \texttt{mixedS}.
+implemented as \texttt{mixedS := (i : G.I) -> stdSimplex R (G.SS i)}.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L59-L60}{\extlink}
 
-\begin{lstlisting}[caption={Finite games and mixed strategy profiles},label=code:finite-game-space]
-structure FinGame extends Game where
-  FinI : Fintype I
-  FinSS : ∀ i : I, Fintype (SS i)
+The expected payoff of player $i$ at a mixed profile $\sigma$ is the finite multilinear extension of the pure payoff function:
+$$
+  \bar g^i(\sigma)
+  = \sum_{s \in \Pi_j S^j}
+      \left(\prod_j \sigma^j(s^j)\right) g^i(s).
+$$
+In Lean this is \texttt{mixed\_g}.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L62}{\extlink}  The key algebraic lemma is that \texttt{mixed\_g} is affine in one player's mixed strategy when the other components are fixed:
+$$
+  \bar g^i(\sigma[i\leftarrow y])
+  = \sum_{a\in S^i} y(a)\,\bar g^i(\sigma[i\leftarrow \delta_a]).
+$$
+This lemma is the bridge from pure deviations to arbitrary mixed deviations in the final equilibrium proof.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L67-L134}{\extlink}
 
-attribute [instance] FinGame.FinI FinGame.FinSS
-
-variable {G : FinGame}
-
-instance {G : FinGame} : Fintype G.I := G.FinI
-instance {G : FinGame} {i : G.I} : Fintype (G.SS i) := G.FinSS i
-
-variable (G) in
-abbrev mixedS := (i : G.I) → stdSimplex ℝ (G.SS i)
-\end{lstlisting}
-
-The pure payoff function extends to mixed profiles by taking expected payoff.  For a player $i$, the mixed payoff \texttt{mixed\_g i $\sigma$} is the multilinear extension of the pure payoff function, obtained by summing over pure strategy profiles with weights given by the players' mixed strategies.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L62}{\extlink}  The formalization also proves the algebraic lemmas needed to treat this extension as linear in the relevant coordinates.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L67-L134}{\extlink}
-
-It is convenient to package the mixed extension itself as another game, whose strategy type for player $i$ is the simplex over $S^i$ and whose payoff function is the expected payoff.
-
-\begin{lstlisting}[caption={The mixed extension of a finite game},label=code:finite-mixed-game]
-def FinGame2MixedGame (G : FinGame) : Game := {
-  I := G.I
-  HI := G.HI
-  SS := fun i => S (G.SS i)
-  HSS := inferInstance
-  g := mixed_g
-}
-\end{lstlisting}
-
-A mixed Nash equilibrium is then a Nash equilibrium of this mixed game: a mixed profile $\sigma^*$ such that no player can obtain a larger expected payoff by replacing $\sigma^{*i}$ with another mixed strategy while all other players keep their components fixed.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L165-L167}{\extlink}
+A mixed Nash equilibrium is a mixed profile $\sigma^*$ such that no player can improve expected payoff by replacing only their own component:
+$$
+  \forall i,\ \forall y\in\Delta(S^i),\qquad
+  \bar g^i(\sigma^*) \geq \bar g^i(\sigma^*[i\leftarrow y]).
+$$
+This is the predicate \texttt{mixedNashEquilibrium}.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L165-L167}{\extlink}
 
 \subsection{The Nash Map}
-Following the standard Brouwer proof of Nash's theorem, we define a continuous self-map on the mixed strategy space.  For a mixed profile $\sigma$, player $i$, and pure strategy $s^i\in S^i$, let
+For a mixed profile $\sigma$, define the positive gain of switching player $i$ to the pure strategy $a\in S^i$ by
 $$
-  A_i(s^i,\sigma) = \bigl(g^i(s^i,\sigma^{-i}) - g^i(\sigma)\bigr)^+,
-  \qquad a^+ = \max(a,0).
+  A_i(a,\sigma)
+  = \max\bigl(0,\bar g^i(\sigma[i\leftarrow\delta_a]) - \bar g^i(\sigma)\bigr).
 $$
-The Nash map $F:\Delta(G)\to\Delta(G)$ is defined coordinatewise by
+The Nash map increases the weight of profitable pure deviations and then renormalizes within each player block:
 $$
-  F(\sigma)^i(s^i)
+  F(\sigma)^i(a)
   =
-  \frac{\sigma^i(s^i)+A_i(s^i,\sigma)}
-       {1+\sum_{t^i\in S^i} A_i(t^i,\sigma)}.
+  \frac{\sigma^i(a)+A_i(a,\sigma)}
+       {\sum_{b\in S^i}\bigl(\sigma^i(b)+A_i(b,\sigma)\bigr)}.
 $$
-The denominator is positive, and the coordinates in each player block sum to one; hence $F(\sigma)^i$ is again a mixed strategy.  The Lean definition mirrors this formula by first defining the unnormalized numerator and then normalizing it inside the simplex certificate.
+The denominator is at least one, because the original mixed strategy has total mass one and all gain terms are nonnegative.  Hence every block of $F(\sigma)$ is again a point of the corresponding simplex.
 
-\begin{lstlisting}[caption={The Nash map},label=code:nash-map]
-noncomputable abbrev g_function (i : G.I) (σ : G.mixedS) (a : G.SS i) : ℝ :=
-  σ i a + max 0 (mixed_g i (Function.update σ i (stdSimplex.pure a)) - mixed_g i σ)
+The continuity proof follows the syntax of the definition.  Each coordinate is built from coordinate projections, finite sums and products, subtraction, \texttt{max}, and division by a nonzero denominator; Lean packages this in \texttt{nash\_map\_cont}.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L401-L474}{\extlink}  Applying the product version of Brouwer's theorem to this continuous self-map gives a fixed point $F(\sigma)=\sigma$.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L258-L343}{\extlink}
 
-noncomputable abbrev nash_map_aux (σ : G.mixedS) (i : G.I) (a : G.SS i) : ℝ :=
-  g_function i σ a / ∑ b : G.SS i, g_function i σ b
+It remains to relate fixed points of $F$ to equilibrium.  If every pure positive gain $A_i(a,\sigma)$ is zero, then every pure deviation is nonprofitable.  By the linearity lemma for \texttt{mixed\_g}, every mixed deviation is a convex combination of pure deviations, so no mixed deviation is profitable.  Conversely, if some pure gain were positive at a fixed point, the normalization equation would force the denominator in player $i$'s block to be strictly larger than one.  The weighted-sum identity for the current mixed strategy then produces a strategy with positive mass and nonpositive gain, contradicting the fixed-point equation for that coordinate.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L477-L581}{\extlink}
 
-noncomputable def nash_map (σ : G.mixedS) : G.mixedS :=
-  fun i ↦ ⟨nash_map_aux σ i, nash_map_cert σ i⟩
-\end{lstlisting}
-
-The proof has two parts.  First, we prove that \texttt{nash\_map} is continuous.  Mathematically this follows from the finiteness of the strategy sets and the fact that the formula is built from finite sums, subtraction, \texttt{max}, and division by a positive denominator.  In Lean, the main work is to make the continuity of the expected payoff function explicit before assembling the continuity proof for the whole map.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L459-L474}{\extlink}
-
-Second, applying the product version of Brouwer's theorem to \texttt{nash\_map} gives a fixed point $\sigma$.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L258-L343}{\extlink}  It remains to show that this fixed point is a mixed Nash equilibrium.  If all positive payoff improvements vanish, then every pure deviation has payoff at most $g^i(\sigma)$, and therefore no mixed deviation can improve the payoff.  If some positive improvement were available at a fixed point, the normalization equation defining the Nash map would force a contradiction with the expected payoff identity.  Thus every fixed point of the Nash map satisfies the mixed Nash equilibrium condition.
 \begin{theorem}[Existence of mixed Nash equilibria]
 Every finite strategic-form game has a mixed Nash equilibrium.\href{https://github.com/Solo-ary/Game-Theory-Formalization/blob/7b49d5267d4f26b17bdf071250880b63e96999b6/Brouwer/Gametheory/Nash.lean#L477-L581}{\extlink}
 \end{theorem}
-
 
 
 \section{BrouwerBench: A Lean-Grounded Benchmark}
@@ -545,41 +498,49 @@ During evaluation, each model receives the section-level Lean context together w
 
 \subsection{Models and Results}
 
-We evaluated four locally deployed models: \texttt{qwen3:8b} as a small baseline, \texttt{gemma3:12b}, \texttt{kimina-prover:7b}, and \texttt{gpt-oss:20b}. The results in Table~\ref{tab:brouwerbench-v1-models} use the 80-item BrouwerBench v1 dataset, with a maximum score of 160 points.
+We evaluated four locally deployed models: \texttt{qwen3:8b} as a small baseline, \texttt{gemma3:12b}, \texttt{kimina-prover:7b}, and \texttt{gpt-oss:20b}. The results in Table~\ref{tab:brouwerbench-v1-models} use the 80-item BrouwerBench v1 dataset, with a maximum score of 160 points. Time and Avg. report total and per-item runtime in seconds.
 
-\begin{table*}[t]
-\centering
-\caption{BrouwerBench v1 results. Scores use a 0--2 rubric per item.}
-\label{tab:brouwerbench-v1-models}
-\begin{tabular}{lrrrr}
-\hline
-Model & Score & Accuracy & Runtime (s) & Avg. / task (s) \\
-\hline
-\texttt{gpt-oss:20b} & 122/160 & 76.2\% & 1448.1 & 18.10 \\
-\texttt{qwen3:8b} & 101/160 & 63.1\% & 428.1 & 5.35 \\
-\texttt{gemma3:12b} & 89/160 & 55.6\% & 822.8 & 10.29 \\
-\texttt{kimina-prover:7b} & 58/160 & 36.2\% & 986.4 & 12.33 \\
-\hline
-\end{tabular}
-\end{table*}
+\begin{table}[H]
+  \caption{BrouwerBench v1 results. Scores use a 0--2 rubric per item.}
+  \label{tab:brouwerbench-v1-models}
+  \begin{center}
+    \begin{scriptsize}
+      \begin{tabular}{lrrrr}
+        \toprule
+        Model & Score & Acc. & Time (s) & Avg. (s) \\
+        \midrule
+        \texttt{gpt-oss:20b} & 122/160 & 76.2\% & 1448.1 & 18.10 \\
+        \texttt{qwen3:8b} & 101/160 & 63.1\% & 428.1 & 5.35 \\
+        \texttt{gemma3:12b} & 89/160 & 55.6\% & 822.8 & 10.29 \\
+        \texttt{kimina-prover:7b} & 58/160 & 36.2\% & 986.4 & 12.33 \\
+        \bottomrule
+      \end{tabular}
+    \end{scriptsize}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
-\begin{table*}[t]
-\centering
-\caption{BrouwerBench v1 scores by formalization section.}
-\label{tab:brouwerbench-v1-sections}
-\begin{tabular}{lrrrr}
-\hline
-Model & Scarf & Brouwer & Product Brouwer & Nash \\
-\hline
-\texttt{gpt-oss:20b} & 40/48 & 25/40 & 29/36 & 28/36 \\
-\texttt{qwen3:8b} & 30/48 & 22/40 & 25/36 & 24/36 \\
-\texttt{gemma3:12b} & 25/48 & 21/40 & 24/36 & 19/36 \\
-\texttt{kimina-prover:7b} & 14/48 & 12/40 & 14/36 & 18/36 \\
-\hline
-\end{tabular}
-\end{table*}
+\begin{table}[H]
+  \caption{BrouwerBench v1 scores by formalization section.}
+  \label{tab:brouwerbench-v1-sections}
+  \begin{center}
+    \begin{scriptsize}
+      \begin{tabular}{lrrrr}
+        \toprule
+        Model & Scarf & Brouwer & Prod. & Nash \\
+        \midrule
+        \texttt{gpt-oss:20b} & 40/48 & 25/40 & 29/36 & 28/36 \\
+        \texttt{qwen3:8b} & 30/48 & 22/40 & 25/36 & 24/36 \\
+        \texttt{gemma3:12b} & 25/48 & 21/40 & 24/36 & 19/36 \\
+        \texttt{kimina-prover:7b} & 14/48 & 12/40 & 14/36 & 18/36 \\
+        \bottomrule
+      \end{tabular}
+    \end{scriptsize}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
-The strongest model, \texttt{gpt-oss:20b}, scores 76.2\% overall. It performs especially well on theorem-summary and proof-dependency questions, where the task is to connect named Lean lemmas to the surrounding proof strategy. The smaller \texttt{qwen3:8b} baseline remains competitive at 63.1\%, especially on product and Nash questions, suggesting that this benchmark is not simply measuring model size. \texttt{gemma3:12b} is a useful newer general control but trails the baseline on definition-heavy Scarf and Nash dependencies. \texttt{kimina-prover:7b}, despite being prover-oriented, performs substantially worse on this benchmark, which is consistent with the benchmark's emphasis on explanatory proof-structure understanding rather than low-level proof search.
+The strongest model, \texttt{gpt-oss:20b}, scores 76.2\% overall. It performs especially well on theorem-summary and proof-dependency questions, where the task is to connect named Lean lemmas to the surrounding proof strategy. The smaller \texttt{qwen3:8b} baseline remains competitive at 63.1\%, especially on product and Nash questions. This suggests, at least in this pilot setting, that BrouwerBench is not simply a proxy for model size. \texttt{gemma3:12b} trails the baseline on definition-heavy Scarf and Nash dependencies. \texttt{kimina-prover:7b}, despite being prover-oriented, performs substantially worse on this benchmark, which is consistent with the benchmark's emphasis on explanatory proof-structure understanding rather than low-level proof search.
 
 \subsection{Interpretation}
 
@@ -604,19 +565,16 @@ The benchmark follows the same modular structure. Because the proof is organized
 
 \subsection{Limitations}
 
-The current benchmark is intentionally focused. BrouwerBench v1 contains 80 items from one formalization pipeline, so the results should not be read as a general ranking of theorem-proving systems or Lean models. The questions are also explanatory: they test whether a model can connect local Lean context to proof structure, not whether it can synthesize a complete proof accepted by Lean. This is why a prover-oriented model may score poorly here even if it is useful in a proof-search setting.
+The current benchmark is intentionally focused. BrouwerBench v1 contains 80 items from one formalization pipeline, so the results should not be read as a general ranking of theorem-proving systems or Lean models. The questions are also explanatory: they test whether a model can connect local Lean context to proof structure, not whether it can synthesize a complete proof accepted by Lean. This is why a prover-oriented model may score poorly here even if it is useful in a proof-search setting. The model comparison is also limited: we report a small set of locally deployed models and do not claim statistical significance or broad model ranking from these pilot results.
 
 The scoring protocol is another limitation. Each item uses a 0--2 rubric and was manually graded. This makes the scores interpretable, but it also means that the benchmark depends on human judgment about partial credit. A larger evaluation should include multiple graders, adjudication for borderline cases, and a clearer separation between exact Lean-name recall and higher-level mathematical explanation. The present results are best viewed as a pilot study showing that the formalization can generate meaningful evaluation units.
 
 \subsection{Future Work}
 
-A natural direction for future work is to use this development as the starting point for a broader Lean library of game theory. The present formalization establishes several foundational components: finite games, mixed strategies as products of simplices, expected payoffs, Nash equilibria, and the fixed-point argument needed for equilibrium existence. These components could serve as a formal backbone for later developments covering zero-sum games, extensive-form games, repeated games, equilibrium refinements, and mechanism-design-style constructions.
+There are several natural directions for extending this development. First, the Nash endpoint can be expanded into a broader Lean library for finite game theory. The present formalization establishes the existence of mixed Nash equilibria by reducing finite games to Brouwer's fixed point theorem on a product of simplices. A next step is to build on the same representation of mixed profiles and expected payoffs to formalize more structured classes of games, such as zero-sum games, extensive-form games, repeated games, and equilibrium refinements. This would turn the current endpoint into reusable infrastructure for verified game theory rather than a single isolated existence theorem.
 
-Our longer-term goal is to formalize the material of a full textbook on game theory. A textbook-scale project would require not only more theorems, but also a more systematic hierarchy of reusable definitions, so that later chapters can build on earlier formalized notions without repeatedly rebuilding the same infrastructure. The Scarf--Brouwer--Nash pipeline provides a useful test case because it combines finite combinatorics, topology, analysis, and game theory in a single proof development.
+Second, BrouwerBench can be extended from proof-understanding questions to kernel-checked autoformalization tasks. The current version evaluates whether models can identify definitions, dependencies, and proof roles inside an existing Lean development. A richer benchmark could include statement translation, lemma retrieval, proof-script generation, and proof repair from Lean error messages. More broadly, the Scarf--Brouwer--Nash pipeline suggests a reusable formalization pattern: isolate a finite combinatorial core, derive quantitative approximation estimates, and then transfer the result to analysis using compactness and continuity. Applying this pattern to related Sperner- or Scarf-style arguments may help build larger verified libraries at the interface of topology, optimization, and game theory.
 
-Auto-formalization is an important tool for making such a project feasible. Recent work on neural theorem proving and formal-mathematics benchmarks has shown that language models can contribute to proof search, statement translation, and proof repair, while still relying on proof assistants as the final checkers~\cite{polu2020generative,zheng2021minif2f}. In our setting, a possible workflow is to combine human-written mathematical outlines with model-generated Lean drafts: the system would translate textbook definitions and proof sketches into Lean, retrieve relevant Mathlib lemmas and previously formalized game-theoretic results, generate auxiliary lemmas when direct proof attempts fail, and iteratively repair proof scripts using Lean error messages.
-
-BrouwerBench can be expanded alongside this formalization work. The next version should add more theorem families, separate proof-understanding questions from statement-translation and proof-synthesis tasks, and include end-to-end Lean tasks whose outputs are checked by the kernel. A useful long-term benchmark would therefore have several layers: natural-language-to-Lean statement translation, lemma retrieval, proof-plan explanation, proof-script generation, and proof repair from Lean error messages. The current benchmark covers only the proof-understanding layer, but it gives a concrete starting point for evaluating models on the kind of local reasoning that precedes successful formal proof construction.
 
 
 
@@ -628,61 +586,186 @@ BrouwerBench can be expanded alongside this formalization work. The next version
 
 \section*{Impact Statement}
 
-This paper contributes to formalized mathematics and machine-checkable reasoning in proof assistants. Its results are primarily foundational and theoretical, focusing on the formal verification of a route from Scarf's combinatorial theorem to Brouwer's fixed point theorem and Nash equilibrium existence. We do not anticipate direct negative societal impacts from the results themselves. More broadly, the work may support the development of reliable mathematical libraries and auto-formalization tools; as with other formal reasoning technologies, their downstream use should be evaluated in the context of the systems in which they are deployed.
-\bibliography{Brouwer}
-\bibliographystyle{icml2026}
+This paper presents work whose goal is to advance the formalization of mathematics and the evaluation of AI systems for mathematical reasoning. The Lean development may contribute to more reliable and reproducible machine-checked proofs, while the accompanying benchmark may help evaluate autoformalization systems on structured proof developments involving combinatorics, topology, and game theory. However, the benchmark is narrow in scope and should not be interpreted as a comprehensive measure of mathematical reasoning ability. We do not anticipate direct negative societal impacts beyond the general risks of over-reliance on automated reasoning tools without sufficient proof-assistant or human verification.
 
+\bibliographystyle{icml2026}
+\bibliography{Brouwer}
+
+\onecolumn
 \appendix
 
 \section{Formalization Overview}
 \label{app:formalization-overview}
 
-The Lean development is organized as a proof pipeline. The Scarf file establishes the finite combinatorial theorem; the Brouwer file instantiates it on finite simplex grids and passes to a limit; the product file transports the standard-simplex fixed-point theorem to finite products of simplices; and the Nash file applies that product theorem to mixed strategy spaces.
+The Lean development is organized as a proof pipeline. The Scarf file establishes the finite combinatorial theorem; the Brouwer file instantiates it on finite simplex grids and passes to a limit; the product file transports the standard-simplex fixed-point theorem to finite products of simplices; and the Nash file applies that product theorem to mixed strategy spaces. The complete source is available at \url{https://github.com/Solo-ary/Game-Theory-Formalization}. Table~\ref{tab:appendix-file-map} gives the file-level organization and line counts used in this paper.
 
-\begin{table*}[t]
-\centering
-\caption{File-level structure of the formalization.}
+\begin{table}[H]
+\caption{File-level structure of the Lean formalization. Line counts are obtained by \texttt{wc -l} on the submitted Lean files.}
 \label{tab:appendix-file-map}
-\footnotesize
-\begin{tabular}{p{0.14\textwidth}p{0.21\textwidth}p{0.16\textwidth}p{0.25\textwidth}}
-\hline
-File & Main objects & Main endpoint & Role in pipeline \\
-\hline
-\texttt{Scarf.lean} &
-\texttt{IndexedLOrder}, cells, rooms, doors &
-\texttt{Scarf} &
-Finite parity theorem for colorful rooms \\
-\texttt{Brouwer.lean} &
-\texttt{TT}, \texttt{Fcolor}, room sequences &
-\texttt{Brouwer} &
-Grid approximation and limiting fixed point \\
-\texttt{Brouwer\_}\newline\texttt{product.lean} &
-block sums, projection, embedding &
-\texttt{Brouwer\_Product} &
-Retraction from a big simplex to a product \\
-\texttt{Nash.lean} &
-mixed games, Nash map, expected payoff &
-\texttt{ExistsNashEq} &
-Fixed point implies mixed Nash equilibrium \\
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lrll}
+\toprule
+File & Lines & Main endpoint & Role in pipeline \\
+\midrule
+\texttt{Scarf.lean} & 2600 & \texttt{Scarf} & finite parity theorem for colorful rooms \\
+\texttt{Brouwer.lean} & 794 & \texttt{Brouwer} & grid approximation and limiting fixed point \\
+\texttt{Brouwer\_product.lean} & 671 & \texttt{Brouwer\_Product} & retraction from a big simplex to a product \\
+\texttt{Nash.lean} & 584 & \texttt{ExistsNashEq} & fixed point implies mixed Nash equilibrium \\
+\texttt{Simplex.lean} & 119 & supporting simplex lemmas & reusable simplex infrastructure \\
+\midrule
+Total & 4768 & -- & complete Scarf--Brouwer--Nash pipeline \\
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 The formalization also separates reusable infrastructure from proof endpoints. For example, the Scarf layer introduces an indexed family of linear orders before specifying any simplex grid, while the product layer proves its embedding and projection lemmas before the Nash layer uses products of simplices as mixed strategy spaces. This separation is mirrored by BrouwerBench: many benchmark items ask why an intermediate object is needed before the endpoint theorem can be applied.
+
+
+\section{Selected Lean Interfaces}
+\label{app:selected-interfaces}
+
+This appendix records selected interfaces rather than full proof scripts. The complete proof terms and auxiliary lemmas are available in the repository; the snippets below show the formal boundaries between the main layers of the development.
+
+\subsection{Scarf's Combinatorial Core}
+
+\begin{lstlisting}[caption={Representative interfaces for indexed orders, dominance, and Scarf's theorem.},label={lst:app-scarf-interface}]
+class IndexedLOrder (I T : Type*) where
+  IST : I → LinearOrder T
+
+def isDominant (σ : Finset T) (C : Finset I) : Prop :=
+  ∀ y, ∃ i ∈ C, ∀ x ∈ σ, y ≤[i] x
+
+abbrev isRoom (σ : Finset T) (C : Finset I) : Prop :=
+  isCell σ C ∧ C.card = σ.card
+
+abbrev isDoor (σ : Finset T) (C : Finset I) : Prop :=
+  isCell σ C ∧ C.card = σ.card + 1
+
+lemma NC_or_C_of_door
+    (h1 : isTypedNC c i τ D) (h2 : isDoorof τ D σ C) :
+    isTypedNC c i σ C ∨ isColorful c σ C := by
+  ...
+
+lemma typed_colorful_room_odd (i : I) :
+    Odd (Finset.filter
+      (fun x => isColorful c x.2.1 x.2.2)
+      (dbcountingset c i)).card := by
+  ...
+
+theorem Scarf : (IST.colorful c).Nonempty := by
+  ...
+\end{lstlisting}
+
+\subsection{Brouwer from Scarf}
+
+\begin{lstlisting}[caption={Representative interfaces for the grid construction and Brouwer endpoint.},label={lst:app-brouwer-interface}]
+abbrev TT :=
+  {x : Πₗ (_ : Fin n), Fin (l+1) |
+    ∑ i, (x i : ℕ) = l}
+
+def TTtostdSimplex (x : TT n l) : stdSimplex ℝ (Fin n) :=
+  ...
+
+def Fcolor (x : TT n l) : Fin n :=
+  stdSimplex.pick x (f x)
+
+theorem size_bound_in
+    (σ : Finset (TT n l)) (C : Finset (Fin n))
+    (h : TT.ILO.isDominant σ C) :
+    ∀ x ∈ σ, ∀ y ∈ σ, ∀ i,
+      |(x : stdSimplex ℝ (Fin n)) i -
+       (y : stdSimplex ℝ (Fin n)) i| < 2 * (n + 1) / l := by
+  ...
+
+theorem size_bound_out
+    (σ : Finset (TT n l)) (C : Finset (Fin n))
+    (h : TT.ILO.isDominant σ C) :
+    ∀ x ∈ σ, ∀ i ∉ C,
+      (x : stdSimplex ℝ (Fin n)) i < (n + 1) / l := by
+  ...
+
+theorem Brouwer
+    (f : stdSimplex ℝ (Fin n) → stdSimplex ℝ (Fin n))
+    (hf : Continuous f) : ∃ x, f x = x := by
+  ...
+\end{lstlisting}
+
+\subsection{Product Simplices}
+
+\begin{lstlisting}[caption={Representative interfaces for the embedding--projection reduction.},label={lst:app-product-interface}]
+abbrev BigSimplex := stdSimplex ℝ (Fin (total_card card))
+
+abbrev ProductSimplices :=
+  (i : I) → stdSimplex ℝ (Fin (card i))
+
+lemma project_embed_id (y : ProductSimplices card) :
+    project_to_product card (embed_from_product card y) = y := by
+  ...
+
+lemma project_continuous :
+    Continuous (project_to_product card) := by
+  ...
+
+lemma embed_continuous :
+    Continuous (embed_from_product card) := by
+  ...
+
+theorem Brouwer_Product
+    (f : ProductSimplices card → ProductSimplices card)
+    (hf : Continuous f) :
+    ∃ x : ProductSimplices card, f x = x := by
+  ...
+\end{lstlisting}
+
+\clearpage
+\subsection{Nash Equilibria}
+
+\begin{lstlisting}[caption={Representative interfaces for the Nash endpoint.},label={lst:app-nash-interface}]
+structure Game where
+  I : Type
+  SS : I → Type
+  g : I → ((i : I) → SS i) → ℝ
+
+structure FinGame extends Game where
+  FinI : Fintype I
+  FinSS : ∀ i, Fintype (SS i)
+
+abbrev mixedS (G : FinGame) :=
+  (i : G.I) → stdSimplex ℝ (G.SS i)
+
+def mixed_g (i : G.I) (m : Π i, S (G.SS i)) : ℝ :=
+  ∑ s : (Π j, G.SS j), (∏ j, m j (s j)) * (G.g i s)
+
+def mixedNashEquilibrium (x : G.mixedS) : Prop :=
+  ∀ i y, G.mixed_g i x ≥
+    G.mixed_g i (Function.update x i y)
+
+noncomputable def nash_map (σ : G.mixedS) : G.mixedS :=
+  fun i ↦ ⟨nash_map_aux σ i, nash_map_cert σ i⟩
+
+theorem ExistsNashEq :
+    ∃ σ : G.mixedS, mixedNashEquilibrium σ := by
+  ...
+\end{lstlisting}
 
 \section{Scarf Proof Components}
 \label{app:scarf-details}
 
 Table~\ref{tab:appendix-scarf-components} summarizes the combinatorial objects that carry the Scarf proof. The first layer is order theoretic: \texttt{isDominant} says that a finite set of points is controlled by a finite set of order indices. The second layer refines dominant pairs into cells, rooms, and doors by cardinality. The third layer equips these pairs with a coloring and counts typed nearly colorful incidences.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{Scarf proof components and their roles.}
 \label{tab:appendix-scarf-components}
-\begin{tabular}{lll}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lll}
+\toprule
 Lean object & Proof role & Used to establish \\
-\hline
+\midrule
 \texttt{IndexedLOrder} & family of orders indexed by colors & dominance relation \\
 \texttt{isDominant} & order-theoretic cell condition & finite cell structure \\
 \texttt{isCell}, \texttt{isRoom}, \texttt{isDoor} & cardinality refinements & room--door incidence graph \\
@@ -693,9 +776,12 @@ Lean object & Proof role & Used to establish \\
 \texttt{dbcountingset} & typed door--room incidences & double counting \\
 \texttt{typed\_colorful\_room\_odd} & odd colorful-room count & nonempty colorful filter \\
 \texttt{Scarf} & endpoint theorem & colorful room exists \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 The room--door degree facts are the local combinatorial core. Outside doors have one adjacent room, while internal doors have two. After fixing a missing type, the parity proof partitions \texttt{dbcountingset} on the door side into outside and internal doors, and on the room side into colorful and non-colorful typed nearly colorful rooms. The outside contribution is odd, while the internal-door and non-colorful-room contributions are even. The remaining colorful-room contribution is therefore odd and hence nonzero.
 
@@ -704,14 +790,15 @@ The room--door degree facts are the local combinatorial core. Outside doors have
 
 The standard-simplex proof converts the finite Scarf theorem into an analytic fixed point. Table~\ref{tab:appendix-brouwer-components} records the main proof dependencies.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{Key objects in the Scarf-to-Brouwer argument.}
 \label{tab:appendix-brouwer-components}
-\begin{tabular}{lll}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lll}
+\toprule
 Lean object & Local meaning & Global use \\
-\hline
+\midrule
 \texttt{TT n l} & finite integer grid with coordinate sum \texttt{l} & finite domain for Scarf \\
 \texttt{TTtostdSimplex} & divides grid coordinates by \texttt{l} & realizes grid points in the simplex \\
 \texttt{TT.ILO} & indexed lexicographic orders on the grid & Scarf order structure \\
@@ -724,9 +811,12 @@ Lean object & Local meaning & Global use \\
 \texttt{dominant\_coords\_tend\_to\_zero} & coordinates outside fixed set vanish & outside-support control \\
 \texttt{f\_coords\_ge\_z\_coords} & inequalities pass to the limit & endpoint equality argument \\
 \texttt{Brouwer} & standard-simplex theorem & fixed point \texttt{f z = z} \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 The final proof endpoint uses two kinds of estimates. On the stabilized color/index set \(C\), colorful witnesses and continuity give coordinate inequalities \((f z)_i \geq z_i\). Outside \(C\), dominance estimates show that the coordinates of \(z\) vanish. Since \(z\) and \(f z\) both lie in the simplex, the sum-one constraints leave no extra mass: the inequalities on \(C\) become equalities, the outside coordinates are zero, and extensionality yields \(f z = z\).
 
@@ -735,14 +825,15 @@ The final proof endpoint uses two kinds of estimates. On the stabilized color/in
 
 The product extension reduces a fixed-point problem on a finite product of simplices to a fixed-point problem on one larger simplex. The reduction requires explicit coordinate bookkeeping and a projection whose blockwise denominators are positive.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{Product-simplex constructions.}
 \label{tab:appendix-product-components}
-\begin{tabular}{lll}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lll}
+\toprule
 Lean object & Purpose & Key dependency \\
-\hline
+\midrule
 \texttt{index\_split}, \texttt{index\_combine} &
 convert flat and blockwise indices &
 inverse lemmas for sums \\
@@ -767,25 +858,30 @@ fixed-point transport \\
 \texttt{Brouwer\_Product} &
 product fixed-point theorem &
 lift, apply Brouwer, project back \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 The positivity argument is the nontrivial part of projection. A raw point in the big simplex may have insufficient mass in a block, so blockwise normalization cannot be treated as ordinary coordinate projection. The push construction moves points toward a uniform interior point. If the push amount is positive, positive block weight contributes directly. If the push amount is zero, zero deficit shows that the original block already meets its positive target weight. These cases justify the denominator in \texttt{project\_to\_product} and allow the continuity proof to use division by a nonzero continuous function.
 
+\clearpage
 \section{Nash Proof Components}
 \label{app:nash-details}
 
 The Nash layer turns the product fixed-point theorem into equilibrium existence. The finite game supplies one simplex per player, and the Nash map raises weights on profitable pure deviations before renormalizing each player block.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{Objects in the Nash endpoint.}
 \label{tab:appendix-nash-components}
-\begin{tabular}{lll}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lll}
+\toprule
 Lean object & Local meaning & Endpoint role \\
-\hline
+\midrule
 \texttt{Game}, \texttt{FinGame} & strategic-form data with finiteness & finite mixed space \\
 \texttt{mixedS} & product of player simplices & fixed-point domain \\
 \texttt{mixed\_g} & expected payoff & payoff comparison \\
@@ -796,9 +892,12 @@ Lean object & Local meaning & Endpoint role \\
 \texttt{mixed\_g\_linear} & mixed payoff as pure-deviation average & pure-to-mixed step \\
 \texttt{self\_div\_lemma} & normalization contradiction & rules out profitable pure deviations \\
 \texttt{ExistsNashEq} & endpoint theorem & mixed Nash equilibrium exists \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 At a fixed point of \texttt{nash\_map}, a profitable pure deviation would make the normalization denominator strictly larger than one. The proof then finds a nonzero coordinate with no positive improvement. Fixedness gives an equality of the form \(\sigma_s=\sigma_s/\mathrm{sum\_g}\), and \texttt{self\_div\_lemma} forces \(\mathrm{sum\_g}=1\), contradicting the strict inequality. The remaining pure-deviation bound extends to arbitrary mixed deviations through \texttt{mixed\_g\_linear}.
 
@@ -807,44 +906,53 @@ At a fixed point of \texttt{nash\_map}, a profitable pure deviation would make t
 
 BrouwerBench v1 is stored as JSONL. Every row corresponds to one hand-checkable question about a local proof role in the formalization. The 80 items are distributed across the same four proof layers as the paper.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{BrouwerBench v1 coverage by formalization section.}
 \label{tab:appendix-dataset-coverage}
-\begin{tabular}{lrrrrr}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lrrrrr}
+\toprule
 Section & Scarf & Brouwer & Product Brouwer & Nash & Total \\
-\hline
+\midrule
 Items & 24 & 20 & 18 & 18 & 80 \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{BrouwerBench v1 task types.}
 \label{tab:appendix-task-types}
-\begin{tabular}{lrrrrrrr}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lrrrrrrr}
+\toprule
 Type & Def. role & Proof dep. & Parity & Summary & Constr. role & Analysis & Endpoint \\
-\hline
+\midrule
 Items & 7 & 28 & 4 & 3 & 17 & 11 & 10 \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 \subsection{Dataset Schema}
 
 Each item contains the fields listed in Table~\ref{tab:appendix-dataset-schema}. The \texttt{context} and \texttt{question} fields are shown to the model together with a section-level Lean prelude. The reference answer and rubric are used for grading rather than included in the prompt.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{Fields in one BrouwerBench JSONL item.}
 \label{tab:appendix-dataset-schema}
-\begin{tabular}{ll}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{ll}
+\toprule
 Field & Meaning \\
-\hline
+\midrule
 \texttt{id} & stable item identifier \\
 \texttt{section} & one of \texttt{Scarf}, \texttt{Brouwer}, \texttt{Brouwer\_product}, or \texttt{Nash} \\
 \texttt{task\_type} & proof-role category used for analysis \\
@@ -855,9 +963,12 @@ Field & Meaning \\
 \texttt{gold\_answer} & reference explanation used during grading \\
 \texttt{evidence} & file-line anchors used to create and check the item \\
 \texttt{rubric} & item-specific 0--2 criteria and required ideas \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 \subsection{Example Items}
 
@@ -888,20 +999,24 @@ Item \texttt{nash\_011} gives the contradiction branch in \texttt{ExistsNashEq}:
 
 The benchmark uses manual item-level scoring. Each item has a rubric tailored to its proof role, but all rubrics follow the shared scale in Table~\ref{tab:appendix-score-scale}.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{Shared BrouwerBench score scale.}
 \label{tab:appendix-score-scale}
-\begin{tabular}{lll}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lll}
+\toprule
 Score & Interpretation & Typical case \\
-\hline
+\midrule
 0 & misses the formal proof role & generic Brouwer or Nash explanation unrelated to the given Lean context \\
 1 & partially identifies the role & names a subsequence but misses why the fixed set \(C\) is needed \\
 2 & explains the Lean-grounded role & connects the named object, dependency, and proof endpoint \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 The grading distinguishes a mathematically plausible answer from a formalization-specific one. An answer that correctly describes a classical theorem but ignores the supplied Lean objects receives partial credit only when it still captures an essential proof dependency. Hallucinated Lean claims, such as applying the wrong endpoint theorem or inventing an unsupported proof route, lower the score. Exact spelling of every Lean identifier is not required when the mathematical dependency is unambiguous, but named objects matter when the question is specifically about their proof role.
 
@@ -912,31 +1027,35 @@ The current study uses one manual score file per model output. This makes errors
 
 The main text reports overall and section-level scores. Table~\ref{tab:appendix-results-by-type} gives the task-type breakdown. It shows that the evaluation probes several kinds of proof understanding rather than a single style of question.
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{BrouwerBench v1 scores by task type.}
 \label{tab:appendix-results-by-type}
-\begin{tabular}{lrrrrrrr}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lrrrrrrr}
+\toprule
 Model & Def. & Dep. & Parity & Summary & Constr. & Analysis & Endpoint \\
-\hline
+\midrule
 \texttt{gpt-oss:20b} & 9/14 & 45/56 & 7/8 & 6/6 & 26/34 & 15/22 & 14/20 \\
 \texttt{qwen3:8b} & 8/14 & 38/56 & 5/8 & 4/6 & 23/34 & 13/22 & 10/20 \\
 \texttt{gemma3:12b} & 5/14 & 34/56 & 5/8 & 4/6 & 20/34 & 11/22 & 10/20 \\
 \texttt{kimina-prover:7b} & 6/14 & 20/56 & 1/8 & 1/6 & 16/34 & 9/22 & 5/20 \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
-\begin{table*}[t]
-\centering
+\begin{table}[H]
 \caption{Reported model artifact stems and decoding settings.}
 \label{tab:appendix-model-artifacts}
-\small
-\begin{tabular}{lp{0.28\textwidth}p{0.30\textwidth}}
-\hline
+\begin{center}
+    \begin{small}
+      \begin{tabular}{lp{0.28\textwidth}p{0.30\textwidth}}
+\toprule
 Model & Shared artifact stem & Decoding note \\
-\hline
+\midrule
 \texttt{gpt-oss:20b} &
 \texttt{gpt-oss\_20b\_np4096} &
 \texttt{num\_predict=4096} \\
@@ -949,9 +1068,12 @@ default short-answer run \\
 \texttt{kimina-prover:7b} &
 \texttt{kimina-prover\_7b} &
 default short-answer run \\
-\hline
+\bottomrule
 \end{tabular}
-\end{table*}
+    \end{small}
+  \end{center}
+  \vskip -0.1in
+\end{table}
 
 The stems in Table~\ref{tab:appendix-model-artifacts} appear after the shared dataset prefix \texttt{brouwerbench\_v1\_\_}. Raw outputs use the result directory and the \texttt{.jsonl} suffix, while manual score files use the score directory and the \texttt{.manual.jsonl} suffix. The full per-item responses, manual score notes, scored JSONL files, and generated Markdown reports are retained in the benchmark artifact directory. This keeps the paper tables compact while preserving the item-level audit trail used for the reported totals.
 
