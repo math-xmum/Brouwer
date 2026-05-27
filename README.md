@@ -2,6 +2,26 @@
 
 This repository contains a formalization of fundamental theorems in game theory using the Lean proof assistant. The main goal is to prove the existence of Nash Equilibria in finite games.
 
+## Lean Version
+
+This project currently targets:
+
+-   Lean `4.30.0`
+-   mathlib `v4.30.0`
+
+The Lean toolchain is pinned in `lean-toolchain`, and mathlib is pinned in `lakefile.lean` / `lake-manifest.json`.
+
+## Building
+
+Install Lean through `elan`, then run:
+
+```bash
+lake update
+lake build
+```
+
+`lake update` resolves the pinned dependencies. `lake build` checks the full formalization.
+
 ## Core Concepts and Theorems
 
 The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This repository builds up the necessary mathematical framework from scratch.
@@ -15,7 +35,7 @@ The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This reposi
 -   `Gametheory/Nash.lean`: Formalizes finite games `FinGame`, mixed strategies `mixedS`, payoffs, and mixed Nash equilibrium `mixedNashEquilibrium`. Builds a continuous `nash_map` on the product of simplices and applies `Brouwer_Product` to obtain existence: `ExistsNashEq : ∃ σ : G.mixedS, mixedNashEquilibrium σ`.
 -   `GameTheory.lean`: Umbrella file that imports `Brouwer`, `Nash`, and `Simplex` for convenience.
 
--   Open any of the Lean files in an editor with the Lean server running to see goals and check proofs interactively.
+Open any of the Lean files in an editor with the Lean server running to see goals and check proofs interactively.
 
 ## Notation and Key Definitions
 
@@ -30,5 +50,4 @@ The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This reposi
 
 -   N. V. Ivanov, "Beyond Sperner's Lemma" (source of the Scarf → Brouwer development).
 -   J. F. Nash, "Non-Cooperative Games", Annals of Mathematics (1951).
-
 
