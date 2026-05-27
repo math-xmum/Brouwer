@@ -26,6 +26,36 @@ lake build
 
 The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This repository builds up the necessary mathematical framework from scratch.
 
+## Proof Strategy Blueprint
+
+The formalization follows this dependency chain:
+
+```mermaid
+flowchart TD
+    A["Simplex infrastructure<br/>stdSimplex, pure strategies, weighted sums"]
+    B["Scarf-style combinatorics<br/>doors, rooms, colorful simplices"]
+    C["Approximate fixed points<br/>colorful simplex sequence"]
+    D["Compactness and convergence<br/>extract a convergent subsequence"]
+    E["Brouwer on one simplex<br/>continuous self-map has a fixed point"]
+    F["Finite product of simplices<br/>reduce product case to one simplex"]
+    G["Finite games<br/>mixed strategies as product of simplices"]
+    H["Nash map<br/>continuous self-map on mixed strategies"]
+    I["Mixed Nash equilibrium<br/>fixed point implies no profitable deviation"]
+
+    A --> B --> C --> D --> E --> F --> G --> H --> I
+```
+
+In words:
+
+1.  Define mixed strategies as points of standard simplices.
+2.  Prove a Scarf/Sperner-style combinatorial lemma producing colorful simplices.
+3.  Use finer and finer combinatorial approximations to build approximate fixed points.
+4.  Use compactness to extract a convergent subsequence.
+5.  Use continuity to turn the limit into an actual Brouwer fixed point.
+6.  Lift the single-simplex fixed-point theorem to finite products of simplices.
+7.  Define the Nash map on mixed strategy profiles and apply the product fixed-point theorem.
+8.  Show that a fixed point of the Nash map satisfies the mixed Nash equilibrium condition.
+
 ### Files
 
 -   `Gametheory/Simplex.lean`: Defines the standard simplex `stdSimplex` over a finite type. Includes constructors like `pure`, evaluation lemmas (`pure_eval_eq`, `pure_eval_neq`), and weighted-sum/typeclass instances needed later for continuity/compactness arguments.
@@ -50,4 +80,3 @@ Open any of the Lean files in an editor with the Lean server running to see goal
 
 -   N. V. Ivanov, "Beyond Sperner's Lemma" (source of the Scarf → Brouwer development).
 -   J. F. Nash, "Non-Cooperative Games", Annals of Mathematics (1951).
-
