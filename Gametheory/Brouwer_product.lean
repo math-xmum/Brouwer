@@ -1,4 +1,3 @@
-import Mathlib
 import Gametheory.Brouwer
 open Filter
 
@@ -54,10 +53,11 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
             (∑ j ∈ Finset.univ.filter (· < i₀), (card j : ℕ)) + (card i₀ : ℕ) := by
       have h_split : Finset.univ.filter (· ≤ i₀) = Finset.univ.filter (· < i₀) ∪ {i₀} := by
         ext j
-        simp [le_iff_lt_or_eq]
-      rw [h_split, Finset.sum_union]
-      · simp
-      · simp
+        simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_union,
+          Finset.mem_singleton]
+        exact le_iff_lt_or_eq
+      have h_disj : Disjoint (Finset.univ.filter (· < i₀)) {i₀} := by simp
+      rw [h_split, Finset.sum_union h_disj, Finset.sum_singleton]
     rwa [this] at i₀_in_S
   have h_le : prefix_sum card i₀ ≤ k.val := by
     by_cases h_i₀_is_min : i₀ = (Finset.univ.min' Finset.univ_nonempty)
@@ -77,7 +77,7 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
             · exact h_all_ge (Finset.univ.min' Finset.univ_nonempty) (Finset.mem_univ _)
             · exact Finset.min'_le _ _ (Finset.mem_univ i₀)
           exact this h_min
-        push_neg at this
+        push Not at this
         obtain ⟨j, _, hj⟩ := this
         exact ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ j, hj⟩⟩
       let j₀ := pred_set.max' pred_set_nonempty
@@ -125,7 +125,10 @@ noncomputable def index_combine (p : Σ i, Fin (card i)) : Fin (total_card card)
       have h_eq : (Finset.univ.filter (· ≤ p.1)).sum (fun j => (card j : ℕ)) =
                    (Finset.univ.filter (· < p.1)).sum (fun j => (card j : ℕ)) + (card p.1 : ℕ) := by
         have h_split : Finset.univ.filter (· ≤ p.1) = Finset.univ.filter (· < p.1) ∪ {p.1} := by
-          ext j; simp [le_iff_lt_or_eq]
+          ext j
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_union,
+            Finset.mem_singleton]
+          exact le_iff_lt_or_eq
         have h_disj : Disjoint (Finset.univ.filter (· < p.1)) {p.1} := by simp
         rw [h_split, Finset.sum_union h_disj, Finset.sum_singleton]
       rw [← h_eq]
@@ -152,9 +155,12 @@ lemma index_split_combine_inverse (p : Σ i, Fin (card i)) : index_split card (i
           (Finset.univ.filter (· < a)).sum (fun j => (card j : ℕ)) + (card a : ℕ) := by
         have h_split : Finset.univ.filter (· ≤ a) =
             Finset.univ.filter (· < a) ∪ {a} := by
-          ext j; simp [le_iff_lt_or_eq]
+          ext j
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_union,
+            Finset.mem_singleton]
+          exact le_iff_lt_or_eq
         have h_disj : Disjoint (Finset.univ.filter (· < a)) {a} := by simp
-        simp [h_split, Finset.sum_union h_disj]
+        rw [h_split, Finset.sum_union h_disj, Finset.sum_singleton]
       have h_le : (Finset.univ.filter (· ≤ a)).sum (fun j => (card j : ℕ)) ≤
           (Finset.univ.filter (· < b)).sum (fun j => (card j : ℕ)) :=
         Finset.sum_le_sum_of_subset_of_nonneg h_subset (by
@@ -561,7 +567,7 @@ lemma blockSum_pushTowardsZ_pos (i : I) (x : BigSimplex card) :
 lemma blockSum_continuous (i : I) : Continuous (blockSum card i) := by
   change Continuous (fun x : BigSimplex card =>
     ∑ j : Fin (card i), x.1 (index_combine card ⟨i, j⟩))
-  apply continuous_finset_sum
+  apply continuous_finsetSum
   intro j _
   exact (continuous_apply _).comp continuous_subtype_val
 
@@ -569,7 +575,7 @@ lemma blockSum_continuous (i : I) : Continuous (blockSum card i) := by
 lemma deficit_continuous : Continuous (deficit card) := by
   change Continuous (fun x : BigSimplex card =>
     ∑ i, max (0 : ℝ) ((blockWeight card i) - blockSum card i x))
-  apply continuous_finset_sum
+  apply continuous_finsetSum
   intro i _
   exact continuous_const.max (continuous_const.sub (blockSum_continuous card i))
 
@@ -611,7 +617,7 @@ lemma project_continuous : Continuous (project_to_product card) := by
       blockSum card i (pushTowardsZ card x)) := by
     change Continuous (fun x : BigSimplex card =>
       ∑ j : Fin (card i), (pushTowardsZ card x).1 (index_combine card ⟨i, j⟩))
-    apply continuous_finset_sum
+    apply continuous_finsetSum
     intro j _
     exact (continuous_apply (index_combine card ⟨i, j⟩)).comp
       (continuous_subtype_val.comp (pushTowardsZ_continuous card))

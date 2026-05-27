@@ -58,10 +58,10 @@ lemma wsum_magic_ineq [DecidableEq α] [LinearOrder k] [IsOrderedCancelAddMonoid
   ∑ i : α, (σ i) *  f i = c → ∃ i, 0 < σ i ∧ f i ≤ c := by
     intro H1
     by_contra H2
-    push_neg at H2
+    push Not at H2
     have h_exists_pos : ∃ i, 0 < σ i := by
       by_contra h_all_zero
-      push_neg at h_all_zero
+      push Not at h_all_zero
       have h_all_eq_zero : ∀ i, σ i = 0 := by
         intro i
         exact le_antisymm (h_all_zero i) (σ.2.1 i)
@@ -79,12 +79,12 @@ lemma wsum_magic_ineq [DecidableEq α] [LinearOrder k] [IsOrderedCancelAddMonoid
       · intro i _
         by_cases h_pos : 0 < σ i
         · have h_fi_gt_c : c < f i := H2 i h_pos
-          exact (mul_le_mul_left h_pos).mpr (le_of_lt h_fi_gt_c)
+          exact mul_le_mul_of_nonneg_left (le_of_lt h_fi_gt_c) (le_of_lt h_pos)
         · have h_zero : σ i = 0 := le_antisymm (le_of_not_gt h_pos) (σ.2.1 i)
           simp [h_zero]
       · use i₀, Finset.mem_univ i₀
         have h_fi₀_gt_c : c < f i₀ := H2 i₀ hi₀
-        exact (mul_lt_mul_left hi₀).mpr h_fi₀_gt_c
+        exact mul_lt_mul_of_pos_left h_fi₀_gt_c hi₀
     rw [H1] at h_ge
     exact lt_irrefl c h_ge
 

@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: Gametheory.Brouwer_product
-// Imports: Init Mathlib Gametheory.Brouwer
+// Imports: public import Init public meta import Init public import Gametheory.Brouwer
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -13,21 +13,21 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-lean_object* initialize_Init(uint8_t builtin, lean_object*);
-lean_object* initialize_Mathlib(uint8_t builtin, lean_object*);
-lean_object* initialize_Gametheory_Brouwer(uint8_t builtin, lean_object*);
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_Gametheory_Gametheory_Brouwer(uint8_t builtin);
 static bool _G_initialized = false;
-LEAN_EXPORT lean_object* initialize_Gametheory_Brouwer__product(uint8_t builtin, lean_object* w) {
+LEAN_EXPORT lean_object* initialize_Gametheory_Gametheory_Brouwer__product(uint8_t builtin) {
 lean_object * res;
 if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
 _G_initialized = true;
-res = initialize_Init(builtin, lean_io_mk_world());
+res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_Mathlib(builtin, lean_io_mk_world());
+res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_Gametheory_Brouwer(builtin, lean_io_mk_world());
+res = initialize_Gametheory_Gametheory_Brouwer(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));

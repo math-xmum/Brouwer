@@ -1,5 +1,3 @@
-import Mathlib
-
 import Gametheory.Brouwer_product
 import Gametheory.Simplex
 
@@ -9,7 +7,6 @@ open Function
 
 noncomputable section
 
-#check Brouwer_Product
 /-
 A game is a set of maps g^i : Πᵢ S i → ℝ
 -/
@@ -61,9 +58,6 @@ abbrev mixedS  := (i : G.I) → stdSimplex ℝ (G.SS i)
 
 def mixed_g (i : G.I) (m : Π i, S (G.SS i) ) : ℝ := ∑ s : (Π j, G.SS j) , (∏ j,  m j (s j)) * (G.g i s)
 
-#print mixed_g
-
-
 lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mixed_g i (update x i (stdSimplex.pure s)) := by
   unfold mixed_g
   simp only [Finset.mul_sum]
@@ -85,7 +79,7 @@ lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mix
            by_cases h1 : j = i
            · rw [h1, Function.update_self]
              simp
-           · push_neg at h1
+           · push Not at h1
              rw [Function.update_of_ne (show j ≠ i by exact h1)]
              set t := fun j =>(update x i y j) (f j)
              have h2 : t j = (x j) (f j) := by
@@ -109,7 +103,7 @@ lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mix
         simp [hxx]
       · simp only [hxx, ↓reduceIte, zero_eq_mul]
         right
-        push_neg at hxx
+        push Not at hxx
         rw [stdSimplex.pure_eval_neq hxx]
 
   rw [h1, Finset.sum_mul]
@@ -123,7 +117,7 @@ lemma mixed_g_linear : G.mixed_g i (update  x i y) = ∑ s : G.SS i, y s * G.mix
   by_cases h2 : j = i
   · rw [h2,Function.update_self]
     simp
-  · push_neg at h2
+  · push Not at h2
     nth_rw 2 [Function.update_of_ne (show j ≠ i by exact h2)]
     set p := fun j =>(update x i y j) (f j)
     have h3 : p j = (x j) (f j) := by
@@ -235,8 +229,14 @@ def map_simplex_equiv {n m : Type*} [Fintype n] [Fintype m] (e : n ≃ m) :
     (stdSimplex ℝ n) ≃ (stdSimplex ℝ m) where
   toFun := map_simplex e
   invFun := map_simplex e.symm
-  left_inv x := by ext i; simp
-  right_inv x := by ext i; simp
+  left_inv x := by
+    ext i
+    change x.1 (e.symm (e i)) = x.1 i
+    rw [e.symm_apply_apply]
+  right_inv x := by
+    ext i
+    change x.1 (e (e.symm i)) = x.1 i
+    rw [e.apply_symm_apply]
 
 /-- Lifts component-wise equivalences to an equivalence on the space of mixed strategies. -/
 def map_mixedS_equiv {G : FinGame} (e : (i : G.I) → G.SS i ≃ Fin (Fintype.card (G.SS i))) :
@@ -244,9 +244,13 @@ def map_mixedS_equiv {G : FinGame} (e : (i : G.I) → G.SS i ≃ Fin (Fintype.ca
   toFun x i := map_simplex (e i) (x i)
   invFun x i := map_simplex (e i).symm (x i)
   left_inv x := by
-    funext i; ext j; simp [map_simplex_apply]
+    funext i; ext j
+    change (x i).1 ((e i).symm ((e i) j)) = (x i).1 j
+    rw [(e i).symm_apply_apply]
   right_inv x := by
-    funext i; ext j; simp [map_simplex_apply]
+    funext i; ext j
+    change (x i).1 ((e i) ((e i).symm j)) = (x i).1 j
+    rw [(e i).apply_symm_apply]
 
 
 
@@ -283,9 +287,13 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
   let map_idx_inv : ((k : Fin n) → stdSimplex ℝ (Fin (card' k))) → ((k : Fin n) → stdSimplex ℝ (G.SS (eI.symm k))) :=
     fun z k => map_simplex (eS k).symm (z k)
   have map_idx_left : ∀ y, map_idx_inv (map_idx y) = y := by
-    intro y; funext k; ext j; simp [map_idx, map_idx_inv]
+    intro y; funext k; ext j
+    change (y k).1 ((eS k).symm ((eS k) j)) = (y k).1 j
+    rw [(eS k).symm_apply_apply]
   have map_idx_right : ∀ z, map_idx (map_idx_inv z) = z := by
-    intro z; funext k; ext j; simp [map_idx, map_idx_inv]
+    intro z; funext k; ext j
+    change (z k).1 ((eS k) ((eS k).symm j)) = (z k).1 j
+    rw [(eS k).apply_symm_apply]
 
   let φ : G.mixedS → ProductSimplices card' := fun x => map_idx (reindex x)
   let φ_inv : ProductSimplices card' → G.mixedS := fun w => reindex_inv (map_idx_inv w)
@@ -319,8 +327,8 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       apply eq_of_heq
       rw [eqRec_heq_iff_heq]
       congr
-      .  symm
-         apply eqRec_heq'
+      · symm
+        exact @eqRec_heq (Type _) (fun X => X) _ _ typeeq.symm (eS (eI i))
 
     have h_map : Continuous (map_simplex eSi.symm) := by
       apply Continuous.subtype_mk
@@ -418,10 +426,10 @@ lemma cg : Continuous fun a => g_function (G:=G) i a s := by
     · continuity
     · unfold mixed_g
       apply Continuous.sub
-      · apply continuous_finset_sum
+      · apply continuous_finsetSum
         intro i' _
         apply Continuous.mul
-        · apply continuous_finset_prod
+        · apply continuous_finsetProd
           intro i'' _
           by_cases h : i'' = i
           · rw [h]
@@ -434,10 +442,10 @@ lemma cg : Continuous fun a => g_function (G:=G) i a s := by
             continuity
             apply Continuous.comp <;> continuity
         · continuity
-      · apply continuous_finset_sum
+      · apply continuous_finsetSum
         intro i' _
         apply Continuous.mul
-        · apply continuous_finset_prod
+        · apply continuous_finsetProd
           intro i'' _
           by_cases h : i'' = i
           · have : (fun (a : G.mixedS) => (a i) (i' i)) = (fun f => f (i' i)) ∘ Subtype.val ∘ fun a => a i := by
@@ -467,7 +475,7 @@ lemma nash_map_cont : Continuous $ nash_map G :=
   intro s
   apply Continuous.div
   · apply cg
-  · apply continuous_finset_sum
+  · apply continuous_finsetSum
     intro i _; apply cg
   · intro σ
     apply ne_of_gt
@@ -504,7 +512,7 @@ theorem ExistsNashEq : ∃ σ : G.mixedS , mixedNashEquilibrium σ := by {
     nlinarith
 
   · exfalso -- This case cannot happen
-    push_neg at H
+    push Not at H
     obtain ⟨t,ht⟩ := H
     have H1 :  1 < ∑ b, g_function i σ b := by
       have h1 : 1 ≤ ∑ b : G.SS i, g_function i σ b := by
