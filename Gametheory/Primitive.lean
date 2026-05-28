@@ -1374,6 +1374,191 @@ lemma ScarfAlgorithmTrace.terminal_colorful_room
   (full_color_primitive_iff_colorful_associated_room c trace.terminal_fullyColored.1).1
     trace.terminal_fullyColored.2
 
+omit [Inhabited T] in
+/-- A reachable fully colored primitive set gives a complete Scarf trace. -/
+lemma scarfAlgorithmTrace_of_reachable_fullyColoredPrimitive
+    {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
+    (hX : isFullyColoredPrimitive (IST := IST) c X)
+    (hReach : (GiGraph (IST := IST) c i).Reachable
+      (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+      (associatedCell (T := T) (I := I) X)) :
+    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) := by
+  rcases hReach with ⟨p⟩
+  exact ⟨⟨X, hX, p⟩⟩
+
+omit [Inhabited T] in
+/--
+It is enough to find a fully colored primitive set in the connected component
+of the outside door. This is the component-level form of the path-following
+argument in §3.
+-/
+lemma scarfAlgorithmTrace_of_component_fullyColoredPrimitive
+    {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
+    (hX : isFullyColoredPrimitive (IST := IST) c X)
+    (hComponent :
+      (GiGraph (IST := IST) c i).connectedComponentMk
+        (associatedCell (T := T) (I := I) X) =
+      (GiGraph (IST := IST) c i).connectedComponentMk
+        (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))) :
+    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) := by
+  apply scarfAlgorithmTrace_of_reachable_fullyColoredPrimitive (IST := IST) hX
+  exact SimpleGraph.ConnectedComponent.exact hComponent.symm
+
+omit [Inhabited T] in
+/--
+Existence of a complete Scarf trace is equivalent to finding a fully colored
+primitive set in the connected component of the outside door.  This isolates
+the remaining graph-theoretic endpoint argument from the primitive-set
+translation.
+-/
+theorem scarfAlgorithmTrace_nonempty_iff_component_fullyColoredPrimitive
+    (c : T → I) (i : I) :
+    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) ↔
+      ∃ X : Finset (ExtendedGoods T I),
+        isFullyColoredPrimitive (IST := IST) c X ∧
+          (GiGraph (IST := IST) c i).connectedComponentMk
+            (associatedCell (T := T) (I := I) X) =
+          (GiGraph (IST := IST) c i).connectedComponentMk
+            (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
+  constructor
+  · rintro ⟨trace⟩
+    refine ⟨trace.terminal, trace.terminal_fullyColored, ?_⟩
+    exact SimpleGraph.ConnectedComponent.sound trace.walk.reachable |>.symm
+  · rintro ⟨X, hX, hComponent⟩
+    exact scarfAlgorithmTrace_of_component_fullyColoredPrimitive (IST := IST) hX hComponent
+
+lemma outsideDoor_endpoint_cell_eq_slackBoundary
+    {c : T → I} {i : I} {v : GiCell T I}
+    (hDoor : GiDoorVertex (IST := IST) c i v) (hOutside : IST.isOutsideDoor v.1 v.2) :
+    v = associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i) := by
+  have hτ : v.1 = Finset.empty := hOutside.2
+  have hD : v.2 = ({i} : Finset I) := by
+    have hTyped := hDoor.2.2
+    rw [hτ] at hTyped
+    have hImg : Finset.image c (Finset.empty : Finset T) = Finset.empty := Finset.image_empty c
+    rw [hImg] at hTyped
+    have hsdiff : v.2 \ (Finset.empty : Finset I) = v.2 :=
+      Finset.sdiff_eq_self_of_disjoint (Finset.disjoint_empty_right v.2)
+    rwa [hsdiff] at hTyped
+  rw [associatedCell_slackBoundary]
+  exact Prod.ext hτ hD
+
+omit [Inhabited T] in
+lemma giVertex_of_GiDegree_eq_one {c : T → I} {i : I} {v : GiCell T I}
+    (hdeg : GiDegree (IST := IST) c i v = 1) :
+    GiVertex (IST := IST) c i v := by
+  have hNonempty : (GiNeighbors (IST := IST) c i v).Nonempty := by
+    apply Finset.card_pos.mp
+    change 0 < GiDegree (IST := IST) c i v
+    rw [hdeg]
+    norm_num
+  rcases hNonempty with ⟨w, hw⟩
+  exact GiEdge.left_vertex ((mem_GiNeighbors (IST := IST)).1 hw)
+
+omit [Inhabited T] in
+def reachableComponentGraph {α : Type*} (G : SimpleGraph α) (v₀ : α) :
+    SimpleGraph {v : α // G.Reachable v₀ v} where
+  Adj a b := G.Adj a.1 b.1
+  symm := by intro a b h; exact G.symm h
+  loopless := ⟨fun a h => G.loopless.1 a.1 h⟩
+
+omit [Inhabited T] in
+lemma reachableComponentGraph_degree_eq
+    {α : Type*} [Fintype α] [DecidableEq α] (G : SimpleGraph α) (v₀ : α)
+    (x : {v : α // G.Reachable v₀ v}) :
+    (reachableComponentGraph G v₀).degree x = G.degree x.1 := by
+  classical
+  let H : SimpleGraph {v : α // G.Reachable v₀ v} := reachableComponentGraph G v₀
+  change H.degree x = G.degree x.1
+  have hImage :
+      (H.neighborFinset x).image (fun y : {v : α // G.Reachable v₀ v} => y.1) =
+        G.neighborFinset x.1 := by
+    ext y
+    constructor
+    · intro hy
+      rcases Finset.mem_image.mp hy with ⟨z, hz, rfl⟩
+      exact (SimpleGraph.mem_neighborFinset G x.1 z.1).2
+        ((SimpleGraph.mem_neighborFinset H x z).1 hz)
+    · intro hy
+      have hAdj : G.Adj x.1 y := (SimpleGraph.mem_neighborFinset G x.1 y).1 hy
+      have hReachY : G.Reachable v₀ y := by
+        rcases x.2 with ⟨p⟩
+        exact ⟨p.concat hAdj⟩
+      exact Finset.mem_image.mpr
+        ⟨⟨y, hReachY⟩, (SimpleGraph.mem_neighborFinset H x ⟨y, hReachY⟩).2 hAdj, rfl⟩
+  calc
+    H.degree x = (H.neighborFinset x).card := rfl
+    _ = ((H.neighborFinset x).image (fun y : {v : α // G.Reachable v₀ v} => y.1)).card := by
+      rw [Finset.card_image_of_injOn]
+      intro a _ b _ h
+      exact Subtype.ext h
+    _ = (G.neighborFinset x.1).card := by rw [hImage]
+    _ = G.degree x.1 := rfl
+
+theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
+    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) := by
+  classical
+  let outside : GiCell T I :=
+    associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)
+  let G := GiGraph (IST := IST) c i
+  let H : SimpleGraph {v : GiCell T I // G.Reachable outside v} :=
+    reachableComponentGraph G outside
+  let outsideSub : {v : GiCell T I // G.Reachable outside v} := ⟨outside, ⟨SimpleGraph.Walk.nil⟩⟩
+  have hOutsideDoor : IST.isOutsideDoor outside.1 outside.2 := by
+    simp [outside]
+    exact IST.outsidedoor_singleton i
+  have hOutsideTyped : IST.isTypedNC c i outside.1 outside.2 := by
+    have hDoorVertex := slackBoundary_GiDoorVertex (IST := IST) c i
+    simpa [outside] using hDoorVertex.2
+  have hOutsideDegree : G.degree outside = 1 := by
+    change GiDegree (IST := IST) c i outside = 1
+    exact GiDegree_outsideDoor (IST := IST) hOutsideDoor hOutsideTyped
+  have hOutsideSubDegree : H.degree outsideSub = 1 := by
+    change H.degree outsideSub = 1
+    rw [reachableComponentGraph_degree_eq G outside outsideSub, hOutsideDegree]
+  have hOddOutside : Odd (H.degree outsideSub) := by rw [hOutsideSubDegree]; exact odd_one
+  obtain ⟨w, hwNe, hwOdd⟩ :=
+    SimpleGraph.exists_ne_odd_degree_of_exists_odd_degree H outsideSub hOddOutside
+  have hwOddG : Odd (G.degree w.1) := by
+    rw [← reachableComponentGraph_degree_eq G outside w]
+    exact hwOdd
+  have hwLe : G.degree w.1 ≤ 2 := by
+    exact (GiPathStructure_of_degreeCharacterization
+      (IST := IST) (GiDegreeCharacterization_holds (IST := IST) c i)).2 w.1
+  have hwDegreeOne : G.degree w.1 = 1 := by
+    rcases hwOddG with ⟨k, hk⟩
+    omega
+  have hwGiDegreeOne : GiDegree (IST := IST) c i w.1 = 1 := by
+    rw [← hwDegreeOne]
+    rfl
+  have hwEndpoint : GiEndpoint (IST := IST) c i w.1 :=
+    ⟨giVertex_of_GiDegree_eq_one (IST := IST) hwGiDegreeOne, hwGiDegreeOne⟩
+  have hwEndpointKind := (GiDegreeCharacterization_holds (IST := IST) c i).2 w.1 |>.mp hwEndpoint
+  have hwColorful : IST.isColorful c w.1.1 w.1.2 := by
+    rcases hwEndpointKind with hOutside | hColorful
+    · have hwEqOutside := outsideDoor_endpoint_cell_eq_slackBoundary
+        (IST := IST) hOutside.1 hOutside.2
+      have hwEq : w = outsideSub := by
+        apply Subtype.ext
+        change w.1 = outside
+        simpa [outside] using hwEqOutside
+      exact False.elim (hwNe hwEq)
+    · exact hColorful
+  let X : Finset (ExtendedGoods T I) := toPrimitiveSet (I := I) w.1.1 w.1.2
+  have hRoom : IST.isRoom w.1.1 w.1.2 := IST.room_of_colorful hwColorful
+  have hPrim : isPrimitive (IST := IST) X := room_to_primitive hRoom
+  have hFull :
+      X.image (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I) :=
+    (full_color_primitive_iff_colorful_room c hRoom).2 hwColorful
+  apply scarfAlgorithmTrace_of_reachable_fullyColoredPrimitive (IST := IST) ⟨hPrim, hFull⟩
+  have hReach : G.Reachable outside w.1 := w.2
+  rcases hReach with ⟨p⟩
+  change (GiGraph (IST := IST) c i).Reachable outside (associatedCell (T := T) (I := I) X)
+  have hAssoc : associatedCell (T := T) (I := I) X = w.1 := by
+    simp [X, associatedCell]
+  rw [hAssoc]
+  exact ⟨p⟩
+
 /--
 Scarf's combinatorial theorem in the primitive-set language from §3: after
 extending a coloring by the identity on slack vectors, some primitive set has
