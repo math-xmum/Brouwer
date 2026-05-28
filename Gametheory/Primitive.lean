@@ -107,6 +107,59 @@ lemma card_toPrimitiveSet (σ : Finset T) (C : Finset I) :
     exact Sum.inr.inj h
   rw [hGoods, hSlacks]
 
+omit [Inhabited T] IST in
+lemma eq_toPrimitive_from_parts (X : Finset (ExtendedGoods T I)) :
+    X = toPrimitiveSet (I := I)
+      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+  ext x
+  cases x with
+  | inl t => simp
+  | inr i => simp [toPrimitiveSet, fromMissing]
+
+omit [Inhabited T] IST in
+lemma eq_toAlmost_from_parts (X : Finset (ExtendedGoods T I)) :
+    X = toAlmostPrimitive (I := I)
+      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+  simpa [toAlmostPrimitive] using
+    (eq_toPrimitive_from_parts (T := T) (I := I) X)
+
+omit [Inhabited T] [Fintype T] in
+lemma card_toPrimitiveSet_of_room {σ : Finset T} {C : Finset I} (hRoom : IST.isRoom σ C) :
+    (toPrimitiveSet (I := I) σ C).card = Fintype.card I := by
+  rw [card_toPrimitiveSet, ← hRoom.2, Finset.card_sdiff_of_subset (Finset.subset_univ C),
+    Finset.card_univ]
+  have hCle : C.card ≤ Fintype.card I := by
+    rw [← Finset.card_univ]
+    exact Finset.card_le_card (Finset.subset_univ C)
+  omega
+
+omit [Inhabited T] [Fintype T] in
+lemma card_toAlmostPrimitive_of_door {τ : Finset T} {D : Finset I} (hDoor : IST.isDoor τ D) :
+    (toAlmostPrimitive (I := I) τ D).card + 1 = Fintype.card I := by
+  rw [toAlmostPrimitive, card_toPrimitiveSet,
+    Finset.card_sdiff_of_subset (Finset.subset_univ D), Finset.card_univ]
+  have hDle : D.card ≤ Fintype.card I := by
+    rw [← Finset.card_univ]
+    exact Finset.card_le_card (Finset.subset_univ D)
+  omega
+
+omit [Inhabited T] [Fintype T] IST in
+lemma exists_insert_eq_of_subset_card_eq_succ {α : Type*} [DecidableEq α]
+    {s t : Finset α} (hsub : s ⊆ t) (hcard : t.card = s.card + 1) :
+    ∃ x, x ∉ s ∧ insert x s = t := by
+  have hdiff_card : (t \ s).card = 1 := by
+    rw [Finset.card_sdiff_of_subset hsub, hcard]
+    omega
+  obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hdiff_card
+  have hxmem : x ∈ t \ s := by
+    rw [hx]
+    simp
+  refine ⟨x, (Finset.mem_sdiff.mp hxmem).2, ?_⟩
+  calc
+    insert x s = {x} ∪ s := rfl
+    _ = (t \ s) ∪ s := by rw [hx]
+    _ = t := Finset.sdiff_union_of_subset hsub
+
 /-- Scarf primitive sets, stated through the equivalent room language. -/
 def isPrimitive (X : Finset (ExtendedGoods T I)) : Prop :=
   ∃ σ C, IST.isRoom σ C ∧ X = toPrimitiveSet (I := I) σ C
@@ -116,6 +169,10 @@ def isAlmostPrimitive (Y : Finset (ExtendedGoods T I)) : Prop :=
   ∃ τ D σ C,
     IST.isDoorof τ D σ C ∧
       Y = toAlmostPrimitive (I := I) τ D
+
+/-- Almost primitive sets in the paper's native form: an `(n-1)`-face contained in a primitive set. -/
+def isAlmostPrimitiveNative (Y : Finset (ExtendedGoods T I)) : Prop :=
+  Y.card + 1 = Fintype.card I ∧ ∃ X, isPrimitive (IST := IST) X ∧ Y ⊆ X
 
 omit [Inhabited T] [Fintype T] in
 /-- A primitive set can be represented by the room from which it was built. -/
@@ -133,8 +190,7 @@ lemma primitive_eq_toPrimitive_from_parts {X : Finset (ExtendedGoods T I)}
     (h : isPrimitive (IST := IST) X) :
     X = toPrimitiveSet (I := I)
       (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
-  rcases h with ⟨σ, C, _hRoom, rfl⟩
-  simp
+  exact eq_toPrimitive_from_parts X
 
 /-- A room recovered from a primitive set is again primitive. -/
 lemma primitive_from_parts {X : Finset (ExtendedGoods T I)}
@@ -216,8 +272,108 @@ lemma almostPrimitive_eq_toAlmost_from_parts {Y : Finset (ExtendedGoods T I)}
     (h : isAlmostPrimitive (IST := IST) Y) :
     Y = toAlmostPrimitive (I := I)
       (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y) := by
-  rcases h with ⟨τ, D, σ, C, _hDoor, rfl⟩
-  simp
+  exact eq_toAlmost_from_parts Y
+
+lemma subset_toPrimitive_toAlmost_doorof {τ σ : Finset T} {D C : Finset I}
+    (hDoor : IST.isDoor τ D) (hRoom : IST.isRoom σ C)
+    (hsub : toAlmostPrimitive (I := I) τ D ⊆ toPrimitiveSet (I := I) σ C) :
+    IST.isDoorof τ D σ C := by
+  have hτsub : τ ⊆ σ := by
+    intro t ht
+    have hmem : Sum.inl t ∈ toPrimitiveSet (I := I) σ C :=
+      hsub (by simpa using ht)
+    simpa using hmem
+  have hCsubD : C ⊆ D := by
+    intro i hiC
+    by_contra hiD
+    have hmem : Sum.inr i ∈ toPrimitiveSet (T := T) σ C :=
+      hsub (by simpa using hiD)
+    have hiNotC : i ∉ C := by simpa using hmem
+    exact hiNotC hiC
+  have hτleσ : τ.card ≤ σ.card := Finset.card_le_card hτsub
+  have hσleτsucc : σ.card ≤ τ.card + 1 := by
+    calc
+      σ.card = C.card := hRoom.2.symm
+      _ ≤ D.card := Finset.card_le_card hCsubD
+      _ = τ.card + 1 := hDoor.2
+  have hCases : σ.card = τ.card ∨ σ.card = τ.card + 1 := by
+    omega
+  cases hCases with
+  | inl hEq =>
+      have hτσ : τ = σ := Finset.eq_of_subset_of_card_le hτsub (by omega)
+      have hDcard : D.card = C.card + 1 := by
+        omega
+      obtain ⟨j, hjC, hjInsert⟩ := exists_insert_eq_of_subset_card_eq_succ hCsubD hDcard
+      apply isDoorof.odoor hRoom.1 hDoor j hjC
+      · exact hτσ
+      · exact hjInsert.symm
+  | inr hSucc =>
+      have hCD : C = D := by
+        apply Finset.eq_of_subset_of_card_le hCsubD
+        omega
+      obtain ⟨x, hxτ, hxInsert⟩ := exists_insert_eq_of_subset_card_eq_succ hτsub hSucc
+      apply isDoorof.idoor hRoom.1 hDoor x hxτ
+      · exact hxInsert
+      · exact hCD.symm
+
+lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
+    (h : isAlmostPrimitiveNative (IST := IST) Y) :
+    isAlmostPrimitive (IST := IST) Y := by
+  rcases h with ⟨hcard, X, hPrim, hsub⟩
+  rcases hPrim with ⟨σ, C, hRoom, rfl⟩
+  let τ := fromGoods (T := T) (I := I) Y
+  let D := fromMissing (T := T) (I := I) Y
+  have hYeq : Y = toAlmostPrimitive (I := I) τ D := eq_toAlmost_from_parts Y
+  have hτsub : τ ⊆ σ := by
+    intro t ht
+    have hy : Sum.inl t ∈ Y := by simpa [τ] using ht
+    have hx : Sum.inl t ∈ toPrimitiveSet (I := I) σ C := hsub hy
+    simpa using hx
+  have hCsubD : C ⊆ D := by
+    intro i hiC
+    change i ∈ D
+    rw [mem_fromMissing]
+    intro hy
+    have hx : Sum.inr i ∈ toPrimitiveSet (T := T) σ C := hsub hy
+    have hiNotC : i ∉ C := by simpa using hx
+    exact hiNotC hiC
+  have hCell : IST.isCell τ D := by
+    exact IST.Dominant_of_supset τ C D hCsubD
+      (IST.Dominant_of_subset σ τ C hτsub hRoom.1)
+  have hDoor : IST.isDoor τ D := by
+    constructor
+    · exact hCell
+    · have hYcard :
+          Y.card = τ.card + (Finset.univ \ D).card := by
+        rw [hYeq, toAlmostPrimitive, card_toPrimitiveSet]
+      rw [hYcard, Finset.card_sdiff_of_subset (Finset.subset_univ D),
+        Finset.card_univ] at hcard
+      have hDle : D.card ≤ Fintype.card I := by
+        rw [← Finset.card_univ]
+        exact Finset.card_le_card (Finset.subset_univ D)
+      omega
+  have hsubParts : toAlmostPrimitive (I := I) τ D ⊆ toPrimitiveSet (I := I) σ C := by
+    rw [← hYeq]
+    exact hsub
+  exact ⟨τ, D, σ, C, subset_toPrimitive_toAlmost_doorof hDoor hRoom hsubParts, hYeq⟩
+
+lemma almostPrimitive_to_nativeAlmostPrimitive {Y : Finset (ExtendedGoods T I)}
+    (h : isAlmostPrimitive (IST := IST) Y) :
+    isAlmostPrimitiveNative (IST := IST) Y := by
+  rcases h with ⟨τ, D, σ, C, hDoorof, rfl⟩
+  have hDoor : IST.isDoor τ D := by
+    cases hDoorof with
+    | idoor _ hD _ _ _ _ => exact hD
+    | odoor _ hD _ _ _ _ => exact hD
+  have hRoom : IST.isRoom σ C := IST.isRoom_of_Door hDoorof
+  constructor
+  · exact card_toAlmostPrimitive_of_door hDoor
+  · exact ⟨toPrimitiveSet (I := I) σ C, room_to_primitive hRoom,
+      doorof_toAlmost_subset_toPrimitive hDoorof⟩
+
+theorem isAlmostPrimitive_iff_native {Y : Finset (ExtendedGoods T I)} :
+    isAlmostPrimitive (IST := IST) Y ↔ isAlmostPrimitiveNative (IST := IST) Y :=
+  ⟨almostPrimitive_to_nativeAlmostPrimitive, nativeAlmostPrimitive_to_almostPrimitive⟩
 
 /--
 Scarf's main lemma for internal almost primitive sets, in the room/door
