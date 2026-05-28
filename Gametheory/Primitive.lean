@@ -180,7 +180,7 @@ def isAlmostPrimitive (Y : Finset (ExtendedGoods T I)) : Prop :=
 
 /-- Almost primitive sets in the paper's native form: an `(n-1)`-face contained in a primitive set. -/
 def isAlmostPrimitiveNative (Y : Finset (ExtendedGoods T I)) : Prop :=
-  Y.card + 1 = Fintype.card I ∧ ∃ X, isPrimitive (IST := IST) X ∧ Y ⊆ X
+  Y.card + 1 = Fintype.card I ∧ ∃ X, isPrimitiveNative (IST := IST) X ∧ Y ⊆ X
 
 omit [Inhabited T] [Fintype T] in
 /-- A primitive set can be represented by the room from which it was built. -/
@@ -363,7 +363,7 @@ lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
     (h : isAlmostPrimitiveNative (IST := IST) Y) :
     isAlmostPrimitive (IST := IST) Y := by
   rcases h with ⟨hcard, X, hPrim, hsub⟩
-  rcases hPrim with ⟨σ, C, hRoom, rfl⟩
+  rcases nativePrimitive_to_primitive hPrim with ⟨σ, C, hRoom, rfl⟩
   let τ := fromGoods (T := T) (I := I) Y
   let D := fromMissing (T := T) (I := I) Y
   have hYeq : Y = toAlmostPrimitive (I := I) τ D := eq_toAlmost_from_parts Y
@@ -399,7 +399,6 @@ lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
     exact hsub
   exact ⟨τ, D, σ, C, subset_toPrimitive_toAlmost_doorof hDoor hRoom hsubParts, hYeq⟩
 
-omit [Fintype T] in
 lemma almostPrimitive_to_nativeAlmostPrimitive {Y : Finset (ExtendedGoods T I)}
     (h : isAlmostPrimitive (IST := IST) Y) :
     isAlmostPrimitiveNative (IST := IST) Y := by
@@ -411,7 +410,7 @@ lemma almostPrimitive_to_nativeAlmostPrimitive {Y : Finset (ExtendedGoods T I)}
   have hRoom : IST.isRoom σ C := IST.isRoom_of_Door hDoorof
   constructor
   · exact card_toAlmostPrimitive_of_door hDoor
-  · exact ⟨toPrimitiveSet (I := I) σ C, room_to_primitive hRoom,
+  · exact ⟨toPrimitiveSet (I := I) σ C, primitive_to_nativePrimitive (room_to_primitive hRoom),
       doorof_toAlmost_subset_toPrimitive hDoorof⟩
 
 theorem isAlmostPrimitive_iff_native {Y : Finset (ExtendedGoods T I)} :
@@ -542,7 +541,7 @@ theorem native_primitive_erase_mainLemma
         have hpos : 0 < X.card := Finset.card_pos.mpr ⟨x, hx⟩
         omega
       exact hcardErase.trans hX.1
-    · exact ⟨X, nativePrimitive_to_primitive hX, Finset.erase_subset x X⟩
+    · exact ⟨X, hX, Finset.erase_subset x X⟩
   by_cases hInternal : (fromGoods (T := T) (I := I) Y).Nonempty
   · right
     obtain ⟨X₁, X₂, hNe, hPrim₁, hPrim₂, hSub₁, hSub₂, hUnique⟩ :=
@@ -570,6 +569,64 @@ theorem native_primitive_erase_mainLemma
   · left
     exact hInternal
 
+/--
+Scarf's main lemma in the paper's replacement form: after removing `x` from
+a primitive set `X`, either only slack vectors remain, or there is a unique
+new element `y ∉ X` such that `X - x + y` is primitive.
+-/
+theorem native_primitive_erase_replacement_mainLemma
+    {X : Finset (ExtendedGoods T I)} (hX : isPrimitiveNative (IST := IST) X)
+    {x : ExtendedGoods T I} (hx : x ∈ X) :
+    ¬ (fromGoods (T := T) (I := I) (X.erase x)).Nonempty ∨
+      ∃! y : ExtendedGoods T I,
+        y ∉ X ∧ isPrimitiveNative (IST := IST) (insert y (X.erase x)) := by
+  let Y := X.erase x
+  have hYcard : Y.card + 1 = Fintype.card I := by
+    change (X.erase x).card + 1 = Fintype.card I
+    rw [Finset.card_erase_of_mem hx]
+    have hpos : 0 < X.card := Finset.card_pos.mpr ⟨x, hx⟩
+    have hle : 1 ≤ X.card := Nat.succ_le_iff.mpr hpos
+    rw [Nat.sub_add_cancel hle, hX.1]
+  obtain hBoundary | hOther := native_primitive_erase_mainLemma (IST := IST) hX hx
+  · exact Or.inl hBoundary
+  · right
+    rcases hOther with ⟨X', ⟨hPrimX', hSub, hNe⟩, hUniqueX⟩
+    have hX'card : X'.card = Y.card + 1 := by
+      rw [hPrimX'.1, hYcard]
+    obtain ⟨y, hyNotY, hyInsert⟩ := exists_insert_eq_of_subset_card_eq_succ hSub hX'card
+    have hyNotX : y ∉ X := by
+      intro hyX
+      have hyx : y = x := by
+        by_contra hyNe
+        exact hyNotY (Finset.mem_erase.mpr ⟨hyNe, hyX⟩)
+      subst hyx
+      have hX'eqX : X' = X := by
+        rw [← hyInsert]
+        simp [hx]
+      exact hNe hX'eqX
+    refine ⟨y, ⟨hyNotX, ?_⟩, ?_⟩
+    · rw [hyInsert]
+      exact hPrimX'
+    · intro z hz
+      rcases hz with ⟨hzNotX, hzPrim⟩
+      have hNez : insert z Y ≠ X := by
+        intro hEq
+        have hzX : z ∈ X := by
+          rw [← hEq]
+          exact Finset.mem_insert_self z Y
+        exact hzNotX hzX
+      have hEqToX' : insert z Y = X' :=
+        hUniqueX (insert z Y) ⟨hzPrim, Finset.subset_insert z Y, hNez⟩
+      have hEqInsert : insert z Y = insert y Y := hEqToX'.trans hyInsert.symm
+      have hzNotY : z ∉ Y := fun hzY => hzNotX (Finset.erase_subset x X hzY)
+      have hzMem : z ∈ insert y Y := by
+        rw [← hEqInsert]
+        exact Finset.mem_insert_self z Y
+      rw [Finset.mem_insert] at hzMem
+      rcases hzMem with hzy | hzY
+      · exact hzy
+      · exact False.elim (hzNotY hzY)
+
 /-- The boundary almost primitive set made only of slacks, missing `i`. -/
 def slackBoundary (i : I) : Finset (ExtendedGoods T I) :=
   toAlmostPrimitive (T := T) (Finset.empty : Finset T) ({i} : Finset I)
@@ -594,6 +651,10 @@ lemma slackBoundary_isAlmostPrimitive (i : I) :
     · rfl
     · rfl
   exact door_to_almostPrimitive hDoorof
+
+lemma slackBoundary_isAlmostPrimitiveNative (i : I) :
+    isAlmostPrimitiveNative (IST := IST) (slackBoundary (T := T) (I := I) i) :=
+  almostPrimitive_to_nativeAlmostPrimitive (slackBoundary_isAlmostPrimitive (IST := IST) i)
 
 lemma slackBoundary_unique_incident_primitive (i : I) :
     ∃! X : Finset (ExtendedGoods T I),
@@ -649,6 +710,14 @@ lemma slackBoundary_unique_incident_primitive (i : I) :
         have hσNonempty : σ.Nonempty := IST.sigma_nonempty_of_room hRoom
         rw [← hτ_eq] at hσNonempty
         exact Finset.not_nonempty_empty hσNonempty
+
+lemma slackBoundary_unique_incident_nativePrimitive (i : I) :
+    ∃! X : Finset (ExtendedGoods T I),
+      isPrimitiveNative (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X := by
+  rcases slackBoundary_unique_incident_primitive (IST := IST) i with ⟨X, hX, hUnique⟩
+  refine ⟨X, ⟨primitive_to_nativePrimitive hX.1, hX.2⟩, ?_⟩
+  intro Y hY
+  exact hUnique Y ⟨nativePrimitive_to_primitive hY.1, hY.2⟩
 
 /--
 Incidence between an almost primitive face and a primitive set is exactly
@@ -1185,6 +1254,30 @@ theorem coordinatePrimitive_iff_native {u : I → T → ℝ} {M : I → ℝ}
     {X : Finset (ExtendedGoods T I)} :
     isCoordinatePrimitive (T := T) (I := I) u M X ↔ isPrimitiveNative (IST := IST) X :=
   ⟨coordinatePrimitive_to_nativePrimitive hu, nativePrimitive_to_coordinatePrimitive hu hM⟩
+
+/--
+Scarf's main lemma for the literal coordinate-dominance definition of
+primitive sets on `T ∪ I`.
+-/
+theorem coordinatePrimitive_erase_replacement_mainLemma
+    {u : I → T → ℝ} {M : I → ℝ}
+    (hu : PositiveUtilityRealization (IST := IST) u)
+    (hM : SlackBounds (T := T) (I := I) u M)
+    {X : Finset (ExtendedGoods T I)}
+    (hX : isCoordinatePrimitive (T := T) (I := I) u M X)
+    {x : ExtendedGoods T I} (hx : x ∈ X) :
+    ¬ (fromGoods (T := T) (I := I) (X.erase x)).Nonempty ∨
+      ∃! y : ExtendedGoods T I,
+        y ∉ X ∧ isCoordinatePrimitive (T := T) (I := I) u M (insert y (X.erase x)) := by
+  obtain hBoundary | hReplace :=
+    native_primitive_erase_replacement_mainLemma
+      (IST := IST) (coordinatePrimitive_to_nativePrimitive hu hX) hx
+  · exact Or.inl hBoundary
+  · right
+    rcases hReplace with ⟨y, ⟨hyNotX, hyPrim⟩, hUnique⟩
+    refine ⟨y, ⟨hyNotX, (coordinatePrimitive_iff_native hu hM).2 hyPrim⟩, ?_⟩
+    intro z hz
+    exact hUnique z ⟨hz.1, (coordinatePrimitive_iff_native hu hM).1 hz.2⟩
 
 end IndexedLOrder
 
