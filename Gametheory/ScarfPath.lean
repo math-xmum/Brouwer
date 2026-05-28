@@ -626,11 +626,13 @@ theorem exists_maximal_component_path_of_degree_le_two
   omega
 
 /--
-Generic graph-theoretic step 2: a maximal component path whose endpoints have
-no unused outgoing neighbors covers the whole component.
+Generic graph-theoretic step 2a: in a graph of degree at most two, a maximal
+component path has no neighbor outside its support.  This is the point that
+rules out T-shaped components.
 -/
-theorem maximal_component_path_support_eq_component
+theorem maximal_component_path_no_escape_of_degree_le_two
     {α : Type*} [Fintype α] (G : SimpleGraph α)
+    (hdeg : simpleGraphDegreeAtMostTwo G)
     {component : G.ConnectedComponent} {u v : α} {p : G.Walk u v}
     (hp : p.IsPath)
     (hp_sub : {x : α | x ∈ p.support} ⊆ component.supp)
@@ -639,14 +641,120 @@ theorem maximal_component_path_support_eq_component
         p'.IsPath →
           {x : α | x ∈ p'.support} ⊆ component.supp →
             p'.length ≤ p.length)
+    {x y : α}
+    (hx : x ∈ p.support)
+    (hxy : G.Adj x y)
+    (hycomp : y ∈ component.supp) :
+    y ∈ p.support := by
+  by_contra hyNot
+  by_cases hxu : x = u
+  · subst hxu
+    let p' : G.Walk y v := SimpleGraph.Walk.cons hxy.symm p
+    have hp' : p'.IsPath := by
+      change (SimpleGraph.Walk.cons hxy.symm p).IsPath
+      exact (SimpleGraph.Walk.cons_isPath_iff hxy.symm p).2 ⟨hp, hyNot⟩
+    have hp'_sub : {z : α | z ∈ p'.support} ⊆ component.supp := by
+      intro z hz
+      simp [p', SimpleGraph.Walk.support_cons] at hz
+      rcases hz with rfl | hz
+      · exact hycomp
+      · exact hp_sub hz
+    have hle := hmax y v p' hp' hp'_sub
+    simp [p'] at hle
+  by_cases hxv : x = v
+  · subst hxv
+    let p' : G.Walk u y := p.concat hxy
+    have hp' : p'.IsPath := by
+      change (p.concat hxy).IsPath
+      exact (SimpleGraph.Walk.concat_isPath_iff hxy).2 ⟨hp, hyNot⟩
+    have hp'_sub : {z : α | z ∈ p'.support} ⊆ component.supp := by
+      intro z hz
+      simp [p'] at hz
+      rcases hz with hz | rfl
+      · exact hp_sub hz
+      · exact hycomp
+    have hle := hmax u y p' hp' hp'_sub
+    simp [p'] at hle
+  obtain ⟨q, r, hqPath, hrPath, hqr⟩ := (SimpleGraph.Walk.IsPath.mem_support_iff_exists_append hp).1 hx
+  have hqNonNil : ¬ q.Nil := by
+    apply SimpleGraph.Walk.not_nil_of_ne
+    exact fun hux => hxu hux.symm
+  have hrNonNil : ¬ r.Nil := by
+    apply SimpleGraph.Walk.not_nil_of_ne
+    exact hxv
+  let a : α := q.penultimate
+  let b : α := r.snd
+  have haAdj : G.Adj x a := (q.adj_penultimate hqNonNil).symm
+  have hbAdj : G.Adj x b := r.adj_snd hrNonNil
+  have haQ : a ∈ q.support := by
+    exact q.getVert_mem_support (q.length - 1)
+  have hbR : b ∈ r.support := by
+    exact r.getVert_mem_support 1
+  have hpqr : (q.append r).IsPath := by
+    rwa [← hqr]
+  have hb_ne_x : b ≠ x := hbAdj.ne.symm
+  have hab : a ≠ b :=
+    SimpleGraph.Walk.IsPath.ne_of_mem_support_of_append hpqr hb_ne_x haQ hbR
+  have haP : a ∈ p.support := by
+    rw [hqr, SimpleGraph.Walk.mem_support_append_iff]
+    exact Or.inl haQ
+  have hbP : b ∈ p.support := by
+    rw [hqr, SimpleGraph.Walk.mem_support_append_iff]
+    exact Or.inr hbR
+  have hay : a ≠ y := fun h => hyNot (h ▸ haP)
+  have hby : b ≠ y := fun h => hyNot (h ▸ hbP)
+  have hTripleSubset : ({a, b, y} : Finset α) ⊆ (G.neighborFinset x) := by
+    intro z hz
+    rw [Finset.mem_insert, Finset.mem_insert, Finset.mem_singleton] at hz
+    rw [SimpleGraph.mem_neighborFinset]
+    rcases hz with rfl | rfl | rfl
+    · exact haAdj
+    · exact hbAdj
+    · exact hxy
+  have hTripleCard : ({a, b, y} : Finset α).card = 3 := by
+    rw [Finset.card_eq_three]
+    exact ⟨a, b, y, hab, hay, hby, rfl⟩
+  have hThreeLe : 3 ≤ G.degree x := by
+    rw [SimpleGraph.degree, ← hTripleCard]
+    exact Finset.card_le_card hTripleSubset
+  have hTwo := hdeg x
+  omega
+
+/--
+Generic graph-theoretic step 2b: if a component path has no edge escaping its
+support inside the component, then its support is the whole component.
+-/
+theorem component_path_support_eq_component_of_no_escape
+    {α : Type*} [Fintype α] (G : SimpleGraph α)
+    {component : G.ConnectedComponent} {u v : α} {p : G.Walk u v}
+    (hp_sub : {x : α | x ∈ p.support} ⊆ component.supp)
     (hend :
       ∀ ⦃x y : α⦄,
-        x = u ∨ x = v →
+        x ∈ p.support →
           G.Adj x y →
             y ∈ component.supp →
               y ∈ p.support) :
     {x : α | x ∈ p.support} = component.supp := by
-  sorry
+  ext z
+  constructor
+  · intro hz
+    exact hp_sub hz
+  · intro hzcomp
+    by_contra hzNot
+    have huSupport : u ∈ p.support := p.start_mem_support
+    have hucomp : u ∈ component.supp := hp_sub huSupport
+    have hReach : G.Reachable u z := by
+      apply SimpleGraph.ConnectedComponent.exact
+      rw [SimpleGraph.ConnectedComponent.mem_supp_iff] at hucomp hzcomp
+      exact hucomp.trans hzcomp.symm
+    rcases hReach with ⟨q⟩
+    obtain ⟨d, hdq, hdfst, hdsnd⟩ :=
+      q.exists_boundary_dart {x : α | x ∈ p.support} huSupport hzNot
+    have hdfstComp : d.fst ∈ component.supp := hp_sub hdfst
+    have hdsndComp : d.snd ∈ component.supp := by
+      exact (SimpleGraph.ConnectedComponent.mem_supp_congr_adj component d.adj).1 hdfstComp
+    have hEscape : d.snd ∈ p.support := hend hdfst d.adj hdsndComp
+    exact hdsnd hEscape
 
 /- Generic graph-theoretic step 3: if a maximal component path in a degree-at-most
 two graph has a closing edge not already used by the path, then the component
@@ -694,41 +802,16 @@ theorem simpleGraph_components_path_or_cycle_of_degree_le_two
   intro component
   obtain ⟨u, v, p, hp, hp_sub, hmax⟩ :=
     exists_maximal_component_path_of_degree_le_two G hdeg component
-  have hend :
+  have hNoEscape :
       ∀ ⦃x y : α⦄,
-        x = u ∨ x = v →
+        x ∈ p.support →
           G.Adj x y →
             y ∈ component.supp →
               y ∈ p.support := by
     intro x y hx hxy hycomp
-    by_contra hyNot
-    rcases hx with rfl | rfl
-    · let p' : G.Walk y v := SimpleGraph.Walk.cons hxy.symm p
-      have hp' : p'.IsPath := by
-        change (SimpleGraph.Walk.cons hxy.symm p).IsPath
-        exact (SimpleGraph.Walk.cons_isPath_iff hxy.symm p).2 ⟨hp, hyNot⟩
-      have hp'_sub : {z : α | z ∈ p'.support} ⊆ component.supp := by
-        intro z hz
-        simp [p', SimpleGraph.Walk.support_cons] at hz
-        rcases hz with rfl | hz
-        · exact hycomp
-        · exact hp_sub hz
-      have hle := hmax y v p' hp' hp'_sub
-      simp [p'] at hle
-    · let p' : G.Walk u y := p.concat hxy
-      have hp' : p'.IsPath := by
-        change (p.concat hxy).IsPath
-        exact (SimpleGraph.Walk.concat_isPath_iff hxy).2 ⟨hp, hyNot⟩
-      have hp'_sub : {z : α | z ∈ p'.support} ⊆ component.supp := by
-        intro z hz
-        simp [p'] at hz
-        rcases hz with hz | rfl
-        · exact hp_sub hz
-        · exact hycomp
-      have hle := hmax u y p' hp' hp'_sub
-      simp [p'] at hle
+    exact maximal_component_path_no_escape_of_degree_le_two G hdeg hp hp_sub hmax hx hxy hycomp
   have hsupp : {x : α | x ∈ p.support} = component.supp :=
-    maximal_component_path_support_eq_component G hp hp_sub hmax hend
+    component_path_support_eq_component_of_no_escape G hp_sub hNoEscape
   by_cases hcycle : G.Adj v u ∧ s(v, u) ∉ p.edges
   · exact Or.inr (component_cycle_of_maximal_path_closes G hp hsupp hcycle.1 hcycle.2)
   · exact Or.inl (component_path_of_support_eq_component G hp hsupp)
