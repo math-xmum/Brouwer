@@ -493,6 +493,92 @@ lemma slackBoundary_unique_incident_primitive (i : I) :
         rw [← hτ_eq] at hσNonempty
         exact Finset.not_nonempty_empty hσNonempty
 
+/--
+Incidence between an almost primitive face and a primitive set is exactly
+the old room-door incidence after translating both sides back to `(goods, indices)`.
+-/
+lemma almostPrimitive_subset_primitive_iff_doorof
+    {Y X : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y) (hX : isPrimitive (IST := IST) X) :
+    Y ⊆ X ↔
+      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
+        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+  constructor
+  · intro hSub
+    have hDoor : IST.isDoor (fromGoods (T := T) (I := I) Y)
+        (fromMissing (T := T) (I := I) Y) := almostPrimitive_to_door hY
+    have hRoom : IST.isRoom (fromGoods (T := T) (I := I) X)
+        (fromMissing (T := T) (I := I) X) := primitive_to_room hX
+    apply subset_toPrimitive_toAlmost_doorof hDoor hRoom
+    rw [← almostPrimitive_eq_toAlmost_from_parts hY, ← primitive_eq_toPrimitive_from_parts hX]
+    exact hSub
+  · intro hDoorof
+    rw [almostPrimitive_eq_toAlmost_from_parts hY, primitive_eq_toPrimitive_from_parts hX]
+    exact doorof_toAlmost_subset_toPrimitive hDoorof
+
+/--
+A Scarf replacement step: two primitive sets are adjacent if they share an
+almost primitive face. This is the primitive-set version of walking through a
+door from one room to another.
+-/
+def primitiveReplacementStep (X X' : Finset (ExtendedGoods T I)) : Prop :=
+  isPrimitive (IST := IST) X ∧
+    isPrimitive (IST := IST) X' ∧
+      X ≠ X' ∧
+        ∃ Y, isAlmostPrimitive (IST := IST) Y ∧ Y ⊆ X ∧ Y ⊆ X'
+
+omit [Inhabited T] [Fintype T] in
+lemma primitiveReplacementStep.symm {X X' : Finset (ExtendedGoods T I)}
+    (h : primitiveReplacementStep (IST := IST) X X') :
+    primitiveReplacementStep (IST := IST) X' X := by
+  rcases h with ⟨hX, hX', hne, Y, hY, hYX, hYX'⟩
+  exact ⟨hX', hX, hne.symm, Y, hY, hYX', hYX⟩
+
+lemma replacementStep_has_common_door {X X' : Finset (ExtendedGoods T I)}
+    (h : primitiveReplacementStep (IST := IST) X X') :
+    ∃ Y,
+      isAlmostPrimitive (IST := IST) Y ∧
+      Y ⊆ X ∧ Y ⊆ X' ∧
+      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
+        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) ∧
+      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
+        (fromGoods (T := T) (I := I) X') (fromMissing (T := T) (I := I) X') := by
+  rcases h with ⟨hX, hX', _hne, Y, hY, hYX, hYX'⟩
+  exact ⟨Y, hY, hYX, hYX',
+    (almostPrimitive_subset_primitive_iff_doorof hY hX).mp hYX,
+    (almostPrimitive_subset_primitive_iff_doorof hY hX').mp hYX'⟩
+
+lemma common_door_gives_replacementStep
+    {τ : Finset T} {D : Finset I} {σ₁ σ₂ : Finset T} {C₁ C₂ : Finset I}
+    (hDoor₁ : IST.isDoorof τ D σ₁ C₁)
+    (hDoor₂ : IST.isDoorof τ D σ₂ C₂)
+    (hNe : (σ₁, C₁) ≠ (σ₂, C₂)) :
+    primitiveReplacementStep (IST := IST)
+      (toPrimitiveSet (I := I) σ₁ C₁) (toPrimitiveSet (I := I) σ₂ C₂) := by
+  have hRoom₁ : IST.isRoom σ₁ C₁ := IST.isRoom_of_Door hDoor₁
+  have hRoom₂ : IST.isRoom σ₂ C₂ := IST.isRoom_of_Door hDoor₂
+  refine ⟨room_to_primitive hRoom₁, room_to_primitive hRoom₂, ?_,
+    toAlmostPrimitive (I := I) τ D, door_to_almostPrimitive hDoor₁, ?_, ?_⟩
+  · intro hEq
+    have hσ : σ₁ = σ₂ := by
+      have := congrArg (fromGoods (T := T) (I := I)) hEq
+      simpa using this
+    have hC : C₁ = C₂ := by
+      have := congrArg (fromMissing (T := T) (I := I)) hEq
+      simpa using this
+    exact hNe (by simp [hσ, hC])
+  · exact doorof_toAlmost_subset_toPrimitive hDoor₁
+  · exact doorof_toAlmost_subset_toPrimitive hDoor₂
+
+theorem internal_almostPrimitive_replacementStep {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y)
+    (hInternal : (fromGoods (T := T) (I := I) Y).Nonempty) :
+    ∃ X₁ X₂,
+      primitiveReplacementStep (IST := IST) X₁ X₂ ∧ Y ⊆ X₁ ∧ Y ⊆ X₂ := by
+  obtain ⟨X₁, X₂, hNe, hPrim₁, hPrim₂, hSub₁, hSub₂⟩ :=
+    internal_almostPrimitive_two_incident_primitives hY hInternal
+  exact ⟨X₁, X₂, ⟨hPrim₁, hPrim₂, hNe, Y, hY, hSub₁, hSub₂⟩, hSub₁, hSub₂⟩
+
 /-- Extend a coloring of goods by coloring each slack vector by its own index. -/
 def extendedColoring (c : T → I) : ExtendedGoods T I → I
   | Sum.inl t => c t
@@ -568,6 +654,79 @@ structure PositiveUtilityRealization (u : I → T → ℝ) : Prop extends
     UtilityRealization (IST := IST) u where
   positive : ∀ i x, 0 < u i x
 
+/-- The lower contour set of `x` in the order indexed by `i`. -/
+def orderLowerSet (i : I) (x : T) : Finset T :=
+  letI : LinearOrder T := IST i
+  Finset.univ.filter (fun y : T => y ≤ x)
+
+/--
+The finite rank utility associated to an indexed order. Adding `1` makes it
+positive, matching the economic convention in the paper.
+-/
+def orderUtility (i : I) (x : T) : ℝ :=
+  ((orderLowerSet (IST := IST) i x).card : ℝ) + 1
+
+omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
+lemma orderUtility_positive (i : I) (x : T) :
+    0 < orderUtility (IST := IST) i x := by
+  unfold orderUtility
+  positivity
+
+omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
+lemma orderUtility_order_iff (i : I) (x y : T) :
+    (IST i).lt x y ↔
+      orderUtility (IST := IST) i x < orderUtility (IST := IST) i y := by
+  letI : LinearOrder T := IST i
+  constructor
+  · intro hxy
+    unfold orderUtility orderLowerSet
+    have hSubset : Finset.univ.filter (fun z : T => z ≤ x) ⊂
+        Finset.univ.filter (fun z : T => z ≤ y) := by
+      constructor
+      · intro z hz
+        rw [Finset.mem_filter] at hz ⊢
+        exact ⟨hz.1, le_trans hz.2 (le_of_lt hxy)⟩
+      · intro hEq
+        have hy_mem_y : y ∈ Finset.univ.filter (fun z : T => z ≤ y) := by
+          simp
+        have hy_mem_x : y ∈ Finset.univ.filter (fun z : T => z ≤ x) := by
+          exact hEq hy_mem_y
+        rw [Finset.mem_filter] at hy_mem_x
+        exact not_le_of_gt hxy hy_mem_x.2
+    have hCard : (Finset.univ.filter (fun z : T => z ≤ x)).card <
+        (Finset.univ.filter (fun z : T => z ≤ y)).card :=
+      Finset.card_lt_card hSubset
+    exact_mod_cast (Nat.succ_lt_succ hCard)
+  · intro hlt
+    by_contra hnot
+    have hyx : y ≤ x := le_of_not_gt hnot
+    unfold orderUtility orderLowerSet at hlt
+    have hSubset : Finset.univ.filter (fun z : T => z ≤ y) ⊆
+        Finset.univ.filter (fun z : T => z ≤ x) := by
+      intro z hz
+      rw [Finset.mem_filter] at hz ⊢
+      exact ⟨hz.1, le_trans hz.2 hyx⟩
+    have hCard : (Finset.univ.filter (fun z : T => z ≤ y)).card ≤
+        (Finset.univ.filter (fun z : T => z ≤ x)).card :=
+      Finset.card_le_card hSubset
+    have hNot : ¬
+        (((Finset.univ.filter (fun z : T => z ≤ x)).card : ℝ) + 1 <
+          ((Finset.univ.filter (fun z : T => z ≤ y)).card : ℝ) + 1) := by
+      apply not_lt.mpr
+      exact_mod_cast Nat.succ_le_succ hCard
+    exact hNot hlt
+
+omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
+lemma orderUtility_realization :
+    UtilityRealization (IST := IST) (fun i x => orderUtility (IST := IST) i x) where
+  order_iff := orderUtility_order_iff
+
+omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
+lemma positiveOrderUtility_realization :
+    PositiveUtilityRealization (IST := IST) (fun i x => orderUtility (IST := IST) i x) where
+  order_iff := orderUtility_order_iff
+  positive := orderUtility_positive
+
 /--
 The coordinate model of Scarf's slack vector for face `i`: the `i`th
 coordinate is zero and all other coordinates are the chosen large value `M i`.
@@ -584,6 +743,12 @@ omit [Fintype I] in
 @[simp] lemma slackVector_of_ne (M : I → ℝ) {i j : I} (h : j ≠ i) :
     slackVector (I := I) M i j = M i := by
   simp [slackVector, h]
+
+omit [Fintype I] in
+lemma slackVector_other_coordinate_gt {M : I → ℝ} {i j : I} (hji : j ≠ i)
+    {r : ℝ} (hr : r < M i) :
+    r < slackVector (I := I) M i j := by
+  simpa [slackVector, hji] using hr
 
 end IndexedLOrder
 
