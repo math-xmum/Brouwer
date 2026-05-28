@@ -1301,6 +1301,20 @@ lemma scarfSplitReplacementStep_GiEdges
     algorithm_incidence_to_GiEdge (IST := IST) hY hYColor hX (Or.inl hXColor) hYX,
     algorithm_incidence_to_GiEdge (IST := IST) hY hYColor hX' hX'Color hYX'⟩
 
+/--
+The graph-walk segment represented by one split Scarf replacement step:
+`X → Y → X'`.
+-/
+def scarfSplitReplacementStep_walk
+    {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
+    (h : scarfSplitReplacementStep (IST := IST) c i X Y X') :
+    (GiGraph (IST := IST) c i).Walk
+      (associatedCell (T := T) (I := I) X)
+      (associatedCell (T := T) (I := I) X') :=
+  let hEdges := scarfSplitReplacementStep_GiEdges (IST := IST) h
+  SimpleGraph.Walk.cons hEdges.1
+    (SimpleGraph.Walk.cons (GiEdge.symm hEdges.2) SimpleGraph.Walk.nil)
+
 lemma initial_scarf_step_to_GiEdge (c : T → I) (i : I) :
     ∃ X : Finset (ExtendedGoods T I),
       isPrimitive (IST := IST) X ∧
@@ -1322,6 +1336,43 @@ lemma initial_scarf_step_to_GiEdge (c : T → I) (i : I) :
       GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) :=
     GiRoomVertex_of_incident_typed_door hDoorVertex.2 hDoorof
   exact ⟨X, hPrim, hSub, Or.inl ⟨hRoomVertex, hDoorVertex, hDoorof⟩⟩
+
+/-- The first graph-walk segment of Scarf's algorithm, from `I - i` into the building. -/
+lemma initial_scarf_step_walk (c : T → I) (i : I) :
+    ∃ X : Finset (ExtendedGoods T I),
+      ∃ _p : (GiGraph (IST := IST) c i).Walk
+          (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+          (associatedCell (T := T) (I := I) X),
+        isPrimitive (IST := IST) X ∧
+        slackBoundary (T := T) (I := I) i ⊆ X := by
+  rcases initial_scarf_step_to_GiEdge (IST := IST) c i with ⟨X, hPrim, hSub, hEdge⟩
+  refine ⟨X, ?_, hPrim, hSub⟩
+  exact SimpleGraph.Walk.cons
+    (show (GiGraph (IST := IST) c i).Adj
+      (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+      (associatedCell (T := T) (I := I) X) from GiEdge.symm hEdge)
+    SimpleGraph.Walk.nil
+
+/--
+A complete primitive-language Scarf algorithm trace of type `i`.  It starts at
+the boundary face `I - i`, follows `G_i`, and terminates at a fully colored
+primitive set.  The local lemmas above build such walks from initial and split
+replacement segments.
+-/
+structure ScarfAlgorithmTrace (c : T → I) (i : I) where
+  terminal : Finset (ExtendedGoods T I)
+  terminal_fullyColored : isFullyColoredPrimitive (IST := IST) c terminal
+  walk : (GiGraph (IST := IST) c i).Walk
+    (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+    (associatedCell (T := T) (I := I) terminal)
+
+lemma ScarfAlgorithmTrace.terminal_colorful_room
+    {c : T → I} {i : I} (trace : ScarfAlgorithmTrace (IST := IST) c i) :
+    IST.isColorful c
+      (fromGoods (T := T) (I := I) trace.terminal)
+      (fromMissing (T := T) (I := I) trace.terminal) :=
+  (full_color_primitive_iff_colorful_associated_room c trace.terminal_fullyColored.1).1
+    trace.terminal_fullyColored.2
 
 /--
 Scarf's combinatorial theorem in the primitive-set language from §3: after
