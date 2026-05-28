@@ -186,8 +186,9 @@ lemma primitive_to_room {X : Finset (ExtendedGoods T I)} (h : isPrimitive (IST :
   rcases h with ⟨σ, C, hRoom, rfl⟩
   simpa using hRoom
 
+omit [Inhabited T] in
 lemma primitive_eq_toPrimitive_from_parts {X : Finset (ExtendedGoods T I)}
-    (h : isPrimitive (IST := IST) X) :
+    (_h : isPrimitive (IST := IST) X) :
     X = toPrimitiveSet (I := I)
       (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
   exact eq_toPrimitive_from_parts X
@@ -268,12 +269,14 @@ lemma doorof_iff_subset_primitive {τ σ : Finset T} {D C : Finset I} :
   exact ⟨hRoom, door_to_almostPrimitive h, room_to_primitive hRoom,
     doorof_toAlmost_subset_toPrimitive h⟩
 
+omit [Inhabited T] in
 lemma almostPrimitive_eq_toAlmost_from_parts {Y : Finset (ExtendedGoods T I)}
-    (h : isAlmostPrimitive (IST := IST) Y) :
+    (_h : isAlmostPrimitive (IST := IST) Y) :
     Y = toAlmostPrimitive (I := I)
       (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y) := by
   exact eq_toAlmost_from_parts Y
 
+omit [Fintype T] in
 lemma subset_toPrimitive_toAlmost_doorof {τ σ : Finset T} {D C : Finset I}
     (hDoor : IST.isDoor τ D) (hRoom : IST.isRoom σ C)
     (hsub : toAlmostPrimitive (I := I) τ D ⊆ toPrimitiveSet (I := I) σ C) :
@@ -331,7 +334,6 @@ lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
     simpa using hx
   have hCsubD : C ⊆ D := by
     intro i hiC
-    change i ∈ D
     rw [mem_fromMissing]
     intro hy
     have hx : Sum.inr i ∈ toPrimitiveSet (T := T) σ C := hsub hy
@@ -357,6 +359,7 @@ lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
     exact hsub
   exact ⟨τ, D, σ, C, subset_toPrimitive_toAlmost_doorof hDoor hRoom hsubParts, hYeq⟩
 
+omit [Fintype T] in
 lemma almostPrimitive_to_nativeAlmostPrimitive {Y : Finset (ExtendedGoods T I)}
     (h : isAlmostPrimitive (IST := IST) Y) :
     isAlmostPrimitiveNative (IST := IST) Y := by
@@ -434,6 +437,61 @@ lemma slackBoundary_isAlmostPrimitive (i : I) :
     · rfl
     · rfl
   exact door_to_almostPrimitive hDoorof
+
+lemma slackBoundary_unique_incident_primitive (i : I) :
+    ∃! X : Finset (ExtendedGoods T I),
+      isPrimitive (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X := by
+  let xMax : T := @Finset.max' T (IST i) Finset.univ
+    (Finset.univ_nonempty_iff.mpr ⟨(default : T)⟩)
+  let X₀ := toPrimitiveSet (I := I) ({xMax} : Finset T) ({i} : Finset I)
+  have hOutside : IST.isOutsideDoor (Finset.empty : Finset T) ({i} : Finset I) :=
+    IST.outsidedoor_singleton i
+  have hCell : IST.isCell ({xMax} : Finset T) ({i} : Finset I) := by
+    intro y
+    refine ⟨i, by simp, ?_⟩
+    intro x hx
+    rw [Finset.mem_singleton.mp hx]
+    exact @Finset.le_max' T (IST i) Finset.univ y (Finset.mem_univ y)
+  have hDoorof₀ : IST.isDoorof (Finset.empty : Finset T) ({i} : Finset I)
+      ({xMax} : Finset T) ({i} : Finset I) := by
+    apply isDoorof.idoor hCell hOutside.1 xMax
+    · exact Finset.notMem_empty xMax
+    · rfl
+    · rfl
+  have hRoom₀ : IST.isRoom ({xMax} : Finset T) ({i} : Finset I) := IST.isRoom_of_Door hDoorof₀
+  refine ⟨X₀, ⟨room_to_primitive hRoom₀, ?_⟩, ?_⟩
+  · exact doorof_toAlmost_subset_toPrimitive hDoorof₀
+  · intro X hX
+    rcases hX with ⟨hPrim, hSub⟩
+    rcases hPrim with ⟨σ, C, hRoom, rfl⟩
+    have hDoorof : IST.isDoorof (Finset.empty : Finset T) ({i} : Finset I) σ C :=
+      subset_toPrimitive_toAlmost_doorof hOutside.1 hRoom hSub
+    cases hDoorof with
+    | idoor hCellσC _ x _ hInsert hD_eq =>
+        have hσ : σ = ({x} : Finset T) := by
+          simpa using hInsert.symm
+        have hC : C = ({i} : Finset I) := hD_eq.symm
+        have hx_eq : x = xMax := by
+          have hAbove : ∀ y : T, (IST i).le y x := by
+            intro y
+            obtain ⟨j, hj, hle⟩ := hCellσC y
+            have hji : j = i := by
+              rw [hC] at hj
+              exact Finset.mem_singleton.mp hj
+            subst hji
+            apply hle
+            rw [hσ]
+            simp
+          have hx_le_max : (IST i).le x xMax :=
+            @Finset.le_max' T (IST i) Finset.univ x (Finset.mem_univ x)
+          have hmax_le_x : (IST i).le xMax x := hAbove xMax
+          exact @le_antisymm T (IST i).toPartialOrder x xMax hx_le_max hmax_le_x
+        rw [hσ, hC, hx_eq]
+    | odoor _ _ j _ hτ_eq _ =>
+        exfalso
+        have hσNonempty : σ.Nonempty := IST.sigma_nonempty_of_room hRoom
+        rw [← hτ_eq] at hσNonempty
+        exact Finset.not_nonempty_empty hσNonempty
 
 /-- Extend a coloring of goods by coloring each slack vector by its own index. -/
 def extendedColoring (c : T → I) : ExtendedGoods T I → I
