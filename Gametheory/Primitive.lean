@@ -1129,6 +1129,36 @@ def primitiveGiPath (c : T → I) (i : I) :
   | [_] => True
   | Z :: W :: rest => primitiveGiStep (IST := IST) c i Z W ∧ primitiveGiPath c i (W :: rest)
 
+/-- A lightweight graph path predicate: consecutive vertices are related by `step`. -/
+def graphPath {α : Type*} (step : α → α → Prop) : List α → Prop
+  | [] => True
+  | [_] => True
+  | x :: y :: rest => step x y ∧ graphPath step (y :: rest)
+
+/--
+Abstract path uniqueness under a faithful projection.  This is the graph-level
+form of the fact used in §3: once the map from Scarf's primitive language to
+the room-door graph is injective, a projected path has at most one lift.
+-/
+theorem graphPath_projection_unique {α β : Type*} {step : α → α → Prop} {π : α → β}
+    (hπ : Function.Injective π) {p q : List α}
+    (_hp : graphPath step p) (_hq : graphPath step q)
+    (hproj : p.map π = q.map π) :
+    p = q := by
+  exact List.map_injective_iff.2 hπ hproj
+
+omit [Inhabited T] in
+lemma primitiveGiPath_graphPath (c : T → I) (i : I)
+    (zs : List (Finset (ExtendedGoods T I))) :
+    primitiveGiPath (IST := IST) c i zs ↔ graphPath (primitiveGiStep (IST := IST) c i) zs := by
+  induction zs with
+  | nil => simp [primitiveGiPath, graphPath]
+  | cons z zs ih =>
+      cases zs with
+      | nil => simp [primitiveGiPath, graphPath]
+      | cons w rest =>
+          simp [primitiveGiPath, graphPath, ih]
+
 /-- The room/door cell associated to a primitive or almost primitive set. -/
 def projectedCell (Z : Finset (ExtendedGoods T I)) : Finset T × Finset I :=
   (fromGoods (T := T) (I := I) Z, fromMissing (T := T) (I := I) Z)
@@ -1158,6 +1188,25 @@ theorem primitiveGiSequence_projection_unique
         ws.map (projectedCell (T := T) (I := I))) :
     zs = ws := by
   exact List.map_injective_iff.2 (projectedCell_injective (T := T) (I := I)) h
+
+omit [Inhabited T] in
+/--
+Specialization of the abstract graph theorem to primitive `G_i` paths: the
+room-door projection determines the split Scarf path uniquely.
+-/
+theorem primitiveGiPath_projection_unique {c : T → I} {i : I}
+    {zs ws : List (Finset (ExtendedGoods T I))}
+    (hzs : primitiveGiPath (IST := IST) c i zs)
+    (hws : primitiveGiPath (IST := IST) c i ws)
+    (h :
+      zs.map (projectedCell (T := T) (I := I)) =
+        ws.map (projectedCell (T := T) (I := I))) :
+    zs = ws := by
+  exact graphPath_projection_unique
+    (projectedCell_injective (T := T) (I := I))
+    ((primitiveGiPath_graphPath (IST := IST) c i zs).1 hzs)
+    ((primitiveGiPath_graphPath (IST := IST) c i ws).1 hws)
+    h
 
 /--
 Scarf's combinatorial theorem in the primitive-set language from §3: after
@@ -1538,6 +1587,71 @@ def CoordinateValuesDefineLinearOrders (u : I → T → ℝ) (M : I → ℝ) : P
 def SlackHeightsPairwiseDistinct (M : I → ℝ) : Prop :=
   Function.Injective M
 
+omit [Inhabited T] IST in
+/-- All utility coordinates, as a finite set of real numbers. -/
+noncomputable def utilityCoordinateValues (u : I → T → ℝ) : Finset ℝ :=
+  (Finset.univ.product Finset.univ).image (fun p : I × T => u p.1 p.2)
+
+omit [DecidableEq T] [DecidableEq I] IST in
+lemma utilityCoordinateValues_nonempty [Inhabited I] (u : I → T → ℝ) :
+    (utilityCoordinateValues (T := T) (I := I) u).Nonempty := by
+  refine ⟨u default default, ?_⟩
+  unfold utilityCoordinateValues
+  rw [Finset.mem_image]
+  exact ⟨((default : I), (default : T)), by simp, rfl⟩
+
+omit IST in
+/--
+A strict upper bound for all utility coordinates.  This packages the finite
+maximum used to make the slack heights dominate the goods coordinates.
+-/
+noncomputable def utilityCoordinateBound [Inhabited I] (u : I → T → ℝ) : ℝ :=
+  (utilityCoordinateValues (T := T) (I := I) u).max'
+    (utilityCoordinateValues_nonempty (T := T) (I := I) u) + 1
+
+omit [DecidableEq T] [DecidableEq I] IST in
+lemma utility_lt_utilityCoordinateBound [Inhabited I] (u : I → T → ℝ) (j : I) (x : T) :
+    u j x < utilityCoordinateBound (T := T) (I := I) u := by
+  unfold utilityCoordinateBound
+  have hmem : u j x ∈ utilityCoordinateValues (T := T) (I := I) u := by
+    unfold utilityCoordinateValues
+    rw [Finset.mem_image]
+    exact ⟨(j, x), by simp, rfl⟩
+  have hle :
+      u j x ≤ (utilityCoordinateValues (T := T) (I := I) u).max'
+        (utilityCoordinateValues_nonempty (T := T) (I := I) u) :=
+    Finset.le_max' _ _ hmem
+  linarith
+
+/--
+An explicit version of the paper's "perturb the slack heights" step: start
+above every utility coordinate and then add the finite index of each trader.
+-/
+noncomputable def perturbedSlackHeight [Inhabited I] (u : I → T → ℝ) : I → ℝ :=
+  fun i => utilityCoordinateBound (T := T) (I := I) u + ((Fintype.equivFin I i).val : ℝ)
+
+omit [DecidableEq T] IST in
+lemma perturbedSlackHeight_slackBounds [Inhabited I] (u : I → T → ℝ) :
+    SlackBounds (T := T) (I := I) u (perturbedSlackHeight (T := T) (I := I) u) := by
+  rw [slackBounds_iff_heights_gt_coordinates]
+  intro i j x _hji
+  have hlt := utility_lt_utilityCoordinateBound (T := T) (I := I) u j x
+  have hnonneg : 0 ≤ ((Fintype.equivFin I i).val : ℝ) := by positivity
+  unfold perturbedSlackHeight
+  linarith
+
+omit [DecidableEq T] [DecidableEq I] IST in
+lemma perturbedSlackHeight_pairwiseDistinct [Inhabited I] (u : I → T → ℝ) :
+    SlackHeightsPairwiseDistinct (I := I) (perturbedSlackHeight (T := T) (I := I) u) := by
+  intro i j hij
+  apply (Fintype.equivFin I).injective
+  apply Fin.ext
+  have hvalReal :
+      ((Fintype.equivFin I i).val : ℝ) = ((Fintype.equivFin I j).val : ℝ) := by
+    unfold perturbedSlackHeight at hij
+    linarith
+  exact_mod_cast hvalReal
+
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma utility_coordinate_injective {u : I → T → ℝ}
     (hu : UtilityRealization (IST := IST) u) (i : I) :
@@ -1640,6 +1754,27 @@ theorem coordinateValuesDefineLinearOrders_of_realization
       trans := by
         intro a b c hab hbc
         exact lt_trans hab hbc }
+
+omit [DecidableEq T] in
+/--
+The fully formalized perturbation step from §3: for every positive utility
+realization on a finite, nonempty index set, there are slack heights that
+dominate all goods coordinates, are pairwise distinct, and therefore make
+coordinate comparison into linear orders on `T ∪ I`.
+-/
+theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I]
+    {u : I → T → ℝ} (hu : PositiveUtilityRealization (IST := IST) u) :
+    ∃ M : I → ℝ,
+      SlackBounds (T := T) (I := I) u M ∧
+      SlackHeightsPairwiseDistinct (I := I) M ∧
+      CoordinateValuesDefineLinearOrders (T := T) (I := I) u M := by
+  let M := perturbedSlackHeight (T := T) (I := I) u
+  have hBounds : SlackBounds (T := T) (I := I) u M :=
+    perturbedSlackHeight_slackBounds (T := T) (I := I) u
+  have hDistinct : SlackHeightsPairwiseDistinct (I := I) M :=
+    perturbedSlackHeight_pairwiseDistinct (T := T) (I := I) u
+  exact ⟨M, hBounds, hDistinct,
+    coordinateValuesDefineLinearOrders_of_realization (IST := IST) hu hBounds hDistinct⟩
 
 /-- The indexed family of coordinate-induced orders on the enlarged set. -/
 @[reducible]
