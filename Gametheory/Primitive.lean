@@ -1344,24 +1344,30 @@ lemma slackVector_other_coordinate_gt {M : I → ℝ} {i j : I} (hji : j ≠ i)
   simpa [slackVector, hji] using hr
 
 /--
-Paper's slack-height condition: each nonzero coordinate of the slack vector
-`s(i)` lies above the corresponding coordinate of every good.
+Slack-height condition for Scarf's slack vectors: the nonzero coordinate
+`coord` of the slack vector `s(slack)` is above the corresponding coordinate
+of every good. Since `s(slack) coord = M slack` when `coord ≠ slack`, this is
+the condition needed for the coordinate model to match the abstract
+room/primitive-set model.
 -/
 def SlackHeightsDominateGoodsCoordinates (u : I → T → ℝ) (M : I → ℝ) : Prop :=
-  ∀ i j x, j ≠ i → u j x < slackVector (I := I) M i j
+  ∀ slack coord x, coord ≠ slack → u coord x < M slack
 
-/-- Backwards-compatible short name for the paper's slack-height condition. -/
+/-- Backwards-compatible short name for the slack-height condition. -/
 abbrev SlackBounds (u : I → T → ℝ) (M : I → ℝ) : Prop :=
   SlackHeightsDominateGoodsCoordinates (T := T) (I := I) u M
 
-omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] IST in
+omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] IST in
 lemma slackBounds_iff_heights_gt_coordinates {u : I → T → ℝ} {M : I → ℝ} :
     SlackBounds (T := T) (I := I) u M ↔ ∀ i j x, j ≠ i → u j x < M i := by
-  constructor
-  · intro h i j x hji
-    simpa [slackVector, hji] using h i j x hji
-  · intro h i j x hji
-    simpa [slackVector, hji] using h i j x hji
+  rfl
+
+omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] IST in
+lemma slackBounds_of_global_coordinate_bound {u : I → T → ℝ} {M : I → ℝ} {B : ℝ}
+    (hGoods : ∀ coord x, u coord x < B) (hHeights : ∀ slack, B ≤ M slack) :
+    SlackBounds (T := T) (I := I) u M := by
+  intro slack coord x _hcoord
+  exact lt_of_lt_of_le (hGoods coord x) (hHeights slack)
 
 /-- The finite set of Scarf slack vectors. -/
 def slackImage (M : I → ℝ) : Finset (I → ℝ) :=
@@ -1479,7 +1485,7 @@ lemma slackBounds_lt_slack_coordinate {u : I → T → ℝ} {M : I → ℝ}
     (hM : SlackBounds (T := T) (I := I) u M) {i j : I} (hji : j ≠ i) (x : T) :
     extendedCoordinatePoint (T := T) (I := I) u M (Sum.inl x) j <
       extendedCoordinatePoint (T := T) (I := I) u M (Sum.inr i) j := by
-  simpa [extendedCoordinatePoint, utilityVector] using hM i j x hji
+  simpa [extendedCoordinatePoint, utilityVector, slackVector, hji] using hM i j x hji
 
 omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma orderUtility_lt_uniformSlackHeight (i : I) (x : T) :
@@ -1494,7 +1500,7 @@ lemma orderUtility_lt_uniformSlackHeight (i : I) (x : T) :
     omega
   exact_mod_cast hNat
 
-omit [Inhabited T] [Fintype I] [DecidableEq T] in
+omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma orderUtility_slackBounds :
     SlackBounds (T := T) (I := I)
       (fun i x => orderUtility (IST := IST) i x) (uniformSlackHeight (T := T) (I := I)) := by
@@ -1565,7 +1571,7 @@ above every utility coordinate and then add the finite index of each trader.
 noncomputable def perturbedSlackHeight [Inhabited I] (u : I → T → ℝ) : I → ℝ :=
   fun i => utilityCoordinateBound (T := T) (I := I) u + ((Fintype.equivFin I i).val : ℝ)
 
-omit [DecidableEq T] IST in
+omit [DecidableEq T] [DecidableEq I] IST in
 lemma perturbedSlackHeight_slackBounds [Inhabited I] (u : I → T → ℝ) :
     SlackBounds (T := T) (I := I) u (perturbedSlackHeight (T := T) (I := I) u) := by
   rw [slackBounds_iff_heights_gt_coordinates]
@@ -1623,7 +1629,8 @@ lemma extendedCoordinatePoint_coordinate_injective
             exact (ne_of_gt hpos)
               (by simpa [extendedCoordinatePoint, utilityVector, slackVector, hki.symm] using hEq)
           · have hik : i ≠ k := fun hik => hki hik.symm
-            have hlt : u i x < slackVector (I := I) M k i := hM k i x hik
+            have hlt : u i x < slackVector (I := I) M k i := by
+              simpa [slackVector, hik] using hM k i x hik
             exact (ne_of_lt hlt) (by simpa [extendedCoordinatePoint, utilityVector] using hEq)
   | inr k =>
       cases b with
@@ -1634,7 +1641,8 @@ lemma extendedCoordinatePoint_coordinate_injective
             exact (ne_of_gt hpos)
               (by simpa [extendedCoordinatePoint, utilityVector, slackVector, hki.symm] using hEq.symm)
           · have hik : i ≠ k := fun hik => hki hik.symm
-            have hlt : u i y < slackVector (I := I) M k i := hM k i y hik
+            have hlt : u i y < slackVector (I := I) M k i := by
+              simpa [slackVector, hik] using hM k i y hik
             exact (ne_of_lt hlt) (by simpa [extendedCoordinatePoint, utilityVector] using hEq.symm)
       | inr l =>
           by_cases hki : k = i
@@ -1642,7 +1650,8 @@ lemma extendedCoordinatePoint_coordinate_injective
             · exact congrArg Sum.inr (hki.trans hli.symm)
             · exfalso
               have hil : i ≠ l := fun hil => hli hil.symm
-              have hlt : u i default < slackVector (I := I) M l i := hM l i default hil
+              have hlt : u i default < slackVector (I := I) M l i := by
+                simpa [slackVector, hil] using hM l i default hil
               have hpos : 0 < slackVector (I := I) M l i :=
                 lt_trans (hu.positive i default) hlt
               exact (ne_of_lt hpos)
@@ -1650,7 +1659,8 @@ lemma extendedCoordinatePoint_coordinate_injective
           · by_cases hli : l = i
             · exfalso
               have hik : i ≠ k := fun hik => hki hik.symm
-              have hlt : u i default < slackVector (I := I) M k i := hM k i default hik
+              have hlt : u i default < slackVector (I := I) M k i := by
+                simpa [slackVector, hik] using hM k i default hik
               have hpos : 0 < slackVector (I := I) M k i :=
                 lt_trans (hu.positive i default) hlt
               exact (ne_of_lt hpos)
@@ -1807,7 +1817,7 @@ lemma coordinateGood_lt_slack_of_ne {u : I → T → ℝ} {M : I → ℝ}
     (hM : SlackBounds (T := T) (I := I) u M) {i k : I} (hik : i ≠ k) (x : T) :
     extendedCoordinateLt (T := T) (I := I) u M i (Sum.inl x) (Sum.inr k) := by
   apply extendedCoordinateLt_of_coord_lt
-  simpa [extendedCoordinatePoint, utilityVector] using hM k i x hik
+  simpa [extendedCoordinatePoint, utilityVector, slackVector, hik] using hM k i x hik
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma coordinateSlack_lt_good {u : I → T → ℝ} {M : I → ℝ}
@@ -1823,7 +1833,8 @@ lemma coordinateSlack_lt_slack_of_ne {u : I → T → ℝ} {M : I → ℝ}
     extendedCoordinateLt (T := T) (I := I) u M i (Sum.inr i) (Sum.inr k) := by
   apply extendedCoordinateLt_of_coord_lt
   have hposM : 0 < slackVector (I := I) M k i :=
-    lt_trans (hu.positive i (default : T)) (hM k i default hik)
+    lt_trans (hu.positive i (default : T)) (by
+      simpa [slackVector, hik] using hM k i default hik)
   simpa [extendedCoordinatePoint, slackVector, hik] using hposM
 
 /-- The literal coordinate-dominance primitive definition on the enlarged ordered set. -/
