@@ -217,6 +217,18 @@ lemma room_to_primitive {σ : Finset T} {C : Finset I} (h : IST.isRoom σ C) :
   · exact card_toPrimitiveSet_of_room h
   · simpa using h.1
 
+/--
+For sets written in room coordinates, being primitive is exactly being a room.
+This is the cardinality condition implicit in the paper's comparison between
+dominant sets and primitive sets.
+-/
+theorem isPrimitive_toPrimitiveSet_iff_room {σ : Finset T} {C : Finset I} :
+    isPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) ↔ IST.isRoom σ C := by
+  constructor
+  · intro h
+    simpa using primitive_to_room (IST := IST) h
+  · exact room_to_primitive
+
 omit [Inhabited T] in
 lemma primitive_eq_toPrimitive_from_parts {X : Finset (ExtendedGoods T I)}
     (_h : isPrimitive (IST := IST) X) :
@@ -541,7 +553,6 @@ theorem native_internal_almostPrimitive_exactly_two_incident_primitives
     internal_almostPrimitive_exactly_two_incident_primitives hY' hInternal
   exact ⟨X₁, X₂, hNe, hPrim₁, hPrim₂, hSub₁, hSub₂, fun X hX hSub =>
     hUnique X hX hSub⟩
-
 /--
 Native Scarf main lemma in the "remove one point" form: after removing a
 point from a primitive set, either the resulting face lies in the slack
@@ -740,6 +751,91 @@ lemma slackBoundary_unique_incident_nativePrimitive (i : I) :
   refine ⟨X, hX, ?_⟩
   intro Y hY
   exact hUnique Y hY
+
+/--
+Every almost primitive face made only of slack vectors is one of the boundary
+faces `I - i`.
+-/
+lemma boundary_almostPrimitive_eq_slackBoundary {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y)
+    (hBoundary : ¬ (fromGoods (T := T) (I := I) Y).Nonempty) :
+    ∃ i : I, Y = slackBoundary (T := T) (I := I) i := by
+  have hGoods : fromGoods (T := T) (I := I) Y = Finset.empty :=
+    Finset.not_nonempty_iff_eq_empty.mp hBoundary
+  have hDoor : IST.isDoor (fromGoods (T := T) (I := I) Y)
+      (fromMissing (T := T) (I := I) Y) :=
+    almostPrimitive_to_door hY
+  have hDcard : (fromMissing (T := T) (I := I) Y).card = 1 := by
+    have hDoorCard := hDoor.2
+    rw [hGoods] at hDoorCard
+    simpa using hDoorCard
+  obtain ⟨i, hD⟩ := Finset.card_eq_one.mp hDcard
+  refine ⟨i, ?_⟩
+  rw [almostPrimitive_eq_toAlmost_from_parts hY, hGoods, hD]
+  rfl
+
+/--
+Boundary almost primitive faces are incident to exactly one primitive set.
+-/
+theorem boundary_almostPrimitive_unique_incident_primitive
+    {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y)
+    (hBoundary : ¬ (fromGoods (T := T) (I := I) Y).Nonempty) :
+    ∃! X : Finset (ExtendedGoods T I), isPrimitive (IST := IST) X ∧ Y ⊆ X := by
+  obtain ⟨i, hYeq⟩ := boundary_almostPrimitive_eq_slackBoundary (IST := IST) hY hBoundary
+  rw [hYeq]
+  exact slackBoundary_unique_incident_primitive (IST := IST) i
+
+theorem native_boundary_almostPrimitive_unique_incident_primitive
+    {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitiveNative (IST := IST) Y)
+    (hBoundary : ¬ (fromGoods (T := T) (I := I) Y).Nonempty) :
+    ∃! X : Finset (ExtendedGoods T I), isPrimitiveNative (IST := IST) X ∧ Y ⊆ X :=
+  boundary_almostPrimitive_unique_incident_primitive
+    (IST := IST) (nativeAlmostPrimitive_to_almostPrimitive hY) hBoundary
+
+/--
+The full Scarf incidence dichotomy for almost primitive faces: a boundary face
+is incident to one primitive set, while an internal face is incident to exactly
+two primitive sets.
+-/
+theorem almostPrimitive_incident_primitives_boundary_or_internal
+    {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y) :
+    (¬ (fromGoods (T := T) (I := I) Y).Nonempty ∧
+      ∃! X : Finset (ExtendedGoods T I), isPrimitive (IST := IST) X ∧ Y ⊆ X) ∨
+    ((fromGoods (T := T) (I := I) Y).Nonempty ∧
+      ∃ X₁ X₂ : Finset (ExtendedGoods T I),
+        X₁ ≠ X₂ ∧
+          isPrimitive (IST := IST) X₁ ∧
+          isPrimitive (IST := IST) X₂ ∧
+          Y ⊆ X₁ ∧
+          Y ⊆ X₂ ∧
+          ∀ X, isPrimitive (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂) := by
+  by_cases hInternal : (fromGoods (T := T) (I := I) Y).Nonempty
+  · right
+    exact ⟨hInternal, internal_almostPrimitive_exactly_two_incident_primitives hY hInternal⟩
+  · left
+    exact ⟨hInternal, boundary_almostPrimitive_unique_incident_primitive hY hInternal⟩
+
+theorem native_almostPrimitive_incident_primitives_boundary_or_internal
+    {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitiveNative (IST := IST) Y) :
+    (¬ (fromGoods (T := T) (I := I) Y).Nonempty ∧
+      ∃! X : Finset (ExtendedGoods T I), isPrimitiveNative (IST := IST) X ∧ Y ⊆ X) ∨
+    ((fromGoods (T := T) (I := I) Y).Nonempty ∧
+      ∃ X₁ X₂ : Finset (ExtendedGoods T I),
+        X₁ ≠ X₂ ∧
+          isPrimitiveNative (IST := IST) X₁ ∧
+          isPrimitiveNative (IST := IST) X₂ ∧
+          Y ⊆ X₁ ∧
+          Y ⊆ X₂ ∧
+          ∀ X, isPrimitiveNative (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂) := by
+  by_cases hInternal : (fromGoods (T := T) (I := I) Y).Nonempty
+  · right
+    exact ⟨hInternal, native_internal_almostPrimitive_exactly_two_incident_primitives hY hInternal⟩
+  · left
+    exact ⟨hInternal, native_boundary_almostPrimitive_unique_incident_primitive hY hInternal⟩
 
 /--
 Incidence between an almost primitive face and a primitive set is exactly

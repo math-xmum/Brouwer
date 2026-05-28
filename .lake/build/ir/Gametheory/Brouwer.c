@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: Gametheory.Brouwer
-// Imports: public import Init public meta import Init public import Gametheory.Scarf
+// Imports: public import Init public meta import Init public import Gametheory.ScarfPath
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -645,7 +645,7 @@ return v_res_352_;
 }
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
-lean_object* initialize_Gametheory_Gametheory_Scarf(uint8_t builtin);
+lean_object* initialize_Gametheory_Gametheory_ScarfPath(uint8_t builtin);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_Gametheory_Gametheory_Brouwer(uint8_t builtin) {
 lean_object * res;
@@ -657,7 +657,7 @@ lean_dec_ref(res);
 res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_Gametheory_Gametheory_Scarf(builtin);
+res = initialize_Gametheory_Gametheory_ScarfPath(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));

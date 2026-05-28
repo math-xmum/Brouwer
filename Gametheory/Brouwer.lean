@@ -1,4 +1,5 @@
-import Gametheory.Scarf
+import Gametheory.ScarfPath
+
 open Classical
 
 section
