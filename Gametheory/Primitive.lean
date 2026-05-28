@@ -916,6 +916,249 @@ lemma full_color_primitive_iff_colorful_associated_room
     rw [primitive_eq_toPrimitive_from_parts hX]
     exact (full_color_primitive_iff_colorful_room c (primitive_to_room hX)).2 hColorful
 
+omit [Fintype T] IST in
+lemma image_extendedColoring_toAlmostPrimitive (c : T → I) (τ : Finset T) (D : Finset I) :
+    (toAlmostPrimitive (I := I) τ D).image (extendedColoring (T := T) (I := I) c) =
+      (τ.image c) ∪ (Finset.univ \ D) := by
+  simpa [toAlmostPrimitive] using
+    (image_extendedColoring_toPrimitiveSet (T := T) (I := I) c τ D)
+
+omit [Fintype T] IST in
+lemma diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
+    (c : T → I) (i : I) (σ : Finset T) (C : Finset I) :
+    C \ σ.image c = {i} ↔
+      (toPrimitiveSet (I := I) σ C).image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I) := by
+  rw [image_extendedColoring_toPrimitiveSet]
+  constructor
+  · intro hDiff
+    ext j
+    constructor
+    · intro hj
+      rcases Finset.mem_union.mp hj with hjImage | hjCompl
+      · have hji : j ≠ i := by
+          intro hji
+          subst j
+          have hiDiff : i ∈ C \ σ.image c := by
+            rw [hDiff]
+            simp
+          exact (Finset.mem_sdiff.mp hiDiff).2 hjImage
+        exact Finset.mem_erase.mpr ⟨hji, Finset.mem_univ j⟩
+      · have hji : j ≠ i := by
+          intro hji
+          subst j
+          have hiDiff : i ∈ C \ σ.image c := by
+            rw [hDiff]
+            simp
+          exact (Finset.mem_sdiff.mp hjCompl).2 (Finset.mem_sdiff.mp hiDiff).1
+        exact Finset.mem_erase.mpr ⟨hji, Finset.mem_univ j⟩
+    · intro hj
+      by_cases hjImage : j ∈ σ.image c
+      · exact Finset.mem_union_left _ hjImage
+      · have hji : j ≠ i := (Finset.mem_erase.mp hj).1
+        have hjNotC : j ∉ C := by
+          intro hjC
+          have hjDiff : j ∈ C \ σ.image c := Finset.mem_sdiff.mpr ⟨hjC, hjImage⟩
+          have : j = i := by
+            rw [hDiff] at hjDiff
+            exact Finset.mem_singleton.mp hjDiff
+          exact hji this
+        exact Finset.mem_union_right _ (Finset.mem_sdiff.mpr ⟨Finset.mem_univ j, hjNotC⟩)
+  · intro hAllBut
+    ext j
+    constructor
+    · intro hj
+      have hjNotUnion : j ∉ σ.image c ∪ (Finset.univ \ C) := by
+        intro hUnion
+        rcases Finset.mem_union.mp hUnion with hjImage | hjCompl
+        · exact (Finset.mem_sdiff.mp hj).2 hjImage
+        · exact (Finset.mem_sdiff.mp hjCompl).2 (Finset.mem_sdiff.mp hj).1
+      have hjNotErase : j ∉ Finset.univ.erase i := by
+        rw [← hAllBut]
+        exact hjNotUnion
+      have hji : j = i := by
+        by_contra hne
+        exact hjNotErase (Finset.mem_erase.mpr ⟨hne, Finset.mem_univ j⟩)
+      rw [hji]
+      simp
+    · intro hj
+      have hji : j = i := Finset.mem_singleton.mp hj
+      subst j
+      have hiNotErase : i ∉ (Finset.univ.erase i : Finset I) := by simp
+      have hiNotUnion : i ∉ σ.image c ∪ (Finset.univ \ C) := by
+        rw [hAllBut]
+        exact hiNotErase
+      have hiC : i ∈ C := by
+        by_contra hiNotC
+        exact hiNotUnion (Finset.mem_union_right _
+          (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, hiNotC⟩))
+      have hiNotImage : i ∉ σ.image c := by
+        intro hiImage
+        exact hiNotUnion (Finset.mem_union_left _ hiImage)
+      exact Finset.mem_sdiff.mpr ⟨hiC, hiNotImage⟩
+
+omit [Fintype T] IST in
+lemma diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
+    (c : T → I) (i : I) (τ : Finset T) (D : Finset I) :
+    D \ τ.image c = {i} ↔
+      (toAlmostPrimitive (I := I) τ D).image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I) := by
+  simpa [toAlmostPrimitive] using
+    (diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
+      (T := T) (I := I) c i τ D)
+
+lemma allButColor_primitive_iff_typed_associated_room
+    (c : T → I) (i : I) {X : Finset (ExtendedGoods T I)}
+    (hX : isPrimitive (IST := IST) X) :
+    X.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I) ↔
+      IST.isTypedNC c i (fromGoods (T := T) (I := I) X)
+        (fromMissing (T := T) (I := I) X) := by
+  constructor
+  · intro hAllBut
+    exact ⟨(primitive_to_room hX).1,
+      (diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
+        (T := T) (I := I) c i
+        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X)).2
+          (by rwa [← primitive_eq_toPrimitive_from_parts hX])⟩
+  · intro hTyped
+    rw [primitive_eq_toPrimitive_from_parts hX]
+    exact (diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
+      (T := T) (I := I) c i
+      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X)).1 hTyped.2
+
+lemma allButColor_almostPrimitive_iff_typed_associated_door
+    (c : T → I) (i : I) {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y) :
+    Y.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I) ↔
+      IST.isTypedNC c i (fromGoods (T := T) (I := I) Y)
+        (fromMissing (T := T) (I := I) Y) := by
+  constructor
+  · intro hAllBut
+    exact ⟨(almostPrimitive_to_door hY).1,
+      (diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
+        (T := T) (I := I) c i
+        (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)).2
+          (by rwa [← almostPrimitive_eq_toAlmost_from_parts hY])⟩
+  · intro hTyped
+    rw [almostPrimitive_eq_toAlmost_from_parts hY]
+    exact (diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
+      (T := T) (I := I) c i
+      (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)).1 hTyped.2
+
+/-- Primitive-set version of the graph `G_i` from the paper. -/
+inductive primitiveGiStep (c : T → I) (i : I) :
+    Finset (ExtendedGoods T I) → Finset (ExtendedGoods T I) → Prop
+  | door_room {Y X}
+      (hY : isAlmostPrimitive (IST := IST) Y)
+      (hX : isPrimitive (IST := IST) X)
+      (hSub : Y ⊆ X)
+      (hYColor : Y.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I))
+      (hXColor :
+        X.image (extendedColoring (T := T) (I := I) c) =
+            (Finset.univ.erase i : Finset I) ∨
+          X.image (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I)) :
+      primitiveGiStep c i Y X
+  | room_door {X Y}
+      (hY : isAlmostPrimitive (IST := IST) Y)
+      (hX : isPrimitive (IST := IST) X)
+      (hSub : Y ⊆ X)
+      (hYColor : Y.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I))
+      (hXColor :
+        X.image (extendedColoring (T := T) (I := I) c) =
+            (Finset.univ.erase i : Finset I) ∨
+          X.image (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I)) :
+      primitiveGiStep c i X Y
+
+omit [Inhabited T] in
+lemma primitiveGiStep.symm {c : T → I} {i : I} {Z W : Finset (ExtendedGoods T I)}
+    (h : primitiveGiStep (IST := IST) c i Z W) :
+    primitiveGiStep (IST := IST) c i W Z := by
+  cases h with
+  | door_room hY hX hSub hYColor hXColor =>
+      exact primitiveGiStep.room_door hY hX hSub hYColor hXColor
+  | room_door hY hX hSub hYColor hXColor =>
+      exact primitiveGiStep.door_room hY hX hSub hYColor hXColor
+
+/--
+Each edge of the primitive-set graph `G_i` is exactly a room-door incidence
+after applying `Z ↦ (Z ∩ T, I \ Z)`.  This is the formal version of the
+sentence in §3 saying that Scarf's split replacement sequence turns into a
+path in the graph `G_i`.
+-/
+theorem primitiveGiStep_projects_to_roomDoor_incidence
+    {c : T → I} {i : I} {Z W : Finset (ExtendedGoods T I)}
+    (h : primitiveGiStep (IST := IST) c i Z W) :
+    ∃ Y X : Finset (ExtendedGoods T I),
+      ((Z = Y ∧ W = X) ∨ (Z = X ∧ W = Y)) ∧
+      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
+        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) ∧
+      IST.isTypedNC c i (fromGoods (T := T) (I := I) Y)
+        (fromMissing (T := T) (I := I) Y) ∧
+      (IST.isTypedNC c i (fromGoods (T := T) (I := I) X)
+          (fromMissing (T := T) (I := I) X) ∨
+        IST.isColorful c (fromGoods (T := T) (I := I) X)
+          (fromMissing (T := T) (I := I) X)) := by
+  cases h with
+  | door_room hY' hX' hSub hYColor hXColor =>
+      refine ⟨_, _, Or.inl ⟨rfl, rfl⟩, ?_, ?_, ?_⟩
+      · exact (almostPrimitive_subset_primitive_iff_doorof hY' hX').mp hSub
+      · exact (allButColor_almostPrimitive_iff_typed_associated_door c i hY').1 hYColor
+      · exact hXColor.elim
+          (fun hAllBut => Or.inl
+            ((allButColor_primitive_iff_typed_associated_room c i hX').1 hAllBut))
+          (fun hFull => Or.inr
+            ((full_color_primitive_iff_colorful_associated_room c hX').1 hFull))
+  | room_door hY' hX' hSub hYColor hXColor =>
+      refine ⟨_, _, Or.inr ⟨rfl, rfl⟩, ?_, ?_, ?_⟩
+      · exact (almostPrimitive_subset_primitive_iff_doorof hY' hX').mp hSub
+      · exact (allButColor_almostPrimitive_iff_typed_associated_door c i hY').1 hYColor
+      · exact hXColor.elim
+          (fun hAllBut => Or.inl
+            ((allButColor_primitive_iff_typed_associated_room c i hX').1 hAllBut))
+          (fun hFull => Or.inr
+            ((full_color_primitive_iff_colorful_associated_room c hX').1 hFull))
+
+/-- A split Scarf path is a list whose consecutive entries are edges of the primitive `G_i`. -/
+def primitiveGiPath (c : T → I) (i : I) :
+    List (Finset (ExtendedGoods T I)) → Prop
+  | [] => True
+  | [_] => True
+  | Z :: W :: rest => primitiveGiStep (IST := IST) c i Z W ∧ primitiveGiPath c i (W :: rest)
+
+/-- The room/door cell associated to a primitive or almost primitive set. -/
+def projectedCell (Z : Finset (ExtendedGoods T I)) : Finset T × Finset I :=
+  (fromGoods (T := T) (I := I) Z, fromMissing (T := T) (I := I) Z)
+
+omit [Inhabited T] IST in
+lemma projectedCell_injective :
+    Function.Injective (projectedCell (T := T) (I := I)) := by
+  intro Z W h
+  have hGoods : fromGoods (T := T) (I := I) Z = fromGoods (T := T) (I := I) W :=
+    congrArg Prod.fst h
+  have hMissing : fromMissing (T := T) (I := I) Z = fromMissing (T := T) (I := I) W :=
+    congrArg Prod.snd h
+  rw [eq_toPrimitive_from_parts (T := T) (I := I) Z,
+    eq_toPrimitive_from_parts (T := T) (I := I) W, hGoods, hMissing]
+
+omit [Inhabited T] IST in
+/--
+The transformation `Z ↦ (Z ∩ T, I \ Z)` is faithful on whole split sequences:
+two primitive/almost-primitive paths with the same room-door projection are
+definitionally the same sequence.  This is the uniqueness part of the §3
+translation from Scarf's replacement sequence to the path in `G_i`.
+-/
+theorem primitiveGiSequence_projection_unique
+    {zs ws : List (Finset (ExtendedGoods T I))}
+    (h :
+      zs.map (projectedCell (T := T) (I := I)) =
+        ws.map (projectedCell (T := T) (I := I))) :
+    zs = ws := by
+  exact List.map_injective_iff.2 (projectedCell_injective (T := T) (I := I)) h
+
 /--
 Scarf's combinatorial theorem in the primitive-set language from §3: after
 extending a coloring by the identity on slack vectors, some primitive set has
