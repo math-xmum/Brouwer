@@ -30,6 +30,18 @@ def fromGoods (X : Finset (ExtendedGoods T I)) : Finset T :=
 def fromMissing (X : Finset (ExtendedGoods T I)) : Finset I :=
   Finset.univ.filter (fun i : I => Sum.inr i ∉ X)
 
+/-- The room/door cell associated to a subset of `T ∪ I`. -/
+def associatedCell (X : Finset (ExtendedGoods T I)) : GiCell T I :=
+  (fromGoods (T := T) (I := I) X, fromMissing (T := T) (I := I) X)
+
+omit [Inhabited T] IST in
+@[simp] lemma associatedCell_fst (X : Finset (ExtendedGoods T I)) :
+    (associatedCell (T := T) (I := I) X).1 = fromGoods (T := T) (I := I) X := rfl
+
+omit [Inhabited T] IST in
+@[simp] lemma associatedCell_snd (X : Finset (ExtendedGoods T I)) :
+    (associatedCell (T := T) (I := I) X).2 = fromMissing (T := T) (I := I) X := rfl
+
 omit [Inhabited T] [Fintype T] IST in
 @[simp] lemma mem_toPrimitiveSet_inl {σ : Finset T} {C : Finset I} {t : T} :
     Sum.inl t ∈ toPrimitiveSet (I := I) σ C ↔ t ∈ σ := by
@@ -664,6 +676,24 @@ theorem native_primitive_erase_replacement_mainLemma
 def slackBoundary (i : I) : Finset (ExtendedGoods T I) :=
   toAlmostPrimitive (T := T) (Finset.empty : Finset T) ({i} : Finset I)
 
+omit [Inhabited T] IST in
+@[simp] lemma fromGoods_slackBoundary (i : I) :
+    fromGoods (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
+      (Finset.empty : Finset T) := by
+  simp [slackBoundary]
+
+omit [Fintype T] IST in
+@[simp] lemma fromMissing_slackBoundary (i : I) :
+    fromMissing (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
+      ({i} : Finset I) := by
+  simp [slackBoundary]
+
+omit IST in
+@[simp] lemma associatedCell_slackBoundary (i : I) :
+    associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
+      ((Finset.empty : Finset T), ({i} : Finset I)) := by
+  ext <;> simp
+
 /-- Each slack boundary is an almost primitive set. -/
 lemma slackBoundary_isAlmostPrimitive (i : I) :
     isAlmostPrimitive (IST := IST) (slackBoundary (T := T) (I := I) i) := by
@@ -928,6 +958,14 @@ def extendedColoring (c : T → I) : ExtendedGoods T I → I
   | Sum.inl t => c t
   | Sum.inr i => i
 
+omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] IST in
+@[simp] lemma extendedColoring_inl (c : T → I) (t : T) :
+    extendedColoring (T := T) (I := I) c (Sum.inl t) = c t := rfl
+
+omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] IST in
+@[simp] lemma extendedColoring_inr (c : T → I) (i : I) :
+    extendedColoring (T := T) (I := I) c (Sum.inr i) = i := rfl
+
 omit [Fintype T] IST in
 lemma image_extendedColoring_toPrimitiveSet (c : T → I) (σ : Finset T) (C : Finset I) :
     (toPrimitiveSet (I := I) σ C).image (extendedColoring (T := T) (I := I) c) =
@@ -1142,6 +1180,148 @@ lemma allButColor_almostPrimitive_iff_typed_associated_door
     exact (diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
       (T := T) (I := I) c i
       (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)).1 hTyped.2
+
+omit [Fintype T] IST in
+@[simp] lemma image_extendedColoring_slackBoundary (c : T → I) (i : I) :
+    (slackBoundary (T := T) (I := I) i).image (extendedColoring (T := T) (I := I) c) =
+      (Finset.univ.erase i : Finset I) := by
+  rw [slackBoundary, image_extendedColoring_toAlmostPrimitive]
+  ext j
+  constructor
+  · intro hj
+    rw [Finset.mem_union] at hj
+    rcases hj with hjEmpty | hjCompl
+    · rcases Finset.mem_image.mp hjEmpty with ⟨x, hx, _⟩
+      exact False.elim (Finset.notMem_empty x hx)
+    · exact Finset.mem_erase.mpr
+        ⟨fun hji => (Finset.mem_sdiff.mp hjCompl).2 (by simp [hji]), Finset.mem_univ j⟩
+  · intro hj
+    exact Finset.mem_union_right _ (Finset.mem_sdiff.mpr
+      ⟨Finset.mem_univ j, fun hji => (Finset.mem_erase.mp hj).1 (Finset.mem_singleton.mp hji)⟩)
+
+lemma slackBoundary_GiDoorVertex (c : T → I) (i : I) :
+    GiDoorVertex (IST := IST) c i
+      (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
+  have hY : isAlmostPrimitive (IST := IST) (slackBoundary (T := T) (I := I) i) :=
+    slackBoundary_isAlmostPrimitive (IST := IST) i
+  have hTyped := (allButColor_almostPrimitive_iff_typed_associated_door
+    (IST := IST) c i hY).1 (image_extendedColoring_slackBoundary (T := T) (I := I) c i)
+  exact ⟨almostPrimitive_to_door hY, hTyped⟩
+
+lemma fullyColoredPrimitive_GiRoomVertex
+    {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
+    (hX : isFullyColoredPrimitive (IST := IST) c X) :
+    GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) := by
+  exact Or.inl ((full_color_primitive_iff_colorful_associated_room c hX.1).1 hX.2)
+
+lemma allButColorPrimitive_GiRoomVertex
+    {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
+    (hPrim : isPrimitive (IST := IST) X)
+    (hColor : X.image (extendedColoring (T := T) (I := I) c) =
+      (Finset.univ.erase i : Finset I)) :
+    GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) := by
+  exact Or.inr ⟨primitive_to_room hPrim,
+    (allButColor_primitive_iff_typed_associated_room c i hPrim).1 hColor⟩
+
+lemma allButColorAlmostPrimitive_GiDoorVertex
+    {c : T → I} {i : I} {Y : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y)
+    (hColor : Y.image (extendedColoring (T := T) (I := I) c) =
+      (Finset.univ.erase i : Finset I)) :
+    GiDoorVertex (IST := IST) c i (associatedCell (T := T) (I := I) Y) := by
+  exact ⟨almostPrimitive_to_door hY,
+    (allButColor_almostPrimitive_iff_typed_associated_door c i hY).1 hColor⟩
+
+lemma algorithm_incidence_to_GiEdge
+    {c : T → I} {i : I}
+    {Y X : Finset (ExtendedGoods T I)}
+    (hY : isAlmostPrimitive (IST := IST) Y)
+    (hYColor : Y.image (extendedColoring (T := T) (I := I) c) =
+      (Finset.univ.erase i : Finset I))
+    (hX : isPrimitive (IST := IST) X)
+    (hXColor :
+      X.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I) ∨
+      X.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ : Finset I))
+    (hSub : Y ⊆ X) :
+    GiEdge (IST := IST) c i
+      (associatedCell (T := T) (I := I) X) (associatedCell (T := T) (I := I) Y) := by
+  have hRoomVertex : GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) := by
+    rcases hXColor with hAllBut | hFull
+    · exact allButColorPrimitive_GiRoomVertex (IST := IST) hX hAllBut
+    · exact fullyColoredPrimitive_GiRoomVertex (IST := IST) ⟨hX, hFull⟩
+  have hDoorVertex : GiDoorVertex (IST := IST) c i (associatedCell (T := T) (I := I) Y) :=
+    allButColorAlmostPrimitive_GiDoorVertex (IST := IST) hY hYColor
+  have hDoorof :
+      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
+        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) :=
+    (almostPrimitive_subset_primitive_iff_doorof hY hX).mp hSub
+  exact Or.inl ⟨hRoomVertex, hDoorVertex, hDoorof⟩
+
+/--
+A split Scarf replacement step, matching §3: an all-but-`i` primitive set moves
+through an all-but-`i` almost primitive face to another primitive set, which is
+either still all-but-`i` or already fully colored.
+-/
+def scarfSplitReplacementStep (c : T → I) (i : I)
+    (X Y X' : Finset (ExtendedGoods T I)) : Prop :=
+  isPrimitive (IST := IST) X ∧
+    X.image (extendedColoring (T := T) (I := I) c) =
+      (Finset.univ.erase i : Finset I) ∧
+    isAlmostPrimitive (IST := IST) Y ∧
+    Y.image (extendedColoring (T := T) (I := I) c) =
+      (Finset.univ.erase i : Finset I) ∧
+    Y ⊆ X ∧
+    isPrimitive (IST := IST) X' ∧
+    Y ⊆ X' ∧
+    (X'.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ.erase i : Finset I) ∨
+      X'.image (extendedColoring (T := T) (I := I) c) =
+        (Finset.univ : Finset I)) ∧
+    X ≠ X'
+
+omit [Inhabited T] in
+lemma scarfSplitReplacementStep_replacementStep
+    {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
+    (h : scarfSplitReplacementStep (IST := IST) c i X Y X') :
+    primitiveReplacementStep (IST := IST) X X' := by
+  rcases h with ⟨hX, _hXColor, hY, _hYColor, hYX, hX', hYX', _hX'Color, hNe⟩
+  exact ⟨hX, hX', hNe, Y, hY, hYX, hYX'⟩
+
+lemma scarfSplitReplacementStep_GiEdges
+    {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
+    (h : scarfSplitReplacementStep (IST := IST) c i X Y X') :
+    GiEdge (IST := IST) c i
+        (associatedCell (T := T) (I := I) X) (associatedCell (T := T) (I := I) Y) ∧
+      GiEdge (IST := IST) c i
+        (associatedCell (T := T) (I := I) X') (associatedCell (T := T) (I := I) Y) := by
+  rcases h with ⟨hX, hXColor, hY, hYColor, hYX, hX', hYX', hX'Color, _hNe⟩
+  exact ⟨
+    algorithm_incidence_to_GiEdge (IST := IST) hY hYColor hX (Or.inl hXColor) hYX,
+    algorithm_incidence_to_GiEdge (IST := IST) hY hYColor hX' hX'Color hYX'⟩
+
+lemma initial_scarf_step_to_GiEdge (c : T → I) (i : I) :
+    ∃ X : Finset (ExtendedGoods T I),
+      isPrimitive (IST := IST) X ∧
+        slackBoundary (T := T) (I := I) i ⊆ X ∧
+        GiEdge (IST := IST) c i
+          (associatedCell (T := T) (I := I) X)
+          (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
+  rcases slackBoundary_unique_incident_primitive (IST := IST) i with ⟨X, hX, _hUnique⟩
+  rcases hX with ⟨hPrim, hSub⟩
+  have hDoorVertex := slackBoundary_GiDoorVertex (IST := IST) c i
+  have hDoorof :
+      IST.isDoorof
+        (fromGoods (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+        (fromMissing (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) :=
+    (almostPrimitive_subset_primitive_iff_doorof
+      (slackBoundary_isAlmostPrimitive (IST := IST) i) hPrim).mp hSub
+  have hRoomVertex :
+      GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) :=
+    GiRoomVertex_of_incident_typed_door hDoorVertex.2 hDoorof
+  exact ⟨X, hPrim, hSub, Or.inl ⟨hRoomVertex, hDoorVertex, hDoorof⟩⟩
 
 /--
 Scarf's combinatorial theorem in the primitive-set language from §3: after
