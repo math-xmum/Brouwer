@@ -1129,44 +1129,6 @@ def primitiveGiPath (c : T → I) (i : I) :
   | [_] => True
   | Z :: W :: rest => primitiveGiStep (IST := IST) c i Z W ∧ primitiveGiPath c i (W :: rest)
 
-/-- A vertex has at most two neighbors in an undirected graph relation. -/
-def graphDegreeAtMostTwo {α : Type*} (step : α → α → Prop) : Prop :=
-  ∀ ⦃v a b c⦄,
-    step v a → step v b → step v c →
-      a ≠ b → a ≠ c → b ≠ c → False
-
-/-- A vertex is an endpoint when it has exactly one neighbor. -/
-def graphEndpoint {α : Type*} (step : α → α → Prop) (v : α) : Prop :=
-  ∃! w, step v w
-
-/--
-At an endpoint there is only one possible first step.  This is the formal
-version of the start of the path-following argument.
--/
-theorem graphEndpoint_firstStep_unique {α : Type*} {step : α → α → Prop}
-    {v a b : α} (hend : graphEndpoint step v)
-    (ha : step v a) (hb : step v b) :
-    a = b := by
-  rcases hend with ⟨w, _hw, hUnique⟩
-  exact (hUnique a ha).trans (hUnique b hb).symm
-
-/--
-In a graph of degree at most two, once a path enters `cur` from `prev`, there
-is at most one way to continue without turning back.  This is the local
-uniqueness used by the path-following proof of Theorem 9.
--/
-theorem graph_nextStep_unique_of_noBacktracking {α : Type*} {step : α → α → Prop}
-    (hdeg : graphDegreeAtMostTwo step)
-    {prev cur next₁ next₂ : α}
-    (hprev : step cur prev) (hnext₁ : step cur next₁) (hnext₂ : step cur next₂)
-    (hne₁ : next₁ ≠ prev) (hne₂ : next₂ ≠ prev) :
-    next₁ = next₂ := by
-  by_contra hne
-  exact hdeg hprev hnext₁ hnext₂
-    (fun h => hne₁ h.symm)
-    (fun h => hne₂ h.symm)
-    hne
-
 /-- The room/door cell associated to a primitive or almost primitive set. -/
 def projectedCell (Z : Finset (ExtendedGoods T I)) : Finset T × Finset I :=
   (fromGoods (T := T) (I := I) Z, fromMissing (T := T) (I := I) Z)
