@@ -1129,35 +1129,43 @@ def primitiveGiPath (c : T → I) (i : I) :
   | [_] => True
   | Z :: W :: rest => primitiveGiStep (IST := IST) c i Z W ∧ primitiveGiPath c i (W :: rest)
 
-/-- A lightweight graph path predicate: consecutive vertices are related by `step`. -/
-def graphPath {α : Type*} (step : α → α → Prop) : List α → Prop
-  | [] => True
-  | [_] => True
-  | x :: y :: rest => step x y ∧ graphPath step (y :: rest)
+/-- A vertex has at most two neighbors in an undirected graph relation. -/
+def graphDegreeAtMostTwo {α : Type*} (step : α → α → Prop) : Prop :=
+  ∀ ⦃v a b c⦄,
+    step v a → step v b → step v c →
+      a ≠ b → a ≠ c → b ≠ c → False
+
+/-- A vertex is an endpoint when it has exactly one neighbor. -/
+def graphEndpoint {α : Type*} (step : α → α → Prop) (v : α) : Prop :=
+  ∃! w, step v w
 
 /--
-Abstract path uniqueness under a faithful projection.  This is the graph-level
-form of the fact used in §3: once the map from Scarf's primitive language to
-the room-door graph is injective, a projected path has at most one lift.
+At an endpoint there is only one possible first step.  This is the formal
+version of the start of the path-following argument.
 -/
-theorem graphPath_projection_unique {α β : Type*} {step : α → α → Prop} {π : α → β}
-    (hπ : Function.Injective π) {p q : List α}
-    (_hp : graphPath step p) (_hq : graphPath step q)
-    (hproj : p.map π = q.map π) :
-    p = q := by
-  exact List.map_injective_iff.2 hπ hproj
+theorem graphEndpoint_firstStep_unique {α : Type*} {step : α → α → Prop}
+    {v a b : α} (hend : graphEndpoint step v)
+    (ha : step v a) (hb : step v b) :
+    a = b := by
+  rcases hend with ⟨w, _hw, hUnique⟩
+  exact (hUnique a ha).trans (hUnique b hb).symm
 
-omit [Inhabited T] in
-lemma primitiveGiPath_graphPath (c : T → I) (i : I)
-    (zs : List (Finset (ExtendedGoods T I))) :
-    primitiveGiPath (IST := IST) c i zs ↔ graphPath (primitiveGiStep (IST := IST) c i) zs := by
-  induction zs with
-  | nil => simp [primitiveGiPath, graphPath]
-  | cons z zs ih =>
-      cases zs with
-      | nil => simp [primitiveGiPath, graphPath]
-      | cons w rest =>
-          simp [primitiveGiPath, graphPath, ih]
+/--
+In a graph of degree at most two, once a path enters `cur` from `prev`, there
+is at most one way to continue without turning back.  This is the local
+uniqueness used by the path-following proof of Theorem 9.
+-/
+theorem graph_nextStep_unique_of_noBacktracking {α : Type*} {step : α → α → Prop}
+    (hdeg : graphDegreeAtMostTwo step)
+    {prev cur next₁ next₂ : α}
+    (hprev : step cur prev) (hnext₁ : step cur next₁) (hnext₂ : step cur next₂)
+    (hne₁ : next₁ ≠ prev) (hne₂ : next₂ ≠ prev) :
+    next₁ = next₂ := by
+  by_contra hne
+  exact hdeg hprev hnext₁ hnext₂
+    (fun h => hne₁ h.symm)
+    (fun h => hne₂ h.symm)
+    hne
 
 /-- The room/door cell associated to a primitive or almost primitive set. -/
 def projectedCell (Z : Finset (ExtendedGoods T I)) : Finset T × Finset I :=
@@ -1188,25 +1196,6 @@ theorem primitiveGiSequence_projection_unique
         ws.map (projectedCell (T := T) (I := I))) :
     zs = ws := by
   exact List.map_injective_iff.2 (projectedCell_injective (T := T) (I := I)) h
-
-omit [Inhabited T] in
-/--
-Specialization of the abstract graph theorem to primitive `G_i` paths: the
-room-door projection determines the split Scarf path uniquely.
--/
-theorem primitiveGiPath_projection_unique {c : T → I} {i : I}
-    {zs ws : List (Finset (ExtendedGoods T I))}
-    (hzs : primitiveGiPath (IST := IST) c i zs)
-    (hws : primitiveGiPath (IST := IST) c i ws)
-    (h :
-      zs.map (projectedCell (T := T) (I := I)) =
-        ws.map (projectedCell (T := T) (I := I))) :
-    zs = ws := by
-  exact graphPath_projection_unique
-    (projectedCell_injective (T := T) (I := I))
-    ((primitiveGiPath_graphPath (IST := IST) c i zs).1 hzs)
-    ((primitiveGiPath_graphPath (IST := IST) c i ws).1 hws)
-    h
 
 /--
 Scarf's combinatorial theorem in the primitive-set language from §3: after
@@ -1775,6 +1764,26 @@ theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I]
     perturbedSlackHeight_pairwiseDistinct (T := T) (I := I) u
   exact ⟨M, hBounds, hDistinct,
     coordinateValuesDefineLinearOrders_of_realization (IST := IST) hu hBounds hDistinct⟩
+
+omit [DecidableEq T] in
+/--
+The §3 utility-and-perturbation passage as a single existence statement:
+starting only from the abstract indexed linear orders, choose positive utility
+functions realizing the orders and pairwise distinct slack heights large enough
+to make coordinate comparison linear on the enlarged set.
+-/
+theorem exists_coordinateUtilityModel [Inhabited I] :
+    ∃ (u : I → T → ℝ) (M : I → ℝ),
+      PositiveUtilityRealization (IST := IST) u ∧
+      SlackBounds (T := T) (I := I) u M ∧
+      SlackHeightsPairwiseDistinct (I := I) M ∧
+      CoordinateValuesDefineLinearOrders (T := T) (I := I) u M := by
+  let u : I → T → ℝ := fun i x => orderUtility (IST := IST) i x
+  have hu : PositiveUtilityRealization (IST := IST) u :=
+    positiveOrderUtility_realization (IST := IST)
+  obtain ⟨M, hBounds, hDistinct, hCoord⟩ :=
+    exists_perturbedSlackHeights_for_coordinate_orders (IST := IST) hu
+  exact ⟨u, M, hu, hBounds, hDistinct, hCoord⟩
 
 /-- The indexed family of coordinate-induced orders on the enlarged set. -/
 @[reducible]
