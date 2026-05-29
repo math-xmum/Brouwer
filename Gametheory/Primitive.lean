@@ -1562,16 +1562,20 @@ theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
 /--
 Scarf's combinatorial theorem in the primitive-set language from §3: after
 extending a coloring by the identity on slack vectors, some primitive set has
-all colors.
+all colors, obtained by following the Scarf trace from the boundary door.
+-/
+theorem scarf_fullyColoredPrimitive_exists_via_trace [Inhabited I] (c : T → I) :
+    ∃ X : Finset (ExtendedGoods T I), isFullyColoredPrimitive (IST := IST) c X := by
+  obtain ⟨trace⟩ := scarfAlgorithmTrace_exists (IST := IST) c default
+  exact ⟨trace.terminal, trace.terminal_fullyColored⟩
+
+/--
+Scarf's combinatorial theorem in the primitive-set language from §3.  The proof
+is routed through the path-following trace, matching the narrative of the paper.
 -/
 theorem scarf_fullyColoredPrimitive_exists [Inhabited I] (c : T → I) :
-    ∃ X : Finset (ExtendedGoods T I), isFullyColoredPrimitive (IST := IST) c X := by
-  obtain ⟨room, hroom_mem⟩ := IST.Scarf c
-  rcases room with ⟨σ, C⟩
-  have hColorful : IST.isColorful c σ C := (Finset.mem_filter.mp hroom_mem).2
-  have hRoom : IST.isRoom σ C := IST.room_of_colorful hColorful
-  refine ⟨toPrimitiveSet (I := I) σ C, room_to_primitive hRoom, ?_⟩
-  exact (full_color_primitive_iff_colorful_room c hRoom).2 hColorful
+    ∃ X : Finset (ExtendedGoods T I), isFullyColoredPrimitive (IST := IST) c X :=
+  scarf_fullyColoredPrimitive_exists_via_trace (IST := IST) c
 
 /--
 The unique primitive set incident to the boundary face `I - i`, in the same
