@@ -40744,6 +40744,8 @@
    "/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean/ImportGraph/Graph/TransitiveClosure.ir",
    "/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean/ImportGraph/Graph/TransitiveClosure.olean.server",
    "/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean/ImportGraph/Graph/TransitiveClosure.olean.private"],
+  "Gametheory.ScarfPath":
+  ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/ScarfPath.olean"],
   "Gametheory.Scarf":
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.olean"],
   "Gametheory.Brouwer":
