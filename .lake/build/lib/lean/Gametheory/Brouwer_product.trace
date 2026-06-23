@@ -15,7 +15,7 @@
      [["Gametheory/Gametheory:extraDep",
        [["@Gametheory:extraDep", "00000000000006bb"]]],
       ["imports",
-       [["Gametheory.Brouwer transitive imports (legacy)", "1bdb30eb5a3268ad"],
+       [["Gametheory.Brouwer transitive imports (legacy)", "e2956192ba03aa8c"],
         ["Gametheory.Brouwer:importAllArts", "a17991c4638ef533"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
@@ -31,4 +31,4 @@
   ["Module.name: Gametheory.Brouwer_product", "4df41f0b5f9057cd"],
   ["Package.id?: (some Gametheory)", "137e35212e02fd21"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "3013dbccea59c982"}
+ "depHash": "6445c50e0053519a"}

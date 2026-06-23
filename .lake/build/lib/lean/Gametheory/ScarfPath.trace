@@ -16,7 +16,7 @@
        [["@Gametheory:extraDep", "00000000000006bb"]]],
       ["imports",
        [["Gametheory.Scarf transitive imports (legacy)", "5b786c59c8c8a49f"],
-        ["Gametheory.Scarf:importAllArts", "6f9929b2486411db"]]]]],
+        ["Gametheory.Scarf:importAllArts", "78c8635ec65a9c91"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
       ["package external libraries", "00000000000006bb"],
@@ -31,4 +31,4 @@
   ["Module.name: Gametheory.ScarfPath", "36496c97f7e04806"],
   ["Package.id?: (some Gametheory)", "137e35212e02fd21"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "02b0cf6e09929239"}
+ "depHash": "e4b772a945a62b93"}

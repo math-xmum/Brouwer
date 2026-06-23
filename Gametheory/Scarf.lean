@@ -1792,11 +1792,11 @@ lemma doors_of_NCroom [DecidableEq T] (h_room : isRoom σ C) (h_nc : isNearlyCol
           have h_x_in_sdiff : x ∈ σ \ {a, b} := Finset.mem_sdiff.mpr ⟨h_x_in_σ, h_x_notin_ab⟩
           have h_y_in_sdiff : y ∈ σ \ {a, b} := Finset.mem_sdiff.mpr ⟨h_y_in_σ, h_y_notin_ab⟩
           have h_x_in_set : x ∈ (↑σ : Set T) \ {a, b} := by
-            simp [Set.mem_diff, h_x_in_σ]
+            simp [Set.mem_sdiff, h_x_in_σ]
             simp at h_x_notin_ab
             exact h_x_notin_ab
           have h_y_in_set : y ∈ (↑σ : Set T) \ {a, b} := by
-            simp [Set.mem_diff, h_y_in_σ]
+            simp [Set.mem_sdiff, h_y_in_σ]
             simp at h_y_notin_ab
             exact h_y_notin_ab
           have h_inj_xy := h_inj_outside h_x_in_set h_y_in_set h_cxy_eq
@@ -1823,7 +1823,7 @@ lemma doors_of_NCroom [DecidableEq T] (h_room : isRoom σ C) (h_nc : isNearlyCol
                   exact ⟨h_y_in_σ, by simp [h_y_ne_a, h_y_eq_b]⟩
 
                 have h_y_in_set : y ∈ (↑σ : Set T) \ {a, b} := by
-                  simp [Set.mem_diff, h_y_in_σ, h_y_ne_a, h_y_eq_b]
+                  simp [Set.mem_sdiff, h_y_in_σ, h_y_ne_a, h_y_eq_b]
 
                 have h_pairs_different : ({a, y} : Finset T) ≠ {a, b} := by
                   intro h_eq
@@ -1870,7 +1870,7 @@ lemma doors_of_NCroom [DecidableEq T] (h_room : isRoom σ C) (h_nc : isNearlyCol
                   exact ⟨h_y_in_σ, by simp [h_y_eq_a, h_y_ne_b]⟩
 
                 have h_y_in_set : y ∈ (↑σ : Set T) \ {a, b} := by
-                  simp [Set.mem_diff, h_y_in_σ, h_y_eq_a, h_y_ne_b]
+                  simp [Set.mem_sdiff, h_y_in_σ, h_y_eq_a, h_y_ne_b]
 
                 have h_pairs_different : ({b, y} : Finset T) ≠ {a, b} := by
                   intro h_eq
@@ -1918,7 +1918,7 @@ lemma doors_of_NCroom [DecidableEq T] (h_room : isRoom σ C) (h_nc : isNearlyCol
                   exact ⟨h_x_in_σ, by simp [h_x_ne_a, h_x_eq_b]⟩
 
                 have h_x_in_set : x ∈ (↑σ : Set T) \ {a, b} := by
-                  simp [Set.mem_diff, h_x_in_σ, h_x_ne_a, h_x_eq_b]
+                  simp [Set.mem_sdiff, h_x_in_σ, h_x_ne_a, h_x_eq_b]
 
                 have h_pairs_different : ({a, x} : Finset T) ≠ {a, b} := by
                   intro h_eq
@@ -1963,7 +1963,7 @@ lemma doors_of_NCroom [DecidableEq T] (h_room : isRoom σ C) (h_nc : isNearlyCol
                   exact ⟨h_x_in_σ, by simp [h_x_eq_a, h_x_ne_b]⟩
 
                 have h_x_in_set : x ∈ (↑σ : Set T) \ {a, b} := by
-                  simp [Set.mem_diff, h_x_in_σ, h_x_eq_a, h_x_ne_b]
+                  simp [Set.mem_sdiff, h_x_in_σ, h_x_eq_a, h_x_ne_b]
 
                 have h_pairs_different : ({b, x} : Finset T) ≠ {a, b} := by
                   intro h_eq
