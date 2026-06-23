@@ -47,7 +47,6 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
     have := WellFounded.min_le wellFounded_lt hj
     exact not_le_of_gt hlt this
   have h_lt : k.val < prefix_sum card i₀ + (card i₀ : ℕ) := by
-    simp at i₀_in_S
     change k.val < (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) at i₀_in_S
     have : (∑ j ∈ Finset.univ.filter (· ≤ i₀), (card j : ℕ)) =
             (∑ j ∈ Finset.univ.filter (· < i₀), (card j : ℕ)) + (card i₀ : ℕ) := by
@@ -601,7 +600,9 @@ lemma pushTowardsZ_continuous : Continuous (pushTowardsZ card) := by
     hone_minus_t.mul hxk
   have hterm2 : Continuous (fun x => (tPush card x) * (z_uniform card).1 k) :=
     (tPush_continuous card).mul continuous_const
-  simpa [pushTowardsZ] using hterm1.add hterm2
+  change Continuous (fun x : BigSimplex card =>
+    ((1 : ℝ) - tPush card x) * x.1 k + tPush card x * (z_uniform card).1 k)
+  exact hterm1.add hterm2
 
 /-- Continuity of `project_to_product`. -/
 lemma project_continuous : Continuous (project_to_product card) := by

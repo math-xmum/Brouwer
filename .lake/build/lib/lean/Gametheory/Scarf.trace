@@ -1,34 +1,70 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["6dd30f456ffb0357.olean"],
+ {"o": ["5ca0750273c953d2.olean"],
   "m": false,
-  "i": "d33c127a85e1a1e1.ilean",
+  "i": "4e175e2cbba60cc0.ilean",
   "c": "bb86368466c3f258.c"},
  "log":
  [{"message":
-   ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Scarf.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Scarf.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Scarf.setup.json --json",
-   "level": "trace"}],
+   ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.31.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Scarf.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Scarf.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Scarf.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Scarf.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Gametheory/Scarf.lean:1795:18: `Set.mem_diff` has been deprecated: Use `Set.mem_sdiff` instead",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1799:18: `Set.mem_diff` has been deprecated: Use `Set.mem_sdiff` instead",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1826:24: `Set.mem_diff` has been deprecated: Use `Set.mem_sdiff` instead",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1873:24: `Set.mem_diff` has been deprecated: Use `Set.mem_sdiff` instead",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1921:24: `Set.mem_diff` has been deprecated: Use `Set.mem_sdiff` instead",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1966:24: `Set.mem_diff` has been deprecated: Use `Set.mem_sdiff` instead",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1795:18: This simp argument is unused:\n  Set.mem_diff\n\nHint: Omit it from the simp argument list.\n  simp [S̵e̵t̵.̵m̵e̵m̵_̵d̵i̵f̵f̵,̵ ̵h_x_in_σ]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1799:18: This simp argument is unused:\n  Set.mem_diff\n\nHint: Omit it from the simp argument list.\n  simp [S̵e̵t̵.̵m̵e̵m̵_̵d̵i̵f̵f̵,̵ ̵h_y_in_σ]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1826:24: This simp argument is unused:\n  Set.mem_diff\n\nHint: Omit it from the simp argument list.\n  simp [S̵e̵t̵.̵m̵e̵m̵_̵d̵i̵f̵f̵,̵ ̵h_y_in_σ, h_y_ne_a, h_y_eq_b]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1873:24: This simp argument is unused:\n  Set.mem_diff\n\nHint: Omit it from the simp argument list.\n  simp [S̵e̵t̵.̵m̵e̵m̵_̵d̵i̵f̵f̵,̵ ̵h_y_in_σ, h_y_eq_a, h_y_ne_b]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1921:24: This simp argument is unused:\n  Set.mem_diff\n\nHint: Omit it from the simp argument list.\n  simp [S̵e̵t̵.̵m̵e̵m̵_̵d̵i̵f̵f̵,̵ ̵h_x_in_σ, h_x_ne_a, h_x_eq_b]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Gametheory/Scarf.lean:1966:24: This simp argument is unused:\n  Set.mem_diff\n\nHint: Omit it from the simp argument list.\n  simp [S̵e̵t̵.̵m̵e̵m̵_̵d̵i̵f̵f̵,̵ ̵h_x_in_σ, h_x_eq_a, h_x_ne_b]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"}],
  "inputs":
  [["Gametheory.Scarf:deps",
    [["deps",
      [["Gametheory/Gametheory:extraDep",
        [["@Gametheory:extraDep", "00000000000006bb"]]],
       ["imports",
-       [["Mathlib transitive imports (legacy)", "31ec4aeab7cd8b5f"],
-        ["Mathlib:importAllArts", "3a06bffc2eac39df"]]]]],
+       [["Mathlib transitive imports (legacy)", "41d2570f76c2764a"],
+        ["Mathlib:importAllArts", "bbb4e5729d155599"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
       ["package external libraries", "00000000000006bb"],
       ["module dynlibs", "00000000000006bb"],
       ["module plugins", "00000000000006bb"]]]]],
-  ["Lean 4.30.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622",
-   "2f4703bb19086252"],
+  ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
+   "fc45ac412f28501c"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Scarf.lean",
-   "50c154e656f7546e"],
+   "568ba2278ed67249"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: Gametheory.Scarf", "a18c44ee0f5a8302"],
   ["Package.id?: (some Gametheory)", "137e35212e02fd21"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "01295b3350df1e75"}
+ "depHash": "8eb4ec642e0d5e2a"}

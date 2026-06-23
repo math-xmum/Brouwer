@@ -6,8 +6,8 @@ This repository contains a formalization of fundamental theorems in game theory 
 
 This project currently targets:
 
--   Lean `4.30.0`
--   mathlib `v4.30.0`
+-   Lean `4.31.0`
+-   mathlib `v4.31.0`
 
 The Lean toolchain is pinned in `lean-toolchain`, and mathlib is pinned in `lakefile.lean` / `lake-manifest.json`.
 

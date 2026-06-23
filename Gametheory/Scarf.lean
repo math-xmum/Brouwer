@@ -91,7 +91,7 @@ class IndexedLOrder (I T :Type*) where
 
 instance : FunLike (IndexedLOrder I T) I (LinearOrder T) where
   coe := fun a => a.IST
-  coe_injective' := fun f g h => by cases f; cases g; congr
+  coe_injective := fun f g h => by cases f; cases g; congr
 
 
 variable [IST : IndexedLOrder I T]

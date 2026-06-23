@@ -89,7 +89,7 @@ lemma GiEdge.irrefl {c : T → I} {i : I} (v : GiCell T I) :
 /-- The Mathlib `SimpleGraph` whose vertices and edges are the graph `G_i`. -/
 def GiGraph (c : T → I) (i : I) : SimpleGraph (GiCell T I) where
   Adj := GiEdge (IST := IST) c i
-  symm := fun _ _ h => GiEdge.symm h
+  symm := ⟨fun _ _ h => GiEdge.symm h⟩
   loopless := ⟨fun v => GiEdge.irrefl (IST := IST) (c := c) (i := i) v⟩
 
 /-- The finite neighbor set of a vertex in `G_i`. -/
@@ -276,7 +276,9 @@ theorem GiDegree_outsideDoor {c : T → I} {i : I} {τ : Finset T} {D : Finset I
             rw [Finset.mem_singleton]
             apply Prod.ext
             · have hwσ : w.1 = ({x} : Finset T) := by
-                simpa using hInsert.symm
+                calc
+                  w.1 = insert x ∅ := hInsert.symm
+                  _ = {x} := Finset.insert_empty
               have hxMax : x = xMax := by
                 have hAbove : ∀ y : T, (IST i).le y x := by
                   intro y

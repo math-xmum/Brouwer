@@ -32,7 +32,7 @@ instance TT.inhabited : Inhabited (TT n l) where
 
 instance TT.funlike : FunLike (TT n l) (Fin n) (Fin (l+1)) where
   coe := fun a => a.1
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 variable {n l} in
 def TTtostdSimplex (x : TT n l) : stdSimplex ℝ (Fin n) := ⟨fun i => x i / l, by
@@ -397,8 +397,8 @@ def room_seq (l' : ℕ) :=
   let l : PNat := ⟨l'+1,Nat.zero_lt_succ _⟩
   Classical.choice (TT.ILO.Scarf (@Fcolor n l f)).to_subtype
 
-def room_point_seq (l' : ℕ) := pick_colorful_point
-(Finset.mem_filter.1 (room_seq f l').2).2 |>.1
+def room_point_seq (l' : ℕ) :=
+  (pick_colorful_point (Finset.mem_filter.1 (room_seq f l').2).2).1
 
 
 

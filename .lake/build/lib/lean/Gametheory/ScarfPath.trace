@@ -1,13 +1,13 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["ca556d077cb6506e.olean"],
+ {"o": ["d827349b79748be8.olean"],
   "m": false,
-  "i": "32bebbf0947d1224.ilean",
+  "i": "e8367b901be33230.ilean",
   "c": "a0cfe875c5c5a693.c"},
  "log":
  [{"message":
-   ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/ScarfPath.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/ScarfPath.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/ScarfPath.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/ScarfPath.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/ScarfPath.setup.json --json",
+   ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.31.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/ScarfPath.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/ScarfPath.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/ScarfPath.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/ScarfPath.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/ScarfPath.setup.json --json",
    "level": "trace"}],
  "inputs":
  [["Gametheory.ScarfPath:deps",
@@ -15,20 +15,20 @@
      [["Gametheory/Gametheory:extraDep",
        [["@Gametheory:extraDep", "00000000000006bb"]]],
       ["imports",
-       [["Gametheory.Scarf transitive imports (legacy)", "184ece062b5a8837"],
-        ["Gametheory.Scarf:importAllArts", "a8a0f5242d47b20b"]]]]],
+       [["Gametheory.Scarf transitive imports (legacy)", "5b786c59c8c8a49f"],
+        ["Gametheory.Scarf:importAllArts", "6f9929b2486411db"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
       ["package external libraries", "00000000000006bb"],
       ["module dynlibs", "00000000000006bb"],
       ["module plugins", "00000000000006bb"]]]]],
-  ["Lean 4.30.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622",
-   "2f4703bb19086252"],
+  ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
+   "fc45ac412f28501c"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/ScarfPath.lean",
-   "5ee6a3c305f0d677"],
+   "7ff72a576a0e952b"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: Gametheory.ScarfPath", "36496c97f7e04806"],
   ["Package.id?: (some Gametheory)", "137e35212e02fd21"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "0956184780a0d14c"}
+ "depHash": "02b0cf6e09929239"}

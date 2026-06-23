@@ -750,7 +750,9 @@ lemma slackBoundary_unique_incident_primitive (i : I) :
     cases hDoorof with
     | idoor hCellσC _ x _ hInsert hD_eq =>
         have hσ : σ = ({x} : Finset T) := by
-          simpa using hInsert.symm
+          calc
+            σ = insert x ∅ := hInsert.symm
+            _ = {x} := Finset.insert_empty
         have hC : C = ({i} : Finset I) := hD_eq.symm
         have hx_eq : x = xMax := by
           have hAbove : ∀ y : T, (IST i).le y x := by
@@ -798,7 +800,10 @@ lemma boundary_almostPrimitive_eq_slackBoundary {Y : Finset (ExtendedGoods T I)}
   have hDcard : (fromMissing (T := T) (I := I) Y).card = 1 := by
     have hDoorCard := hDoor.2
     rw [hGoods] at hDoorCard
-    simpa using hDoorCard
+    calc
+      (fromMissing (T := T) (I := I) Y).card =
+          (Finset.empty : Finset T).card + 1 := hDoorCard
+      _ = 1 := by rfl
   obtain ⟨i, hD⟩ := Finset.card_eq_one.mp hDcard
   refine ⟨i, ?_⟩
   rw [almostPrimitive_eq_toAlmost_from_parts hY, hGoods, hD]
@@ -1459,7 +1464,7 @@ omit [Inhabited T] in
 def reachableComponentGraph {α : Type*} (G : SimpleGraph α) (v₀ : α) :
     SimpleGraph {v : α // G.Reachable v₀ v} where
   Adj a b := G.Adj a.1 b.1
-  symm := by intro a b h; exact G.symm h
+  symm := ⟨fun a b h => G.symm.symm a.1 b.1 h⟩
   loopless := ⟨fun a h => G.loopless.1 a.1 h⟩
 
 omit [Inhabited T] in

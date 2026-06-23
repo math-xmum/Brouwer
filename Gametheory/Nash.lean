@@ -336,7 +336,8 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       exact (continuous_apply (((eSi.symm).symm j))).comp continuous_subtype_val
     have h_eval : Continuous (fun w : ProductSimplices card' => w (eI i)) :=
       continuous_apply (eI i)
-    simpa [this] using h_map.comp h_eval
+    rw [this]
+    simpa only [Function.comp_def] using h_map.comp h_eval
 
   let f' : ProductSimplices card' → ProductSimplices card' := φ ∘ f ∘ φ_inv
   have hf' : Continuous f' := hφ_cont.comp (hf.comp hφinv_cont)

@@ -1,13 +1,13 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["52547add01c403cd.olean"],
+ {"o": ["98f6422500f43b70.olean"],
   "m": false,
-  "i": "64fd3cbcb7de435c.ilean",
+  "i": "dea0e14bd3a4f8df.ilean",
   "c": "8c193b0da7085d6a.c"},
  "log":
  [{"message":
-   ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer_product.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer_product.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer_product.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer_product.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer_product.setup.json --json",
+   ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.31.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer_product.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer_product.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Brouwer_product.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer_product.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Brouwer_product.setup.json --json",
    "level": "trace"}],
  "inputs":
  [["Gametheory.Brouwer_product:deps",
@@ -15,20 +15,20 @@
      [["Gametheory/Gametheory:extraDep",
        [["@Gametheory:extraDep", "00000000000006bb"]]],
       ["imports",
-       [["Gametheory.Brouwer transitive imports (legacy)", "0a240654edaa85db"],
-        ["Gametheory.Brouwer:importAllArts", "53e8b6a370c152db"]]]]],
+       [["Gametheory.Brouwer transitive imports (legacy)", "1bdb30eb5a3268ad"],
+        ["Gametheory.Brouwer:importAllArts", "a17991c4638ef533"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
       ["package external libraries", "00000000000006bb"],
       ["module dynlibs", "00000000000006bb"],
       ["module plugins", "00000000000006bb"]]]]],
-  ["Lean 4.30.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622",
-   "2f4703bb19086252"],
+  ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
+   "fc45ac412f28501c"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Brouwer_product.lean",
-   "283d42597075ea84"],
+   "c43067cbfbdec634"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: Gametheory.Brouwer_product", "4df41f0b5f9057cd"],
   ["Package.id?: (some Gametheory)", "137e35212e02fd21"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "4a1be0aaf1eddf94"}
+ "depHash": "3013dbccea59c982"}
