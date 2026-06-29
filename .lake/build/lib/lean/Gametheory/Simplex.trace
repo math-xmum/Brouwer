@@ -1,17 +1,14 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["854f97989c339f86.olean"],
+ {"o": ["72eccd666a7de66e.olean"],
   "m": false,
-  "i": "aedf83c9f3e73558.ilean",
+  "i": "d92b82f5e48c3e66.ilean",
   "c": "e7035a14976df356.c"},
  "log":
  [{"message":
    ".> LEAN_PATH=/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Cli/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/batteries/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/Qq/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/aesop/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/importGraph/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/plausible/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/packages/mathlib/.lake/build/lib/lean:/Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean /Users/lyuyuwei/.elan/toolchains/leanprover--lean4---v4.31.0/bin/lean /Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Simplex.lean -o /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Simplex.olean -i /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/lib/lean/Gametheory/Simplex.ilean -c /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Simplex.c --setup /Users/lyuyuwei/Documents/GitHub/Brouwer/.lake/build/ir/Gametheory/Simplex.setup.json --json",
-   "level": "trace"},
-  {"message":
-   "Gametheory/Simplex.lean:57:6: Overlapping instance parameters in `wsum_magic_ineq`:\n\n⚠️ There are 2 `[LinearOrder k]` instances; one is sufficient.\n\nNote: This linter can be disabled with `set_option linter.overlappingInstances false`",
-   "level": "warning"}],
+   "level": "trace"}],
  "inputs":
  [["Gametheory.Simplex:deps",
    [["deps",
@@ -28,10 +25,10 @@
   ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
    "fc45ac412f28501c"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/Simplex.lean",
-   "1401a59c002c3e02"],
+   "cb8641f7b1edcc9b"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: Gametheory.Simplex", "6bdd310229ffd33c"],
   ["Package.id?: (some Gametheory)", "137e35212e02fd21"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "16ab3d38305eb7eb"}
+ "depHash": "a1d259e100e40438"}
