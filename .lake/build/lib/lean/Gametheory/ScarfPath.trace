@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["d827349b79748be8.olean"],
+ {"o": ["5c68b769a1990f30.olean"],
   "m": false,
-  "i": "e8367b901be33230.ilean",
+  "i": "e194b2ae8d78c71f.ilean",
   "c": "a0cfe875c5c5a693.c"},
  "log":
  [{"message":
@@ -25,10 +25,10 @@
   ["Lean 4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783",
    "fc45ac412f28501c"],
   ["/Users/lyuyuwei/Documents/GitHub/Brouwer/Gametheory/ScarfPath.lean",
-   "7ff72a576a0e952b"],
+   "673496d0fb3f38fb"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: Gametheory.ScarfPath", "36496c97f7e04806"],
   ["Package.id?: (some Gametheory)", "137e35212e02fd21"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "e4b772a945a62b93"}
+ "depHash": "6edcac4b841f9c7e"}

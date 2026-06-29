@@ -10,23 +10,23 @@ namespace IndexedLOrder
 variable {T I : Type*} [Inhabited T] [Fintype T] [Fintype I]
 variable [DecidableEq T] [DecidableEq I] [IST : IndexedLOrder I T]
 
-/-- A room/door cell, represented as the pair `(σ, C)`. -/
+/-- A room/door cell, represented as the pair $(\sigma, C)$. -/
 abbrev GiCell (T I : Type*) := Finset T × Finset I
 
-/-- The room-type vertices of the graph `G_i`: colorful rooms and typed nearly-colorful rooms. -/
+/-- The room-type vertices of the graph $G_i$: colorful rooms and typed nearly-colorful rooms. -/
 def GiRoomVertex (c : T → I) (i : I) (v : GiCell T I) : Prop :=
   IST.isColorful c v.1 v.2 ∨
     (IST.isRoom v.1 v.2 ∧ IST.isTypedNC c i v.1 v.2)
 
-/-- The door-type vertices of the graph `G_i`: typed nearly-colorful doors. -/
+/-- The door-type vertices of the graph $G_i$: typed nearly-colorful doors. -/
 def GiDoorVertex (c : T → I) (i : I) (v : GiCell T I) : Prop :=
   IST.isDoor v.1 v.2 ∧ IST.isTypedNC c i v.1 v.2
 
-/-- Vertices of `G_i`: the relevant rooms and doors of fixed type `i`. -/
+/-- Vertices of $G_i$: the relevant rooms and doors of fixed type $i$. -/
 def GiVertex (c : T → I) (i : I) (v : GiCell T I) : Prop :=
   GiRoomVertex (IST := IST) c i v ∨ GiDoorVertex (IST := IST) c i v
 
-/-- Edges of `G_i`: room-door incidence, made symmetric. -/
+/-- Edges of $G_i$: room-door incidence, made symmetric. -/
 def GiEdge (c : T → I) (i : I) (v w : GiCell T I) : Prop :=
   (GiRoomVertex (IST := IST) c i v ∧
     GiDoorVertex (IST := IST) c i w ∧
@@ -86,13 +86,13 @@ lemma GiEdge.irrefl {c : T → I} {i : I} (v : GiCell T I) :
     have hDoorCard := hDoor.2
     omega
 
-/-- The Mathlib `SimpleGraph` whose vertices and edges are the graph `G_i`. -/
+/-- The Mathlib `SimpleGraph` whose vertices and edges are the graph $G_i$. -/
 def GiGraph (c : T → I) (i : I) : SimpleGraph (GiCell T I) where
   Adj := GiEdge (IST := IST) c i
   symm := ⟨fun _ _ h => GiEdge.symm h⟩
   loopless := ⟨fun v => GiEdge.irrefl (IST := IST) (c := c) (i := i) v⟩
 
-/-- The finite neighbor set of a vertex in `G_i`. -/
+/-- The finite neighbor set of a vertex in $G_i$. -/
 def GiNeighbors (c : T → I) (i : I) (v : GiCell T I) : Finset (GiCell T I) :=
   (GiGraph (IST := IST) c i).neighborFinset v
 
@@ -101,11 +101,11 @@ lemma mem_GiNeighbors {c : T → I} {i : I} {v w : GiCell T I} :
     w ∈ GiNeighbors (IST := IST) c i v ↔ GiEdge (IST := IST) c i v w := by
   exact SimpleGraph.mem_neighborFinset (GiGraph (IST := IST) c i) v w
 
-/-- Degree in `G_i`. -/
+/-- Degree in $G_i$. -/
 def GiDegree (c : T → I) (i : I) (v : GiCell T I) : Nat :=
   (GiNeighbors (IST := IST) c i v).card
 
-/-- Endpoint vertices of `G_i`. -/
+/-- Endpoint vertices of $G_i$. -/
 def GiEndpoint (c : T → I) (i : I) (v : GiCell T I) : Prop :=
   GiVertex (IST := IST) c i v ∧ GiDegree (IST := IST) c i v = 1
 
@@ -465,7 +465,7 @@ theorem GiDegree_colorfulRoom {c : T → I} {i : I} {σ : Finset T} {C : Finset 
     rw [GiDegree, hNeighbors]
     simp
 
-/-- A graph has degree at most two at each vertex. -/
+/-- A graph has degree at most $2$ at each vertex. -/
 def simpleGraphDegreeAtMostTwo {α : Type*} [Fintype α] (G : SimpleGraph α) : Prop :=
   ∀ v, G.degree v ≤ 2
 
@@ -488,8 +488,8 @@ def simpleGraphComponentsArePathsOrCycles {α : Type*} [Fintype α]
     simpleGraphPathComponent G component ∨ simpleGraphCycleComponent G component
 
 /--
-The degree characterization of `G_i`: every vertex has degree one or two, and
-the degree-one vertices are exactly the unique outside door of type `i` and
+The degree characterization of $G_i$: every vertex has degree $1$ or $2$, and
+the degree-$1$ vertices are exactly the unique outside door of type $i$ and
 the colorful rooms.
 -/
 def GiDegreeCharacterization (c : T → I) (i : I) : Prop :=
@@ -539,17 +539,17 @@ theorem GiDegreeCharacterization_holds (c : T → I) (i : I) :
           GiDegree_colorfulRoom (IST := IST) (i := i) hColorful⟩
 
 /--
-The path-structure target for `G_i`: degree characterization plus the local
-degree-at-most-two property used by path-following.
+The path-structure target for $G_i$: degree characterization plus the local
+degree-at-most-$2$ property used by path-following.
 -/
 def GiPathStructure (c : T → I) (i : I) : Prop :=
   GiDegreeCharacterization (IST := IST) c i ∧
     simpleGraphDegreeAtMostTwo (GiGraph (IST := IST) c i)
 
 /--
-The faithful component-level target for `G_i`: its connected components are
+The faithful component-level target for $G_i$: its connected components are
 paths or cycles, and the endpoints of path components are exactly colorful
-rooms except for the unique outside door of type `i`.
+rooms except for the unique outside door of type $i$.
 -/
 def GiComponentStructure (c : T → I) (i : I) : Prop :=
   simpleGraphComponentsArePathsOrCycles (GiGraph (IST := IST) c i) ∧
@@ -588,8 +588,8 @@ theorem GiComponentStructure_of_components_are_paths_or_cycles {c : T → I} {i 
   exact ⟨hcomponents, hdegStmt.2⟩
 
 /--
-Generic graph-theoretic step 1: in a finite connected component of a graph of
-degree at most two, choose a path whose support is maximal inside that
+Generic graph-theoretic step $1$: in a finite connected component of a graph of
+degree at most $2$, choose a path whose support is maximal inside that
 component.
 -/
 theorem exists_maximal_component_path_of_degree_le_two
@@ -628,9 +628,9 @@ theorem exists_maximal_component_path_of_degree_le_two
   omega
 
 /--
-Generic graph-theoretic step 2a: in a graph of degree at most two, a maximal
+Generic graph-theoretic step $2\mathrm{a}$: in a graph of degree at most $2$, a maximal
 component path has no neighbor outside its support.  This is the point that
-rules out T-shaped components.
+rules out $T$-shaped components.
 -/
 theorem maximal_component_path_no_escape_of_degree_le_two
     {α : Type*} [Fintype α] (G : SimpleGraph α)
@@ -723,7 +723,7 @@ theorem maximal_component_path_no_escape_of_degree_le_two
   omega
 
 /--
-Generic graph-theoretic step 2b: if a component path has no edge escaping its
+Generic graph-theoretic step $2\mathrm{b}$: if a component path has no edge escaping its
 support inside the component, then its support is the whole component.
 -/
 theorem component_path_support_eq_component_of_no_escape
@@ -758,9 +758,9 @@ theorem component_path_support_eq_component_of_no_escape
     have hEscape : d.snd ∈ p.support := hend hdfst d.adj hdsndComp
     exact hdsnd hEscape
 
-/- Generic graph-theoretic step 3: if a maximal component path in a degree-at-most
-two graph has a closing edge not already used by the path, then the component
-is a cycle.  The extra edge condition excludes the two-vertex path case. -/
+/-- Generic graph-theoretic step $3$: if a maximal component path in a degree-at-most-$2$
+graph has a closing edge not already used by the path, then the component
+is a cycle.  The extra edge condition excludes the $2$-vertex path case. -/
 theorem component_cycle_of_maximal_path_closes
     {α : Type*} [Fintype α] (G : SimpleGraph α)
     {component : G.ConnectedComponent} {u v : α} {p : G.Walk u v}
@@ -794,7 +794,7 @@ theorem component_path_of_support_eq_component
 
 /--
 Generic graph-theoretic theorem: every connected component of a finite graph
-whose vertices all have degree at most two is represented by either a path or
+whose vertices all have degree at most $2$ is represented by either a path or
 a cycle.
 -/
 theorem simpleGraph_components_path_or_cycle_of_degree_le_two
@@ -819,8 +819,8 @@ theorem simpleGraph_components_path_or_cycle_of_degree_le_two
   · exact Or.inl (component_path_of_support_eq_component G hp hsupp)
 
 /--
-Final graph structure statement for `G_i`: its components are paths or cycles,
-and its endpoints are exactly the outside door of type `i` and the colorful
+Final graph structure statement for $G_i$: its components are paths or cycles,
+and its endpoints are exactly the outside door of type $i$ and the colorful
 rooms.
 -/
 theorem GiComponentStructure_holds (c : T → I) (i : I) :
@@ -835,4 +835,3 @@ theorem GiComponentStructure_holds (c : T → I) (i : I) :
 
 end IndexedLOrder
 
-end

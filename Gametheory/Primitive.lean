@@ -11,26 +11,28 @@ namespace IndexedLOrder
 variable {T I : Type*} [Inhabited T] [Fintype T] [Fintype I]
 variable [DecidableEq T] [DecidableEq I] [IST : IndexedLOrder I T]
 
-/-- The abstract enlargement `T ∪ I` used for Scarf's slack-vector language. -/
+/-- The abstract enlargement $T \cup I$ used for Scarf's slack-vector language. -/
 abbrev ExtendedGoods (T I : Type*) := Sum T I
 
-/-- Turn a room `(σ, C)` into the corresponding primitive set `σ ∪ (I \ C)`. -/
+/-- Turn a room $(\sigma, C)$ into the corresponding primitive set
+$\sigma \cup (I \setminus C)$. -/
 def toPrimitiveSet (σ : Finset T) (C : Finset I) : Finset (ExtendedGoods T I) :=
   (σ.image Sum.inl) ∪ ((Finset.univ \ C).image Sum.inr)
 
-/-- Turn a door `(τ, D)` into the corresponding almost primitive set `τ ∪ (I \ D)`. -/
+/-- Turn a door $(\tau, D)$ into the corresponding almost primitive set
+$\tau \cup (I \setminus D)$. -/
 def toAlmostPrimitive (τ : Finset T) (D : Finset I) : Finset (ExtendedGoods T I) :=
   toPrimitiveSet (I := I) τ D
 
-/-- The goods part of a subset of `T ∪ I`. -/
+/-- The goods part of a subset of $T \cup I$. -/
 def fromGoods (X : Finset (ExtendedGoods T I)) : Finset T :=
   Finset.univ.filter (fun t : T => Sum.inl t ∈ X)
 
-/-- The indices whose slack vectors are missing from a subset of `T ∪ I`. -/
+/-- The indices whose slack vectors are missing from a subset of $T \cup I$. -/
 def fromMissing (X : Finset (ExtendedGoods T I)) : Finset I :=
   Finset.univ.filter (fun i : I => Sum.inr i ∉ X)
 
-/-- The room/door cell associated to a subset of `T ∪ I`. -/
+/-- The room/door cell associated to a subset of $T \cup I$. -/
 def associatedCell (X : Finset (ExtendedGoods T I)) : GiCell T I :=
   (fromGoods (T := T) (I := I) X, fromMissing (T := T) (I := I) X)
 
@@ -178,7 +180,8 @@ def isRoomPrimitive (X : Finset (ExtendedGoods T I)) : Prop :=
 
 /--
 Scarf primitive sets in the paper's native dominance form, using the characterization
-`X` primitive iff `X ∩ T` is dominant with respect to the missing slack indices.
+$X$ primitive iff $X \cap T$ is dominant with respect to the missing slack
+indices.
 -/
 def isPrimitive (X : Finset (ExtendedGoods T I)) : Prop :=
   X.card = Fintype.card I ∧
@@ -194,7 +197,7 @@ def isAlmostPrimitive (Y : Finset (ExtendedGoods T I)) : Prop :=
     IST.isDoorof τ D σ C ∧
       Y = toAlmostPrimitive (I := I) τ D
 
-/-- Almost primitive sets in the paper's native form: an `(n-1)`-face contained in a primitive set. -/
+/-- Almost primitive sets in the paper's native form: an $(n-1)$-face contained in a primitive set. -/
 def isAlmostPrimitiveNative (Y : Finset (ExtendedGoods T I)) : Prop :=
   Y.card + 1 = Fintype.card I ∧ ∃ X, isPrimitiveNative (IST := IST) X ∧ Y ⊆ X
 
@@ -615,9 +618,9 @@ theorem native_primitive_erase_mainLemma
     exact hInternal
 
 /--
-Scarf's main lemma in the paper's replacement form: after removing `x` from
-a primitive set `X`, either only slack vectors remain, or there is a unique
-new element `y ∉ X` such that `X - x + y` is primitive.
+Scarf's main lemma in the paper's replacement form: after removing $x$ from
+a primitive set $X$, either only slack vectors remain, or there is a unique
+new element $y \notin X$ such that $X - x + y$ is primitive.
 -/
 theorem native_primitive_erase_replacement_mainLemma
     {X : Finset (ExtendedGoods T I)} (hX : isPrimitiveNative (IST := IST) X)
@@ -672,7 +675,7 @@ theorem native_primitive_erase_replacement_mainLemma
       · exact hzy
       · exact False.elim (hzNotY hzY)
 
-/-- The boundary almost primitive set made only of slacks, missing `i`. -/
+/-- The boundary almost primitive set made only of slacks, missing $i$. -/
 def slackBoundary (i : I) : Finset (ExtendedGoods T I) :=
   toAlmostPrimitive (T := T) (Finset.empty : Finset T) ({i} : Finset I)
 
@@ -786,7 +789,7 @@ lemma slackBoundary_unique_incident_nativePrimitive (i : I) :
 
 /--
 Every almost primitive face made only of slack vectors is one of the boundary
-faces `I - i`.
+faces $I - i$.
 -/
 lemma boundary_almostPrimitive_eq_slackBoundary {Y : Finset (ExtendedGoods T I)}
     (hY : isAlmostPrimitive (IST := IST) Y)
@@ -874,7 +877,8 @@ theorem native_almostPrimitive_incident_primitives_boundary_or_internal
 
 /--
 Incidence between an almost primitive face and a primitive set is exactly
-the old room-door incidence after translating both sides back to `(goods, indices)`.
+the old room-door incidence after translating both sides back to
+$(\mathrm{goods}, \mathrm{indices})$.
 -/
 lemma almostPrimitive_subset_primitive_iff_doorof
     {Y X : Finset (ExtendedGoods T I)}
@@ -1029,14 +1033,14 @@ lemma full_color_primitive_iff_colorful_room (c : T → I) {σ : Finset T} {C : 
     rw [image_extendedColoring_toPrimitiveSet, hColorful.2]
     exact Finset.union_sdiff_self_eq_union.symm.trans (by simp)
 
-/-- Scarf's primitive-set coloring condition `c(X) = I`. -/
+/-- Scarf's primitive-set coloring condition $c(X) = I$. -/
 def isFullyColoredPrimitive (c : T → I) (X : Finset (ExtendedGoods T I)) : Prop :=
   isPrimitive (IST := IST) X ∧
     X.image (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I)
 
 /--
-For an arbitrary primitive set, Scarf's condition `c(X) = I` is exactly the
-colorful-room condition for the associated room `(X ∩ T, I \ X)`.
+For an arbitrary primitive set, Scarf's condition $c(X) = I$ is exactly the
+colorful-room condition for the associated room $(X \cap T, I \setminus X)$.
 -/
 lemma full_color_primitive_iff_colorful_associated_room
     (c : T → I) {X : Finset (ExtendedGoods T I)} (hX : isPrimitive (IST := IST) X) :
@@ -1265,9 +1269,9 @@ lemma algorithm_incidence_to_GiEdge
   exact Or.inl ⟨hRoomVertex, hDoorVertex, hDoorof⟩
 
 /--
-A split Scarf replacement step, matching §3: an all-but-`i` primitive set moves
-through an all-but-`i` almost primitive face to another primitive set, which is
-either still all-but-`i` or already fully colored.
+A split Scarf replacement step, matching $\S 3$: an all-but-$i$ primitive set moves
+through an all-but-$i$ almost primitive face to another primitive set, which is
+either still all-but-$i$ or already fully colored.
 -/
 def scarfSplitReplacementStep (c : T → I) (i : I)
     (X Y X' : Finset (ExtendedGoods T I)) : Prop :=
@@ -1308,7 +1312,7 @@ lemma scarfSplitReplacementStep_GiEdges
 
 /--
 The graph-walk segment represented by one split Scarf replacement step:
-`X → Y → X'`.
+$X \to Y \to X'$.
 -/
 def scarfSplitReplacementStep_walk
     {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
@@ -1342,7 +1346,7 @@ lemma initial_scarf_step_to_GiEdge (c : T → I) (i : I) :
     GiRoomVertex_of_incident_typed_door hDoorVertex.2 hDoorof
   exact ⟨X, hPrim, hSub, Or.inl ⟨hRoomVertex, hDoorVertex, hDoorof⟩⟩
 
-/-- The first graph-walk segment of Scarf's algorithm, from `I - i` into the building. -/
+/-- The first graph-walk segment of Scarf's algorithm, from $I - i$ into the building. -/
 lemma initial_scarf_step_walk (c : T → I) (i : I) :
     ∃ X : Finset (ExtendedGoods T I),
       ∃ _p : (GiGraph (IST := IST) c i).Walk
@@ -1359,8 +1363,8 @@ lemma initial_scarf_step_walk (c : T → I) (i : I) :
     SimpleGraph.Walk.nil
 
 /--
-A complete primitive-language Scarf algorithm trace of type `i`.  It starts at
-the boundary face `I - i`, follows `G_i`, and terminates at a fully colored
+A complete primitive-language Scarf algorithm trace of type $i$.  It starts at
+the boundary face $I - i$, follows $G_i$, and terminates at a fully colored
 primitive set.  The local lemmas above build such walks from initial and split
 replacement segments.
 -/
@@ -1395,7 +1399,7 @@ omit [Inhabited T] in
 /--
 It is enough to find a fully colored primitive set in the connected component
 of the outside door. This is the component-level form of the path-following
-argument in §3.
+argument in $\S 3$.
 -/
 lemma scarfAlgorithmTrace_of_component_fullyColoredPrimitive
     {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
@@ -1519,7 +1523,6 @@ theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
     change GiDegree (IST := IST) c i outside = 1
     exact GiDegree_outsideDoor (IST := IST) hOutsideDoor hOutsideTyped
   have hOutsideSubDegree : H.degree outsideSub = 1 := by
-    change H.degree outsideSub = 1
     rw [reachableComponentGraph_degree_eq G outside outsideSub, hOutsideDegree]
   have hOddOutside : Odd (H.degree outsideSub) := by rw [hOutsideSubDegree]; exact odd_one
   obtain ⟨w, hwNe, hwOdd⟩ :=
@@ -1565,7 +1568,7 @@ theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
   exact ⟨p⟩
 
 /--
-Scarf's combinatorial theorem in the primitive-set language from §3: after
+Scarf's combinatorial theorem in the primitive-set language from $\S 3$: after
 extending a coloring by the identity on slack vectors, some primitive set has
 all colors, obtained by following the Scarf trace from the boundary door.
 -/
@@ -1575,7 +1578,7 @@ theorem scarf_fullyColoredPrimitive_exists_via_trace [Inhabited I] (c : T → I)
   exact ⟨trace.terminal, trace.terminal_fullyColored⟩
 
 /--
-Scarf's combinatorial theorem in the primitive-set language from §3.  The proof
+Scarf's combinatorial theorem in the primitive-set language from $\S 3$.  The proof
 is routed through the path-following trace, matching the narrative of the paper.
 -/
 theorem scarf_fullyColoredPrimitive_exists [Inhabited I] (c : T → I) :
@@ -1583,7 +1586,7 @@ theorem scarf_fullyColoredPrimitive_exists [Inhabited I] (c : T → I) :
   scarf_fullyColoredPrimitive_exists_via_trace (IST := IST) c
 
 /--
-The unique primitive set incident to the boundary face `I - i`, in the same
+The unique primitive set incident to the boundary face $I - i$, in the same
 language used to start Scarf's replacement path.
 -/
 lemma initial_scarf_primitive_from_boundary (i : I) :
@@ -1594,7 +1597,7 @@ lemma initial_scarf_primitive_from_boundary (i : I) :
 omit [Inhabited T] in
 /--
 Splitting a replacement step gives exactly the alternating primitive /
-almost-primitive pattern described in §3.
+almost-primitive pattern described in $\S 3$.
 -/
 lemma replacementStep_splits_through_almostPrimitive
     {X X' : Finset (ExtendedGoods T I)}
@@ -1613,18 +1616,18 @@ and reflect each indexed strict order.
 structure UtilityRealization (u : I → T → ℝ) : Prop where
   order_iff : ∀ i x y, (IST i).lt x y ↔ u i x < u i y
 
-/-- Positive utility functions, matching the economic convention in §3. -/
+/-- Positive utility functions, matching the economic convention in $\S 3$. -/
 structure PositiveUtilityRealization (u : I → T → ℝ) : Prop extends
     UtilityRealization (IST := IST) u where
   positive : ∀ i x, 0 < u i x
 
-/-- The lower contour set of `x` in the order indexed by `i`. -/
+/-- The lower contour set of $x$ in the order indexed by $i$. -/
 def orderLowerSet (i : I) (x : T) : Finset T :=
   letI : LinearOrder T := IST i
   Finset.univ.filter (fun y : T => y ≤ x)
 
 /--
-The finite rank utility associated to an indexed order. Adding `1` makes it
+The finite rank utility associated to an indexed order. Adding $1$ makes it
 positive, matching the economic convention in the paper.
 -/
 def orderUtility (i : I) (x : T) : ℝ :=
@@ -1691,7 +1694,7 @@ lemma positiveOrderUtility_realization :
   order_iff := orderUtility_order_iff
   positive := orderUtility_positive
 
-/-- A utility vector embeds a good into `ℝ^I`. -/
+/-- A utility vector embeds a good into $\mathbb{R}^I$. -/
 def utilityVector (u : I → T → ℝ) (x : T) : I → ℝ :=
   fun i => u i x
 
@@ -1711,12 +1714,12 @@ lemma utilityVector_injective_of_realization [Inhabited I] {u : I → T → ℝ}
     have hltCoord : u i y < u i x := (hu.order_iff i y x).mp hgt
     exact (ne_of_lt hltCoord) (by simpa [utilityVector] using hcoord.symm)
 
-/-- The finite coordinate image `u(T)` used when identifying goods with utility vectors. -/
+/-- The finite coordinate image $u(T)$ used when identifying goods with utility vectors. -/
 def utilityImage (u : I → T → ℝ) : Finset (I → ℝ) :=
   Finset.univ.image (utilityVector (I := I) u)
 
 /--
-The paper's "identify `T` with its image `u(T)`" step, formalized as an
+The paper's "identify $T$ with its image $u(T)$" step, formalized as an
 equivalence once the utility realization separates points.
 -/
 noncomputable def utilityImageEquiv [Inhabited I] (u : I → T → ℝ)
@@ -1736,13 +1739,13 @@ noncomputable def utilityImageEquiv [Inhabited I] (u : I → T → ℝ)
     exact congrFun hchosen.2 i
 
 /--
-The coordinate model of Scarf's slack vector for face `i`: the `i`th
-coordinate is zero and all other coordinates are the chosen large value `M i`.
+The coordinate model of Scarf's slack vector for face $i$: the $i$th
+coordinate is zero and all other coordinates are the chosen large value $M_i$.
 -/
 def slackVector (M : I → ℝ) (i : I) : I → ℝ :=
   fun j => if j = i then 0 else M i
 
-/-- Interpret the enlarged set `T ∪ I` as points in `ℝ^I`. -/
+/-- Interpret the enlarged set $T \cup I$ as points in $\mathbb{R}^I$. -/
 def extendedCoordinatePoint (u : I → T → ℝ) (M : I → ℝ) :
     ExtendedGoods T I → I → ℝ
   | Sum.inl x => utilityVector (I := I) u x
@@ -1770,8 +1773,9 @@ lemma slackVector_other_coordinate_gt {M : I → ℝ} {i j : I} (hji : j ≠ i)
 
 /--
 Slack-height condition for Scarf's slack vectors: the nonzero coordinate
-`coord` of the slack vector `s(slack)` is above the corresponding coordinate
-of every good. Since `s(slack) coord = M slack` when `coord ≠ slack`, this is
+$\mathit{coord}$ of the slack vector $s(\mathit{slack})$ is above the corresponding coordinate
+of every good. Since $s(\mathit{slack})_{\mathit{coord}} = M_{\mathit{slack}}$ when
+$\mathit{coord} \ne \mathit{slack}$, this is
 the condition needed for the coordinate model to match the abstract
 room/primitive-set model.
 -/
@@ -1798,7 +1802,7 @@ lemma slackBounds_of_global_coordinate_bound {u : I → T → ℝ} {M : I → �
 def slackImage (M : I → ℝ) : Finset (I → ℝ) :=
   Finset.univ.image (slackVector (I := I) M)
 
-/-- The actual coordinate enlarged set `u(T) ∪ {s(i) | i ∈ I}` from §3. -/
+/-- The actual coordinate enlarged set $u(T) \cup \{s(i) \mid i \in I\}$ from $\S 3$. -/
 def coordinateEnlargedSet (u : I → T → ℝ) (M : I → ℝ) : Finset (I → ℝ) :=
   utilityImage (T := T) (I := I) u ∪ slackImage (I := I) M
 
@@ -1873,8 +1877,8 @@ lemma coordinateEnlargedSet_exists_preimage
     exact ⟨Sum.inr i, rfl⟩
 
 /--
-The abstract `T ∪ I` representation is equivalent to the actual coordinate
-enlarged set `u(T) ∪ {s(i)}` under the paper's positivity/slack hypotheses.
+The abstract $T \cup I$ representation is equivalent to the actual coordinate
+enlarged set $u(T) \cup \{s(i)\}$ under the paper's positivity/slack hypotheses.
 -/
 noncomputable def extendedCoordinateEquivCoordinateEnlargedSet
     [Inhabited I] {u : I → T → ℝ} {M : I → ℝ}
@@ -1933,8 +1937,8 @@ lemma orderUtility_slackBounds :
   simpa [uniformSlackHeight, slackVector, hji] using orderUtility_lt_uniformSlackHeight j x
 
 /--
-The coordinate-induced strict relation on `T ∪ I`: one point is smaller
-exactly when its `i`th coordinate is smaller. To match the paper, linearity is
+The coordinate-induced strict relation on $T \cup I$: one point is smaller
+exactly when its $i$th coordinate is smaller. To match the paper, linearity is
 kept as an explicit hypothesis below rather than enforced by a tie-breaker.
 -/
 def extendedCoordinateLt (u : I → T → ℝ) (M : I → ℝ) (i : I)
@@ -1949,7 +1953,7 @@ linear orders on the enlarged set.
 def CoordinateValuesDefineLinearOrders (u : I → T → ℝ) (M : I → ℝ) : Prop :=
   ∀ i, IsStrictTotalOrder (ExtendedGoods T I) (extendedCoordinateLt (T := T) (I := I) u M i)
 
-/-- The paper's "the `M_i` are pairwise different" assumption. -/
+/-- The paper's "the $M_i$ are pairwise different" assumption. -/
 def SlackHeightsPairwiseDistinct (M : I → ℝ) : Prop :=
   Function.Injective M
 
@@ -2098,9 +2102,9 @@ lemma extendedCoordinatePoint_coordinate_injective
 
 omit [Fintype T] [Fintype I] [DecidableEq T] in
 /--
-Under the hypotheses stated in §3 (positive utilities realizing the
+Under the hypotheses stated in $\S 3$ (positive utilities realizing the
 preferences, slack bounds, and pairwise different slack heights), coordinate
-values themselves define linear orders on `T ∪ I`.
+values themselves define linear orders on $T \cup I$.
 -/
 theorem coordinateValuesDefineLinearOrders_of_realization
     {u : I → T → ℝ} {M : I → ℝ}
@@ -2127,10 +2131,10 @@ theorem coordinateValuesDefineLinearOrders_of_realization
 
 omit [DecidableEq T] in
 /--
-The fully formalized perturbation step from §3: for every positive utility
+The fully formalized perturbation step from $\S 3$: for every positive utility
 realization on a finite, nonempty index set, there are slack heights that
 dominate all goods coordinates, are pairwise distinct, and therefore make
-coordinate comparison into linear orders on `T ∪ I`.
+coordinate comparison into linear orders on $T \cup I$.
 -/
 theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I]
     {u : I → T → ℝ} (hu : PositiveUtilityRealization (IST := IST) u) :
@@ -2148,7 +2152,7 @@ theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I]
 
 omit [DecidableEq T] in
 /--
-The §3 utility-and-perturbation passage as a single existence statement:
+The $\S 3$ utility-and-perturbation passage as a single existence statement:
 starting only from the abstract indexed linear orders, choose positive utility
 functions realizing the orders and pairwise distinct slack heights large enough
 to make coordinate comparison linear on the enlarged set.
@@ -2348,7 +2352,7 @@ theorem coordinatePrimitive_iff_native {u : I → T → ℝ} {M : I → ℝ}
 
 /--
 Scarf's main lemma for the literal coordinate-dominance definition of
-primitive sets on `T ∪ I`.
+primitive sets on $T \cup I$.
 -/
 theorem coordinatePrimitive_erase_replacement_mainLemma
     {u : I → T → ℝ} {M : I → ℝ}
@@ -2372,5 +2376,3 @@ theorem coordinatePrimitive_erase_replacement_mainLemma
     exact hUnique z ⟨hz.1, (coordinatePrimitive_iff_native hu hM).1 hz.2⟩
 
 end IndexedLOrder
-
-end
