@@ -329,7 +329,7 @@ theorem GiDegree_colorfulRoom {c : T → I} {i : I} {σ : Finset T} {C : Finset 
       intro y hy hcy
       exact hInj hy hxσ hcy
     have hDoorof : IST.isDoorof (σ.erase x) C σ C :=
-      IST.collision_door_valid σ C c x hColorful.1 hxσ hRoom.2
+      IST.isDoorof_erase_of_isRoom σ C x hRoom hxσ
     have hTypedDoor : IST.isTypedNC c i (σ.erase x) C := by
       constructor
       · exact IST.Dominant_of_subset σ (σ.erase x) C (Finset.erase_subset x σ) hColorful.1
@@ -834,4 +834,3 @@ theorem GiComponentStructure_holds (c : T → I) (i : I) :
         (IST := IST) (GiDegreeCharacterization_holds (IST := IST) c i)).2)
 
 end IndexedLOrder
-
