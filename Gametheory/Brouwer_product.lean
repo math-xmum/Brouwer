@@ -85,7 +85,7 @@ lemma index_split_existence (k : Fin (total_card card)) : ∃ (p : Σ i, Fin (ca
         exact (Finset.mem_filter.mp h_mem).2
       have j₀_notin_S : j₀ ∉ S := i₀_is_min j₀ j₀_lt_i₀
       have j₀_ineq : prefix_sum_inclusive j₀ ≤ k.val := by
-        simp only [S, Set.mem_setOf_eq] at j₀_notin_S
+        simp only [S, Set.mem_ofPred_eq] at j₀_notin_S
         exact le_of_not_gt j₀_notin_S
       have : prefix_sum card i₀ = prefix_sum_inclusive j₀ := by
         simp only [prefix_sum, prefix_sum_inclusive]
@@ -219,7 +219,7 @@ noncomputable def blockSum (i : I) (x : BigSimplex card) : ℝ :=
 noncomputable def uniformProduct : ProductSimplices card :=
   fun i =>
     (⟨fun _ => (1 : ℝ) / (card i : ℝ), by
-      simp only [stdSimplex, Set.mem_setOf_eq]
+      simp only [stdSimplex, Set.mem_ofPred_eq]
       constructor
       · intro _; apply div_nonneg; norm_num; positivity
       · simp [Finset.sum_const]
@@ -228,7 +228,7 @@ noncomputable def uniformProduct : ProductSimplices card :=
 /-- The uniform point in the big simplex. -/
 noncomputable def z_uniform : BigSimplex card :=
   ⟨fun _ => (1 : ℝ) / (total_card card : ℝ), by
-    simp only [stdSimplex, Set.mem_setOf_eq]
+    simp only [stdSimplex, Set.mem_ofPred_eq]
     constructor
     · intro _; apply div_nonneg; norm_num;
       have : 0 < (total_card card : ℝ) := by
@@ -252,7 +252,7 @@ noncomputable def tPush (x : BigSimplex card) : ℝ :=
 /-- Convex push of `x` toward `z_uniform` by amount `tPush`. -/
 noncomputable def pushTowardsZ (x : BigSimplex card) : BigSimplex card :=
   ⟨fun k => (1 - tPush card x) * x.1 k + (tPush card x) * (z_uniform card).1 k, by
-    simp only [stdSimplex, Set.mem_setOf_eq]
+    simp only [stdSimplex, Set.mem_ofPred_eq]
     constructor
     · intro k;
       have hx_nonneg : 0 ≤ x.1 k := x.2.1 k
@@ -361,7 +361,7 @@ noncomputable def project_to_product (x : BigSimplex card) : ProductSimplices ca
           linarith [h_sum_eq, hfirst]
         exact lt_of_lt_of_le this hge
     (⟨fun j => y.1 (index_combine card ⟨i, j⟩) / s, by
-      simp only [stdSimplex, Set.mem_setOf_eq]
+      simp only [stdSimplex, Set.mem_ofPred_eq]
       constructor
       · intro j
         have hy := y.2.1 (index_combine card ⟨i, j⟩)
@@ -381,7 +381,7 @@ noncomputable def embed_from_product (y : ProductSimplices card) : BigSimplex ca
   ⟨fun k =>
     let p := index_split card k
     (y p.1).1 p.2 * (card p.1 : ℝ) / (total_card card : ℝ), by
-    simp only [stdSimplex, Set.mem_setOf_eq]
+    simp only [stdSimplex, Set.mem_ofPred_eq]
     constructor
     · intro k
       let p := index_split card k

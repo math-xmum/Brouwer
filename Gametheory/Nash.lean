@@ -10,11 +10,11 @@ noncomputable section
 /-
 A game is a set of maps g^i : Πᵢ S i → ℝ
 -/
-structure Game where
-    I : Type*           -- The set of player
+structure Game.{u} where
+    I : Type u           -- The set of player
     --deEqI : DecidableEq I := inferInstance -- Decidable Eq
     HI : Inhabited I     -- at least one player
-    SS : I → Type*       -- S is the set of strategies
+    SS : I → Type u       -- S is the set of strategies
     HSS (i :I) : Inhabited (SS i) -- The set of strategies is nonempty
     --deEqSS (i : I) : DecidableEq (SS i)
     g : I → (Π i, SS i) →  ℝ
@@ -39,7 +39,7 @@ end Game
 
 open Game
 
-structure FinGame extends Game where
+structure FinGame.{u} extends Game.{u} where
   FinI : Fintype I
   FinSS : ∀ i : I , Fintype (SS i)
 
@@ -183,7 +183,7 @@ lemma reindex_right_inv :
     have h1 : eI (eI.symm k) = k := eI.apply_symm_apply _
     have h2 : eI.symm (eI (eI.symm k)) = eI.symm k := eI.symm_apply_apply _
     apply eq_of_heq
-    rw [eqRec_heq_iff_heq]
+    rw [eqRec_heq_iff]
     rw [h1]
 
 
@@ -204,14 +204,14 @@ lemma reindex_left_inv {n : ℕ} (eI : G.I ≃ Fin n) :
     have h1 : eI.symm (eI i) = i := eI.symm_apply_apply i
     have h2 : eI (eI.symm (eI i)) = eI i := eI.apply_symm_apply _
     apply eq_of_heq
-    rw [eqRec_heq_iff_heq]
+    rw [eqRec_heq_iff]
     rw [h1]
 
 /-- Lifts an equivalence `e : n ≃ m` to a function between simplices. -/
 def map_simplex {n m : Type*} [Fintype n] [Fintype m] (e : n ≃ m) :
     stdSimplex ℝ n → stdSimplex ℝ m :=
   fun x => ⟨fun i => x.1 (e.symm i), by
-    simp [stdSimplex, Set.mem_setOf_eq]
+    simp [stdSimplex]
     constructor
     · intro i; exact x.2.1 (e.symm i)
     · have h_sum : ∑ i : m, x.1 (e.symm i) = ∑ j : n, x.1 j := by
@@ -265,10 +265,10 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
   let n : ℕ := Fintype.card G.I
   let eI : G.I ≃ Fin n := Fintype.equivFin (G.I)
   have n_pos : 0 < n := Fintype.card_pos_iff.mpr (by infer_instance)
-  letI : Inhabited (Fin n) := ⟨⟨0, n_pos⟩⟩
+  let : Inhabited (Fin n) := ⟨⟨0, n_pos⟩⟩
 
   have card_pos (i : G.I) : 0 < Fintype.card (G.SS i) := by
-    haveI : Inhabited (G.SS i) := inferInstance
+    have : Inhabited (G.SS i) := inferInstance
     exact Fintype.card_pos_iff.mpr inferInstance
   let card' : Fin n → ℕ+ := fun k => ⟨Fintype.card (G.SS (eI.symm k)), card_pos (eI.symm k)⟩
 
@@ -325,7 +325,7 @@ theorem Brouwer.mixedGame (f : G.mixedS → G.mixedS) (hf : Continuous f) : ∃ 
       have h1 : eI (eI.symm (eI i)) = eI i := eI.apply_symm_apply _
       have h2 : eI.symm (eI (eI.symm (eI i))) = eI.symm (eI i) := eI.symm_apply_apply _
       apply eq_of_heq
-      rw [eqRec_heq_iff_heq]
+      rw [eqRec_heq_iff]
       congr
       · symm
         exact @eqRec_heq (Type _) (fun X => X) _ _ typeeq.symm (eS (eI i))

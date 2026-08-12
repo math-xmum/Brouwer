@@ -1,6 +1,6 @@
 {"platform": "x86_64-apple-darwin24.6.0",
  "options": {},
  "name": "mathlib",
- "leanHash": "68218e876d2a38b1985b8590fff244a83c321783",
+ "leanHash": "d8b18978322de05a8f3dba51ef03cf5461676c17",
  "idx": 1,
- "configHash": "43bcab52c7c05934"}
+ "configHash": "62217f6843fc672a"}

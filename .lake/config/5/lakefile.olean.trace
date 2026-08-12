@@ -3,6 +3,6 @@
  {"errorOnBuild":
   "ProofWidgets failed to reuse pre-built JS code. Please report this issue on the Lean Zulip."},
  "name": "proofwidgets",
- "leanHash": "68218e876d2a38b1985b8590fff244a83c321783",
+ "leanHash": "d8b18978322de05a8f3dba51ef03cf5461676c17",
  "idx": 5,
  "configHash": "a4f8a6ba6807ecfe"}
