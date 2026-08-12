@@ -1643,7 +1643,7 @@ omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma orderUtility_order_iff (i : I) (x y : T) :
     (IST i).lt x y ↔
       orderUtility (IST := IST) i x < orderUtility (IST := IST) i y := by
-  letI : LinearOrder T := IST i
+  let : LinearOrder T := IST i
   constructor
   · intro hxy
     unfold orderUtility orderLowerSet
@@ -1705,7 +1705,7 @@ lemma utilityVector_injective_of_realization [Inhabited I] {u : I → T → ℝ}
   intro x y hxy
   by_contra hne
   let i : I := default
-  letI : LinearOrder T := IST i
+  let : LinearOrder T := IST i
   rcases lt_or_gt_of_ne hne with hlt | hgt
   · have hcoord := congrFun hxy i
     have hltCoord : u i x < u i y := (hu.order_iff i x y).mp hlt
@@ -2028,7 +2028,7 @@ lemma utility_coordinate_injective {u : I → T → ℝ}
     Function.Injective (fun x : T => u i x) := by
   intro x y hxy
   by_contra hne
-  letI : LinearOrder T := IST i
+  let : LinearOrder T := IST i
   rcases lt_or_gt_of_ne hne with hlt | hgt
   · have hltCoord : u i x < u i y := (hu.order_iff i x y).mp hlt
     exact (ne_of_lt hltCoord) hxy
@@ -2217,8 +2217,9 @@ lemma coordinateGoods_le_of_original_le {u : I → T → ℝ} {M : I → ℝ}
     (hu : UtilityRealization (IST := IST) u) {i : I} {x y : T}
     (hxy : (IST i).le x y) :
     ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).le (Sum.inl x) (Sum.inl y) := by
-  letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
-  letI : LinearOrder T := IST i
+  let : LinearOrder (ExtendedGoods T I) :=
+    (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
+  let : LinearOrder T := IST i
   by_cases hEq : x = y
   · subst hEq
     exact le_rfl
@@ -2232,8 +2233,9 @@ lemma original_le_of_coordinateGoods_le {u : I → T → ℝ} {M : I → ℝ}
     (hu : UtilityRealization (IST := IST) u) {i : I} {x y : T}
     (hxy : ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).le (Sum.inl x) (Sum.inl y)) :
     (IST i).le x y := by
-  letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
-  letI : LinearOrder T := IST i
+  let : LinearOrder (ExtendedGoods T I) :=
+    (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
+  let : LinearOrder T := IST i
   by_contra hnot
   have hyx : (IST i).lt y x := lt_of_not_ge hnot
   have hCoordLt : extendedCoordinateLt (T := T) (I := I) u M i (Sum.inl y) (Sum.inl x) :=
@@ -2298,7 +2300,8 @@ theorem nativePrimitive_to_coordinatePrimitive {u : I → T → ℝ} {M : I → 
             have hik : i ≠ k := by
               intro hEq
               exact hkNotC (hEq ▸ hiC)
-            letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
+            let : LinearOrder (ExtendedGoods T I) :=
+              (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
             exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
               (Sum.inl t) (Sum.inr k) from coordinateGood_lt_slack_of_ne hM hik t)
     | inr j =>
@@ -2306,15 +2309,18 @@ theorem nativePrimitive_to_coordinatePrimitive {u : I → T → ℝ} {M : I → 
         intro z hz
         cases z with
         | inl x =>
-            letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
+            let : LinearOrder (ExtendedGoods T I) :=
+              (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
             exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j).lt
               (Sum.inr j) (Sum.inl x) from coordinateSlack_lt_good (M := M) hu j x)
         | inr k =>
             by_cases hkj : k = j
             · subst hkj
-              letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) k
+              let : LinearOrder (ExtendedGoods T I) :=
+                (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) k
               exact le_rfl
-            · letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
+            · let : LinearOrder (ExtendedGoods T I) :=
+                (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
               exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j).lt
                 (Sum.inr j) (Sum.inr k) from coordinateSlack_lt_slack_of_ne hu hM (Ne.symm hkj))
 
@@ -2334,7 +2340,8 @@ theorem coordinatePrimitive_to_nativePrimitive {u : I → T → ℝ} {M : I → 
       intro hiSlack
       have hleSlack := hleX (Sum.inr i) hiSlack
       have hSlackLtGood := coordinateSlack_lt_good (M := M) hu i y
-      letI : LinearOrder (ExtendedGoods T I) := (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
+      let : LinearOrder (ExtendedGoods T I) :=
+        (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
       exact not_lt_of_ge hleSlack (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
         (Sum.inr i) (Sum.inl y) from hSlackLtGood)
     refine ⟨i, hiMissing, ?_⟩
