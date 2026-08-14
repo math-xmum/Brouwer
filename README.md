@@ -1,105 +1,184 @@
-# Game Theory Formalization in Lean
+# Brouwer, Nash, and Scarf in Lean
 
-This repository contains a formalization of fundamental theorems in game theory using the Lean proof assistant. The main goal is to prove the existence of Nash Equilibria in finite games.
+This repository contains two independent Lean developments:
 
-## Lean Version
+- `Gametheory`: a Scarf-style proof of Brouwer's fixed-point theorem followed by existence of
+  mixed Nash equilibria for finite games.
+- `BeyondSperner`: a formalization of the main dependency spine and applications in Nikolai
+  Ivanov's *Scarf's theorems, simplices, and oriented matroids* (arXiv:2207.10832).
 
-This project currently targets:
+The project uses Lean `4.33.0` and mathlib `v4.33.0`, pinned by `lean-toolchain` and
+`lake-manifest.json`.
 
--   Lean `4.33.0`
--   mathlib `v4.33.0`
+## Verified status
 
-The Lean toolchain is pinned in `lean-toolchain`, and mathlib is pinned in `lakefile.lean` / `lake-manifest.json`.
+The `BeyondSperner` development is proof-complete within the scope stated below.
 
-## Building
+- `lake build` succeeds with no Lean errors or warnings.
+- There are no `sorry`, `admit`, declared project axioms, or unsafe theorem substitutes in the
+  mathematical source tree.
+- The exhaustive audit checks all 3660 declarations in the `BeyondSperner` namespace, including
+  generated declarations and the compatibility adapters.  No declaration depends on `sorryAx`
+  or on a nonstandard axiom.
+- The only axioms appearing in transitive closures are Lean's standard `propext`,
+  `Classical.choice`, and `Quot.sound`.
 
-Install Lean through `elan`, then run:
+Reproduce the build and both levels of axiom audit with:
 
 ```bash
-lake update
 lake build
+lake env lean FormalizationInterface/AuditAll.lean
+lake env lean FormalizationInterface/Audit.lean
 ```
 
-`lake update` resolves the pinned dependencies. `lake build` checks the full formalization.
+`AuditAll.lean` is the exhaustive pass and fails on any forbidden dependency. `Audit.lean` prints
+the axiom closures of representative public declarations so that the important theorem routes are
+easy to inspect by hand.
 
-## Core Concepts and Theorems
+## Formalization blueprint
 
-The proof of Nash's theorem relies on Brouwer's fixed-point theorem. This repository builds up the necessary mathematical framework from scratch.
-
-## Proof Strategy Blueprint
-
-The formalization follows this dependency chain:
+The diagram separates the common combinatorial spine, the perturbation route to generalized
+Scarf, and the principal applications.  An arrow means theorem dependency, not merely conceptual
+similarity.
 
 ```mermaid
 flowchart TD
-    A["Simplex infrastructure<br/>stdSimplex, pure strategies, weighted sums"]
-    B["Scarf-style combinatorics<br/>doors, rooms, colorful simplices"]
-    C["Primitive-set language<br/>primitive/almost primitive sets, slack vectors"]
-    D["Scarf path graph<br/>Gi paths, endpoints, path/cycle components"]
-    E["Primitive path-following<br/>split replacements and ScarfAlgorithmTrace"]
-    F["Approximate fixed points<br/>colorful simplex sequence"]
-    G["Compactness and convergence<br/>extract a convergent subsequence"]
-    H["Brouwer on one simplex<br/>continuous self-map has a fixed point"]
-    I["Finite product of simplices<br/>reduce product case to one simplex"]
-    J["Finite games<br/>mixed strategies as product of simplices"]
-    K["Nash map<br/>continuous self-map on mixed strategies"]
-    L["Mixed Nash equilibrium<br/>fixed point implies no profitable deviation"]
+    SC["Finite simplicial complexes<br/>simplex families and F₂ chains"]
+    PS["Pseudo-simplex incidence"]
+    CS["Chain-simplex boundary identity"]
+    OR["Indexed linear orders<br/>dominant sets and associated families"]
 
-    A --> B
-    B --> C
-    B --> D
-    C --> E
-    D --> E
-    B --> F --> G --> H --> I --> J --> K --> L
+    OM["Signed-circuit oriented matroids<br/>weak elimination only"]
+    WS["Finite weak-to-strong elimination"]
+    DU["Underlying matroid, cocircuits,<br/>Farkas, duality, Todd"]
+    LX["Constructed lexicographic<br/>one-point extension"]
+
+    ND["Nondegenerate coloring<br/>Theorem 6.5 and odd parity"]
+    PT["Perturbation setup<br/>Lemmas 8.1–8.4"]
+    GS["Theorem 8.5<br/>generalized Scarf"]
+
+    VS["Realizable/vector Scarf<br/>Section 7"]
+    CL["Classical colorful-cell Scarf"]
+    BR["Scarf → Brouwer<br/>standard and affine simplices"]
+    KA["Vector Scarf → Kakutani<br/>closed-graph limit"]
+
+    CH["Section 10 chains and<br/>intersection numbers"]
+    T8A["Theorem 10.8<br/>paper intersection route"]
+    T8B["Theorem 10.8<br/>oriented-matroid route"]
+    T910["Theorems 10.9 and 10.10"]
+
+    FR["Freudenthal/Scarf complexes<br/>Section 4"]
+    GT["Finite geometric triangulations<br/>minimal data → purity/nonbranching"]
+
+    SC --> PS --> CS
+    OR --> PS
+    OM --> WS --> DU --> LX
+    DU --> ND
+    LX --> PT
+    ND --> PT --> GS
+    CS --> GS
+    OR --> GS
+
+    GS --> VS --> KA
+    GS --> CL --> BR
+
+    CS --> CH --> T8A --> T910
+    DU --> T8B --> T910
+    FR --> CS
+    FR --> T910
+    GT --> CS
+    GT --> T910
 ```
 
-In words:
+The two Theorem 10.8 nodes are genuinely dependency-independent.  The forward intersection route
+does not import the oriented-matroid theorem; adapters in `FormalizationInterface` feed either
+provider into the common Theorem 10.9 and 10.10 layers.
 
-1.  Define mixed strategies as points of standard simplices.
-2.  Prove a Scarf/Sperner-style combinatorial lemma producing colorful simplices.
-3.  Relate the room/door presentation to Scarf's primitive and almost-primitive sets on the enlarged set `T ∪ I`.
-4.  Formalize the path-following graph `G_i`, including its degree characterization and path/cycle component structure.
-5.  Connect primitive replacement steps to walks in `G_i`, yielding a complete trace from the boundary face `I - i` to a fully colored primitive set.
-6.  Use finer and finer combinatorial approximations to build approximate fixed points.
-7.  Use compactness to extract a convergent subsequence.
-8.  Use continuity to turn the limit into an actual Brouwer fixed point.
-9.  Lift the single-simplex fixed-point theorem to finite products of simplices.
-10. Define the Nash map on mixed strategy profiles and apply the product fixed-point theorem.
-11. Show that a fixed point of the Nash map satisfies the mixed Nash equilibrium condition.
+## Main checked conclusions
 
-### Files
+The public development includes:
 
--   `Gametheory/Simplex.lean`: Defines the standard simplex `stdSimplex` over a finite type. Includes constructors like `pure`, evaluation lemmas (`pure_eval_eq`, `pure_eval_neq`), and weighted-sum/typeclass instances needed later for continuity/compactness arguments.
--   `Gametheory/Scarf.lean`: Develops the combinatorial framework culminating in `Scarf`. Constructs the combinatorial objects (triangulations/labelings in the formalized guise) and proves existence of a "colorful" simplex, which is used to derive fixed points.
--   `Gametheory/Primitive.lean`: Recasts Scarf's room/door combinatorics in the paper's primitive-set language and connects that language back to the path graph `G_i`. Defines `ExtendedGoods`, `associatedCell`, `isPrimitive`, `isAlmostPrimitive`, `slackBoundary`, primitive replacement steps, split Scarf replacement steps, complete traces `ScarfAlgorithmTrace`, fully colored primitives, and coordinate-utility realizations. Key results include `isPrimitive_iff_native`, `isAlmostPrimitive_iff_native`, `almostPrimitive_incident_primitives_boundary_or_internal`, `scarfAlgorithmTrace_exists`, `scarf_fullyColoredPrimitive_exists`, and `coordinatePrimitive_erase_replacement_mainLemma`.
--   `Gametheory/ScarfPath.lean`: Formalizes the path-following graph `G_i` used in Scarf-style proofs. Defines `GiGraph`, `GiDegree`, `GiEndpoint`, proves the degree characterization `GiDegreeCharacterization_holds`, and packages the final component statement as `GiComponentStructure_holds`.
--   `Gametheory/Brouwer.lean`: From Scarf’s combinatorial lemma, proves Brouwer’s fixed-point theorem on a single simplex. Contains the main theorem `Brouwer` (existence of a fixed point for continuous self-maps on a simplex) and the supporting analytical lemmas (compactness, coordinate-wise continuity, convergence of constructed sequences).
--   `Gametheory/Brouwer_product.lean`: Lifts the single-simplex result to finite products of simplices. Defines helper conversions between a big simplex and a product of simplices (`BigSimplex`, `ProductSimplices`), constructs the projection/embedding, proves continuity properties, and states the product fixed-point theorem `Brouwer_Product`.
--   `Gametheory/Nash.lean`: Formalizes finite games `FinGame`, mixed strategies `mixedS`, payoffs, and mixed Nash equilibrium `mixedNashEquilibrium`. Builds a continuous `nash_map` on the product of simplices and applies `Brouwer_Product` to obtain existence: `ExistsNashEq : ∃ σ : G.mixedS, mixedNashEquilibrium σ`.
--   `GameTheory.lean`: Umbrella file that imports `Brouwer`, `Nash`, and `Simplex` for convenience.
+- weak-to-strong elimination for finite signed-circuit oriented matroids, constructed duality,
+  cocircuit elimination, Farkas/four-painting alternatives, and Todd elimination;
+- a constructed lexicographic extension, rather than an axiom or a wrapper around the existence
+  theorem cited by the paper;
+- Theorem 6.5 with its odd-parity conclusion, Lemmas 8.1–8.4, Theorem 8.5, and
+  `GeneralizedScarf.generalizedScarf`;
+- the realizable/vector form of Scarf's theorem, the classical colorful-cell specialization,
+  Brouwer on finite standard and affine simplices, and Kakutani for closed-graph nonempty
+  convex-valued correspondences on a finite standard simplex;
+- the Section 4 Freudenthal/Scarf complex comparison, boundary formulas, Theorem 4.8, and the
+  stated positive-scale corollaries;
+- the Section 10 `F₂` chain and intersection-number route through Theorems 10.8–10.10, alongside
+  the independent oriented-matroid proof of Theorem 10.8;
+- applications of Theorems 10.9 and 10.10 both to the concrete positive-scale Freudenthal
+  triangulation and to arbitrary finite geometric triangulations.
 
-Open any of the Lean files in an editor with the Lean server running to see goals and check proofs interactively.
+The detailed paper-to-Lean declaration table is in
+[`FormalizationInterface/BeyondSperner.md`](FormalizationInterface/BeyondSperner.md).  The longer
+completion report and proof-architecture notes are in
+[`FormalizationInterface/STATUS.md`](FormalizationInterface/STATUS.md).
 
-## Notation and Key Definitions
+## Semantic audit: exact statements and necessary repairs
 
--   `stdSimplex ℝ α`: the standard simplex over a finite type `α` with real coefficients.
--   `ExtendedGoods T I`: the enlarged set `T ∪ I`, represented as `Sum T I`, used for Scarf's slack-vector language.
--   `associatedCell X`: the room/door cell `(X ∩ T, I \ X)` associated to a subset of `T ∪ I`.
--   `isPrimitive` / `isAlmostPrimitive`: native primitive and almost-primitive sets, equivalent to the existing room/door presentation.
--   `slackBoundary i`: the boundary almost-primitive face `I - i`.
--   `primitiveReplacementStep`: the primitive-set replacement relation obtained by passing through a common almost-primitive face.
--   `scarfSplitReplacementStep`: the split form `X → Y → X'` of Scarf's replacement algorithm, where `Y` is almost primitive.
--   `ScarfAlgorithmTrace`: a primitive-language walk in `G_i` from `I - i` to a fully colored primitive set.
--   `GiGraph`, `GiDegree`, `GiEndpoint`: the graph-theoretic path-following objects for a fixed color `i`.
--   `GiComponentStructure_holds`: theorem stating that the components of `G_i` are paths or cycles, with endpoints exactly the outside door of type `i` and the colorful rooms.
--   `scarfAlgorithmTrace_exists`: theorem constructing a complete primitive-language Scarf trace.
--   `Brouwer_Product`: theorem providing a fixed point on a finite product of simplices.
--   `FinGame`: structure for finite games (finite players and finite pure strategy sets).
--   `mixedS`: type of mixed strategy profiles for a `FinGame`.
--   `mixedNashEquilibrium σ`: predicate that `σ : G.mixedS` is a mixed Nash equilibrium.
--   `ExistsNashEq`: existence theorem for mixed Nash equilibria.
+The audit did not treat matching theorem names as sufficient.  Definitions and hypotheses were
+compared with the paper, and the following boundary decisions are intentional.
 
-## References
+| Paper-facing item | Lean contract | Reason |
+| --- | --- | --- |
+| Dimension of `D(A)` | `SimplexFamily.dimension` stores `|σ| ≤ |A|`; top simplices and purity are separate predicates | Exact dimension is false for arbitrary order families: two identical orders on two points need not have a two-element cell.  Every later argument that needs a top simplex or purity proves or assumes it explicitly. |
+| Oriented-matroid elimination | `OrientedMatroid.Data` stores weak elimination only; strong elimination is derived for finite ground types | This avoids strengthening the primitive structure with the optional extra axiom mentioned in the paper. |
+| Lemma 6.1 | The Lean theorem explicitly assumes `b ∉ X` | Convex-hull membership includes ordinary membership, so the unrestricted printed surface statement would be false. |
+| Lemma 6.3 | The statement carries the used top-cardinality hypothesis | Dropping the top-dimensional context gives an over-strong claim for arbitrary finite sets. |
+| Lemma 7.3 | `[Nonempty X]` is explicit | The empty old ground set gives a concrete counterexample under the paper's dominance convention. |
+| Raw vector Scarf | `old_ne_b`, `b_ne_basis`, and boundedness of the nonnegative solution set are explicit | These are the exclusions and boundedness needed when the paper applies Theorem 7.2 to its displayed raw map `φ`. |
+| Section 9 finite samples | The exact-fixed-point branch is restored before the cell branch | A selected color equal to `b` is already `f(x)=x`; suppressing this branch would overstate the finite lemma. |
+| Lemma 10.2 | The formal theorem assumes `0 < n`, and proves a dimension-zero counterexample to the unrestricted reading | In dimension zero there is no one-simplex endpoint perturbation of the required kind. |
+| Theorem 10.10 | The abstract theorem exposes face compatibility, ambient inclusion, and purity | These are properties of a triangulation, not consequences of `SimplexFamily` or `IsChainSimplex` alone.  Concrete Freudenthal and geometric applications discharge them. |
+| Geometric triangulation input | Stores only a geometric simplicial complex, finite vertices, and exact coverage | Purity and local one-or-two coface incidence are derived, so the desired conclusion is not hidden in the input data. |
 
--   N. V. Ivanov, "Beyond Sperner's Lemma" (source of the Scarf → Brouwer development).
--   J. F. Nash, "Non-Cooperative Games", Annals of Mathematics (1951).
+These changes make implicit necessary context explicit or weaken an inconsistent base definition;
+they do not strengthen the advertised conclusions.  Alternative proof architecture is also
+recorded honestly: the checked Section 7 theorem factors through the stronger oriented-matroid
+Theorem 8.5 instead of reproducing the paper's sequential perturbation proof.
+
+## Trust boundary and non-goals
+
+- The source paper is the mathematical specification, but this repository does not claim that
+  every sentence or every possible generalization in the paper has been formalized.
+- Brouwer is proved here for finite standard simplices and convex hulls of finite affine bases,
+  not for every nonempty compact convex subset of an arbitrary finite-dimensional space.
+- `Rethlas/` contains preserved informal audit material.  It is not imported by Lean and is not
+  counted as proof evidence; the corresponding published results are independently kernel-checked.
+- Classical choice, quotient soundness, and propositional extensionality are part of the declared
+  Lean trust boundary.  No project-specific mathematical axiom is added.
+- `Gametheory` remains independent of `BeyondSperner`; the two developments should not be read as
+  secretly proving one another's central steps.
+
+## Source layout
+
+- [`BeyondSperner.lean`](BeyondSperner.lean): umbrella import for the mathematical development.
+- [`BeyondSperner/OrientedMatroid`](BeyondSperner/OrientedMatroid): signed circuits, ordinary
+  matroid recovery, cocircuits, duality, realizability, and lexicographic extension.
+- [`BeyondSperner/Simplicial`](BeyondSperner/Simplicial) and
+  [`BeyondSperner/Orders`](BeyondSperner/Orders): simplex families, chains, envelopes, dominance,
+  cells, and associated families.
+- [`BeyondSperner/Coloring`](BeyondSperner/Coloring) and
+  [`BeyondSperner/Scarf`](BeyondSperner/Scarf): nondegenerate/general coloring theorems and the
+  generalized, classical, and vector Scarf conclusions.
+- [`BeyondSperner/FixedPoint`](BeyondSperner/FixedPoint): Scarf routes to Brouwer and Kakutani.
+- [`BeyondSperner/Freudenthal`](BeyondSperner/Freudenthal): the Section 4 arithmetic, complexes,
+  boundary induction, geometry, and applications.
+- [`BeyondSperner/Euclidean`](BeyondSperner/Euclidean): Section 10 chains, general position,
+  intersection numbers, and the paper route to affine coloring.
+- [`BeyondSperner/Geometry/Triangulation`](BeyondSperner/Geometry/Triangulation): construction and
+  applications of arbitrary finite geometric triangulations.
+- [`FormalizationInterface`](FormalizationInterface): theorem-route adapters, semantic contracts,
+  status documents, and executable audits.
+- [`Gametheory`](Gametheory): the separate Brouwer/Nash development.
+
+## Development rule
+
+Any change to a definition, structure field, or theorem hypothesis requires a semantic review
+against the paper and the downstream use sites.  A successful build alone is not enough: run the
+exhaustive axiom audit as part of the same change.

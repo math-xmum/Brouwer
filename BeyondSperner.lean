@@ -1,0 +1,50 @@
+import BeyondSperner.Coloring.Affine
+import BeyondSperner.FixedPoint.AffineBrouwer
+import BeyondSperner.Coloring.AffineEnvelope
+import BeyondSperner.Euclidean.AffineGeometry
+import BeyondSperner.Simplicial.ChainSimplex
+import BeyondSperner.Scarf.Classical
+import BeyondSperner.Simplicial.FacetChain
+import BeyondSperner.Freudenthal.DimensionZero
+import BeyondSperner.Freudenthal.Complex
+import BeyondSperner.Freudenthal.Connectivity
+import BeyondSperner.Freudenthal.Boundary
+import BeyondSperner.Freudenthal.Isomorphism
+import BeyondSperner.Freudenthal.Realization
+import BeyondSperner.Euclidean.Chains
+import BeyondSperner.Euclidean.Intersection.Basic
+import BeyondSperner.Euclidean.Intersection.GeneralPosition
+import BeyondSperner.Euclidean.Intersection.DegenerateSimplex
+import BeyondSperner.Euclidean.Intersection.Stokes
+import BeyondSperner.Euclidean.Intersection.EnvelopeCoverage
+import BeyondSperner.Euclidean.Intersection.AffineColoring
+import BeyondSperner.Freudenthal.GeometricComplex
+import BeyondSperner.Freudenthal.Faces
+import BeyondSperner.Freudenthal.Geometry
+import BeyondSperner.Scarf.Generalized
+import BeyondSperner.Geometry.Triangulation.Core
+import BeyondSperner.Geometry.Triangulation.Purity
+import BeyondSperner.Geometry.Triangulation.Nonbranching
+import BeyondSperner.Geometry.Triangulation.Applications
+import BeyondSperner.Freudenthal.IntegerSimplex
+import BeyondSperner.Freudenthal.CellClassification
+import BeyondSperner.Coloring.InwardTangent
+import BeyondSperner.Freudenthal.Applications.InwardTangent
+import BeyondSperner.Coloring.VectorHedgehog
+import BeyondSperner.Freudenthal.Applications.VectorHedgehog
+import BeyondSperner.FixedPoint.Kakutani
+import BeyondSperner.OrientedMatroid.LexicographicExtension
+import BeyondSperner.Orders.LinearOrders
+import BeyondSperner.Coloring.Matroid.General
+import BeyondSperner.Coloring.Matroid.Nondegenerate
+import BeyondSperner.OrientedMatroid
+import BeyondSperner.OrientedMatroid.PrincipalExtension
+import BeyondSperner.OrientedMatroid.Realizable
+import BeyondSperner.OrientedMatroid.SignedSubset
+import BeyondSperner.FixedPoint.ScarfBrouwer
+import BeyondSperner.Coloring.Vector
+import BeyondSperner.Scarf.Vector
+
+/-!
+Umbrella module for the formalization of N. V. Ivanov's “Beyond Sperner's Lemma”.
+-/

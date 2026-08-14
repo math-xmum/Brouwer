@@ -10,6 +10,16 @@ lean_lib «Gametheory» {
   -- add library configuration options here
 }
 
+@[default_target]
+lean_lib «BeyondSperner» {
+  -- Ivanov's “Beyond Sperner's Lemma” formalization lives in its own module tree.
+}
+
+@[default_target]
+lean_lib «FormalizationInterface» {
+  -- Compatibility adapters, status documentation, and axiom audits stay outside the math tree.
+}
+
 --require llmlean from git
 --  "https://github.com/jiajunma/llmlean.git"@"main"-/
 
