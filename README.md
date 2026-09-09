@@ -2,6 +2,10 @@
 
 This repository contains a formalization of fundamental theorems in game theory using the Lean proof assistant. The main goal is to prove the existence of Nash Equilibria in finite games.
 
+Artifact evaluators can start with [`ARTIFACT.md`](ARTIFACT.md), which gives
+the pinned environment, the one-command check, the paper-to-source map, and
+the scope of the formalized claims.
+
 ## Lean Version
 
 This project currently targets:
@@ -16,11 +20,26 @@ The Lean toolchain is pinned in `lean-toolchain`, and mathlib is pinned in `lake
 Install Lean through `elan`, then run:
 
 ```bash
-lake update
 lake build
 ```
 
-`lake update` resolves the pinned dependencies. `lake build` checks the full formalization.
+The default library target explicitly builds the umbrella module
+`GameTheory.lean`, all eight proof-bearing modules, the checked API examples, and
+`Gametheory/AxiomAudit.lean`. Thus this single command checks the complete
+formalization. When the audit module is elaborated, it prints the axioms used
+by the principal endpoints. The checked dependency revisions are already
+recorded in `lake-manifest.json`; do not run `lake update` when reproducing a
+frozen submission artifact.
+
+## ScarfPath and Primitive APIs
+
+Start with the [interface guide](docs/repository-guide/scarf-primitive.md)
+and [checked examples](Gametheory/Examples/ScarfPrimitive.lean).
+`ScarfPath.graph c i` gives the fixed-color graph;
+`Primitive.Trace.nonempty c i` supplies a classical terminal trace.
+Coordinate realizations are grouped under `Primitive.Coordinate`.
+The [migration table](docs/repository-guide/scarf-primitive-renames.md) maps
+the former `IndexedLOrder` declarations to their current names.
 
 ## Core Concepts and Theorems
 
@@ -36,7 +55,7 @@ flowchart TD
     B["Scarf-style combinatorics<br/>doors, rooms, colorful simplices"]
     C["Primitive-set language<br/>primitive/almost primitive sets, slack vectors"]
     D["Scarf path graph<br/>Gi paths, endpoints, path/cycle components"]
-    E["Primitive path-following<br/>split replacements and ScarfAlgorithmTrace"]
+    E["Primitive path-following<br/>split replacements and Primitive.Trace"]
     F["Approximate fixed points<br/>colorful simplex sequence"]
     G["Compactness and convergence<br/>extract a convergent subsequence"]
     H["Brouwer on one simplex<br/>continuous self-map has a fixed point"]
@@ -71,28 +90,47 @@ In words:
 
 -   `Gametheory/Simplex.lean`: Defines the standard simplex `stdSimplex` over a finite type. Includes constructors like `pure`, evaluation lemmas (`pure_eval_eq`, `pure_eval_neq`), and weighted-sum/typeclass instances needed later for continuity/compactness arguments.
 -   `Gametheory/Scarf.lean`: Develops the combinatorial framework culminating in `Scarf`. Constructs the combinatorial objects (triangulations/labelings in the formalized guise) and proves existence of a "colorful" simplex, which is used to derive fixed points.
--   `Gametheory/Primitive.lean`: Recasts Scarf's room/door combinatorics in the paper's primitive-set language and connects that language back to the path graph `G_i`. Defines `ExtendedGoods`, `associatedCell`, `isPrimitive`, `isAlmostPrimitive`, `slackBoundary`, primitive replacement steps, split Scarf replacement steps, complete traces `ScarfAlgorithmTrace`, fully colored primitives, and coordinate-utility realizations. Key results include `isPrimitive_iff_native`, `isAlmostPrimitive_iff_native`, `almostPrimitive_incident_primitives_boundary_or_internal`, `scarfAlgorithmTrace_exists`, `scarf_fullyColoredPrimitive_exists`, and `coordinatePrimitive_erase_replacement_mainLemma`.
--   `Gametheory/ScarfPath.lean`: Formalizes the path-following graph `G_i` used in Scarf-style proofs. Defines `GiGraph`, `GiDegree`, `GiEndpoint`, proves the degree characterization `GiDegreeCharacterization_holds`, and packages the final component statement as `GiComponentStructure_holds`.
+-   `Gametheory/Primitive.lean`: Recasts Scarf's room/door combinatorics in the paper's primitive-set language and connects that language back to the path graph `G_i`. Defines `Primitive.ExtendedGoods`, `Primitive.cell`, `Primitive.IsPrimitive`, `Primitive.IsAlmostPrimitive`, `Primitive.slackBoundary`, primitive replacement steps, split Scarf replacement steps, complete traces `Primitive.Trace`, fully colored primitives, and coordinate-utility realizations. Key results include `Primitive.isRoomPrimitive_iff_isPrimitive`, `Primitive.isAlmostPrimitive_iff_native`, `Primitive.almostPrimitive_incident_primitives_boundary_or_internal`, `Primitive.Trace.nonempty`, `Primitive.exists_fullyColored`, and `Primitive.Coordinate.IsPrimitive.erase_replacement`.
+-   `Gametheory/ScarfPath.lean`: Formalizes the path-following graph `G_i` used in Scarf-style proofs. Defines `ScarfPath.graph`, `ScarfPath.degree`, `ScarfPath.IsEndpoint`, proves the degree characterization `ScarfPath.degree_characterization`, and packages the final component statement as `ScarfPath.component_structure`.
 -   `Gametheory/Brouwer.lean`: From Scarf’s combinatorial lemma, proves Brouwer’s fixed-point theorem on a single simplex. Contains the main theorem `Brouwer` (existence of a fixed point for continuous self-maps on a simplex) and the supporting analytical lemmas (compactness, coordinate-wise continuity, convergence of constructed sequences).
 -   `Gametheory/Brouwer_product.lean`: Lifts the single-simplex result to finite products of simplices. Defines helper conversions between a big simplex and a product of simplices (`BigSimplex`, `ProductSimplices`), constructs the projection/embedding, proves continuity properties, and states the product fixed-point theorem `Brouwer_Product`.
 -   `Gametheory/Nash.lean`: Formalizes finite games `FinGame`, mixed strategies `mixedS`, payoffs, and mixed Nash equilibrium `mixedNashEquilibrium`. Builds a continuous `nash_map` on the product of simplices and applies `Brouwer_Product` to obtain existence: `ExistsNashEq : ∃ σ : G.mixedS, mixedNashEquilibrium σ`.
--   `GameTheory.lean`: Umbrella file that imports `Brouwer`, `Nash`, and `Simplex` for convenience.
+-   `Gametheory/PathComponents.lean`: Generic finite-graph results in `PathComponents` for Mathlib’s `SimpleGraph`, including spanning paths/cycles and reachable components.
+-   `Gametheory/Examples/ScarfPrimitive.lean`: Checked client examples for inference, simplification, proof methods, traces, and coordinate models.
+-   `Gametheory/AxiomAudit.lean`: Prints the axioms used by the principal finite, graph, primitive, Brouwer, product, and Nash endpoints.
+-   `GameTheory.lean`: Default umbrella module importing every proof-bearing module and the axiom audit.
+
+## Submission snapshot
+
+Before packaging a paper artifact, run:
+
+```bash
+lake build
+git status --short
+git rev-parse HEAD
+```
+
+Record the final clean commit hash together with the pinned Lean version from
+`lean-toolchain` and the Mathlib revision from `lake-manifest.json`. The current
+development targets Lean `4.33.0`, Mathlib tag `v4.33.0`, and Mathlib commit
+`db584cd6d46c92f209a44c0f1c829460d327499d`. GitHub Actions runs the same
+default build and an independent `nanoda` check that rejects `sorry`.
 
 Open any of the Lean files in an editor with the Lean server running to see goals and check proofs interactively.
 
 ## Notation and Key Definitions
 
 -   `stdSimplex ℝ α`: the standard simplex over a finite type `α` with real coefficients.
--   `ExtendedGoods T I`: the enlarged set `T ∪ I`, represented as `Sum T I`, used for Scarf's slack-vector language.
--   `associatedCell X`: the room/door cell `(X ∩ T, I \ X)` associated to a subset of `T ∪ I`.
--   `isPrimitive` / `isAlmostPrimitive`: native primitive and almost-primitive sets, equivalent to the existing room/door presentation.
--   `slackBoundary i`: the boundary almost-primitive face `I - i`.
--   `primitiveReplacementStep`: the primitive-set replacement relation obtained by passing through a common almost-primitive face.
--   `scarfSplitReplacementStep`: the split form `X → Y → X'` of Scarf's replacement algorithm, where `Y` is almost primitive.
--   `ScarfAlgorithmTrace`: a primitive-language walk in `G_i` from `I - i` to a fully colored primitive set.
--   `GiGraph`, `GiDegree`, `GiEndpoint`: the graph-theoretic path-following objects for a fixed color `i`.
--   `GiComponentStructure_holds`: theorem stating that the components of `G_i` are paths or cycles, with endpoints exactly the outside door of type `i` and the colorful rooms.
--   `scarfAlgorithmTrace_exists`: theorem constructing a complete primitive-language Scarf trace.
+-   `Primitive.ExtendedGoods T I`: the enlarged set `T ∪ I`, represented as `Sum T I`, used for Scarf's slack-vector language.
+-   `Primitive.cell X`: the room/door cell `(X ∩ T, I \ X)` associated to a subset of `T ∪ I`.
+-   `Primitive.IsPrimitive` / `Primitive.IsAlmostPrimitive`: native primitive and almost-primitive sets, equivalent to the existing room/door presentation.
+-   `Primitive.slackBoundary i`: the boundary almost-primitive face `I - i`.
+-   `Primitive.ReplacementStep`: the primitive-set replacement relation obtained by passing through a common almost-primitive face.
+-   `Primitive.SplitStep`: the split form `X → Y → X'` of Scarf's replacement algorithm, where `Y` is almost primitive.
+-   `Primitive.Trace`: a primitive-language walk in `G_i` from `I - i` to a fully colored primitive set.
+-   `ScarfPath.graph`, `ScarfPath.degree`, `ScarfPath.IsEndpoint`: the graph-theoretic path-following objects for a fixed color `i`.
+-   `ScarfPath.component_structure`: theorem giving spanning paths or cycles for the components of `G_i`, with degree-one endpoints exactly the outside door of type `i` and the colorful rooms.
+-   `Primitive.Trace.nonempty`: theorem constructing a complete primitive-language Scarf trace.
 -   `Brouwer_Product`: theorem providing a fixed point on a finite product of simplices.
 -   `FinGame`: structure for finite games (finite players and finite pure strategy sets).
 -   `mixedS`: type of mixed strategy profiles for a `FinGame`.

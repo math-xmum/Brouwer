@@ -1,4 +1,5 @@
-import Gametheory.Brouwer
+import Gametheory.ScarfPath
+
 
 open Classical
 open Finset
@@ -6,7 +7,9 @@ open Finset
 
 noncomputable section
 
-namespace IndexedLOrder
+namespace Primitive
+
+open IndexedLOrder
 
 variable {T I : Type*} [Inhabited T] [Fintype T] [Fintype I]
 variable [DecidableEq T] [DecidableEq I] [IST : IndexedLOrder I T]
@@ -25,31 +28,31 @@ def toAlmostPrimitive (τ : Finset T) (D : Finset I) : Finset (ExtendedGoods T I
   toPrimitiveSet (I := I) τ D
 
 /-- The goods part of a subset of $T \cup I$. -/
-def fromGoods (X : Finset (ExtendedGoods T I)) : Finset T :=
+def goods (X : Finset (ExtendedGoods T I)) : Finset T :=
   Finset.univ.filter (fun t : T => Sum.inl t ∈ X)
 
 /-- The indices whose slack vectors are missing from a subset of $T \cup I$. -/
-def fromMissing (X : Finset (ExtendedGoods T I)) : Finset I :=
+def missingColors (X : Finset (ExtendedGoods T I)) : Finset I :=
   Finset.univ.filter (fun i : I => Sum.inr i ∉ X)
 
 /-- The room/door cell associated to a subset of $T \cup I$. -/
-def associatedCell (X : Finset (ExtendedGoods T I)) : GiCell T I :=
-  (fromGoods (T := T) (I := I) X, fromMissing (T := T) (I := I) X)
+def cell (X : Finset (ExtendedGoods T I)) : ScarfPath.Cell T I :=
+  (goods (T := T) (I := I) X, missingColors (T := T) (I := I) X)
 
 omit [Inhabited T] IST in
-@[simp] lemma associatedCell_fst (X : Finset (ExtendedGoods T I)) :
-    (associatedCell (T := T) (I := I) X).1 = fromGoods (T := T) (I := I) X := rfl
+@[simp] lemma cell_fst (X : Finset (ExtendedGoods T I)) :
+    (cell (T := T) (I := I) X).1 = goods (T := T) (I := I) X := rfl
 
 omit [Inhabited T] IST in
-@[simp] lemma associatedCell_snd (X : Finset (ExtendedGoods T I)) :
-    (associatedCell (T := T) (I := I) X).2 = fromMissing (T := T) (I := I) X := rfl
+@[simp] lemma cell_snd (X : Finset (ExtendedGoods T I)) :
+    (cell (T := T) (I := I) X).2 = missingColors (T := T) (I := I) X := rfl
 
 omit [Inhabited T] [Fintype T] IST in
 @[simp] lemma mem_toPrimitiveSet_inl {σ : Finset T} {C : Finset I} {t : T} :
     Sum.inl t ∈ toPrimitiveSet (I := I) σ C ↔ t ∈ σ := by
   simp [toPrimitiveSet]
 
-omit [Fintype T] IST in
+omit [Inhabited T] [Fintype T] IST in
 @[simp] lemma mem_toPrimitiveSet_inr {σ : Finset T} {C : Finset I} {i : I} :
     Sum.inr i ∈ toPrimitiveSet (T := T) σ C ↔ i ∉ C := by
   simp [toPrimitiveSet]
@@ -59,41 +62,53 @@ omit [Inhabited T] [Fintype T] IST in
     Sum.inl t ∈ toAlmostPrimitive (I := I) τ D ↔ t ∈ τ := by
   simp [toAlmostPrimitive]
 
-omit [Fintype T] IST in
+omit [Inhabited T] [Fintype T] IST in
 @[simp] lemma mem_toAlmostPrimitive_inr {τ : Finset T} {D : Finset I} {i : I} :
     Sum.inr i ∈ toAlmostPrimitive (T := T) τ D ↔ i ∉ D := by
   simp [toAlmostPrimitive]
 
 omit [Inhabited T] [Fintype I] IST in
-@[simp] lemma mem_fromGoods {X : Finset (ExtendedGoods T I)} {t : T} :
-    t ∈ fromGoods (T := T) (I := I) X ↔ Sum.inl t ∈ X := by
-  simp [fromGoods]
+@[simp] lemma mem_goods {X : Finset (ExtendedGoods T I)} {t : T} :
+    t ∈ goods (T := T) (I := I) X ↔ Sum.inl t ∈ X := by
+  simp [goods]
 
 omit [Inhabited T] [Fintype T] IST in
-@[simp] lemma mem_fromMissing {X : Finset (ExtendedGoods T I)} {i : I} :
-    i ∈ fromMissing (T := T) (I := I) X ↔ Sum.inr i ∉ X := by
-  simp [fromMissing]
+@[simp] lemma mem_missingColors {X : Finset (ExtendedGoods T I)} {i : I} :
+    i ∈ missingColors (T := T) (I := I) X ↔ Sum.inr i ∉ X := by
+  simp [missingColors]
 
 omit [Inhabited T] IST in
-@[simp] lemma fromGoods_toPrimitiveSet (σ : Finset T) (C : Finset I) :
-    fromGoods (T := T) (I := I) (toPrimitiveSet (I := I) σ C) = σ := by
+@[simp] lemma goods_toPrimitiveSet (σ : Finset T) (C : Finset I) :
+    goods (T := T) (I := I) (toPrimitiveSet (I := I) σ C) = σ := by
   ext t
   simp
 
-omit [Fintype T] IST in
-@[simp] lemma fromMissing_toPrimitiveSet (σ : Finset T) (C : Finset I) :
-    fromMissing (T := T) (I := I) (toPrimitiveSet (I := I) σ C) = C := by
+omit [Inhabited T] [Fintype T] IST in
+@[simp] lemma missingColors_toPrimitiveSet (σ : Finset T) (C : Finset I) :
+    missingColors (T := T) (I := I) (toPrimitiveSet (I := I) σ C) = C := by
   ext i
   simp
 
 omit [Inhabited T] IST in
-@[simp] lemma fromGoods_toAlmostPrimitive (τ : Finset T) (D : Finset I) :
-    fromGoods (T := T) (I := I) (toAlmostPrimitive (I := I) τ D) = τ := by
+@[simp] lemma goods_toAlmostPrimitive (τ : Finset T) (D : Finset I) :
+    goods (T := T) (I := I) (toAlmostPrimitive (I := I) τ D) = τ := by
   simp [toAlmostPrimitive]
 
-omit [Fintype T] IST in
-@[simp] lemma fromMissing_toAlmostPrimitive (τ : Finset T) (D : Finset I) :
-    fromMissing (T := T) (I := I) (toAlmostPrimitive (I := I) τ D) = D := by
+omit [Inhabited T] [Fintype T] IST in
+@[simp] lemma missingColors_toAlmostPrimitive (τ : Finset T) (D : Finset I) :
+    missingColors (T := T) (I := I) (toAlmostPrimitive (I := I) τ D) = D := by
+  simp [toAlmostPrimitive]
+
+omit [Inhabited T] IST in
+/-- Decoding an encoded cell recovers both finite sets. -/
+@[simp] lemma cell_toPrimitiveSet (σ : Finset T) (C : Finset I) :
+    cell (toPrimitiveSet σ C) = (σ, C) := by
+  simp [cell]
+
+omit [Inhabited T] IST in
+/-- The door encoding has the same round-trip simplification. -/
+@[simp] lemma cell_toAlmostPrimitive (τ : Finset T) (D : Finset I) :
+    cell (toAlmostPrimitive τ D) = (τ, D) := by
   simp [toAlmostPrimitive]
 
 omit [Inhabited T] [Fintype T] IST in
@@ -124,16 +139,16 @@ lemma card_toPrimitiveSet (σ : Finset T) (C : Finset I) :
 omit [Inhabited T] IST in
 lemma eq_toPrimitive_from_parts (X : Finset (ExtendedGoods T I)) :
     X = toPrimitiveSet (I := I)
-      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+      (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) := by
   ext x
   cases x with
   | inl t => simp
-  | inr i => simp [toPrimitiveSet, fromMissing]
+  | inr i => simp [toPrimitiveSet, missingColors]
 
 omit [Inhabited T] IST in
 lemma eq_toAlmost_from_parts (X : Finset (ExtendedGoods T I)) :
     X = toAlmostPrimitive (I := I)
-      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+      (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) := by
   simpa [toAlmostPrimitive] using
     (eq_toPrimitive_from_parts (T := T) (I := I) X)
 
@@ -175,7 +190,7 @@ lemma exists_insert_eq_of_subset_card_eq_succ {α : Type*} [DecidableEq α]
     _ = t := Finset.sdiff_union_of_subset hsub
 
 /-- Primitive sets stated through the equivalent room language. -/
-def isRoomPrimitive (X : Finset (ExtendedGoods T I)) : Prop :=
+def IsRoomPrimitive (X : Finset (ExtendedGoods T I)) : Prop :=
   ∃ σ C, IST.isRoom σ C ∧ X = toPrimitiveSet (I := I) σ C
 
 /--
@@ -183,37 +198,37 @@ Scarf primitive sets in the paper's native dominance form, using the characteriz
 $X$ primitive iff $X \cap T$ is dominant with respect to the missing slack
 indices.
 -/
-def isPrimitive (X : Finset (ExtendedGoods T I)) : Prop :=
+def IsPrimitive (X : Finset (ExtendedGoods T I)) : Prop :=
   X.card = Fintype.card I ∧
-    IST.isDominant (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X)
+    IST.isDominant (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X)
 
-/-- Backwards-compatible name for the paper's native primitive definition. -/
-abbrev isPrimitiveNative (X : Finset (ExtendedGoods T I)) : Prop :=
-  isPrimitive (IST := IST) X
+/-- Native-language spelling of `IsPrimitive`, used in correspondence statements. -/
+abbrev IsPrimitiveNative (X : Finset (ExtendedGoods T I)) : Prop :=
+  IsPrimitive (IST := IST) X
 
 /-- Almost primitive sets, stated through the equivalent door language. -/
-def isAlmostPrimitive (Y : Finset (ExtendedGoods T I)) : Prop :=
+def IsAlmostPrimitive (Y : Finset (ExtendedGoods T I)) : Prop :=
   ∃ τ D σ C,
     IST.isDoorof τ D σ C ∧
       Y = toAlmostPrimitive (I := I) τ D
 
 /-- Almost primitive sets in the paper's native form: an $(n-1)$-face contained in a primitive set. -/
-def isAlmostPrimitiveNative (Y : Finset (ExtendedGoods T I)) : Prop :=
-  Y.card + 1 = Fintype.card I ∧ ∃ X, isPrimitiveNative (IST := IST) X ∧ Y ⊆ X
+def IsAlmostPrimitiveNative (Y : Finset (ExtendedGoods T I)) : Prop :=
+  Y.card + 1 = Fintype.card I ∧ ∃ X, IsPrimitiveNative (IST := IST) X ∧ Y ⊆ X
 
 omit [Inhabited T] [Fintype T] in
 /-- A room gives the equivalent room-language primitive set. -/
-lemma room_to_roomPrimitive {σ : Finset T} {C : Finset I} (h : IST.isRoom σ C) :
-    isRoomPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) := by
+lemma isRoomPrimitive_of_room {σ : Finset T} {C : Finset I} (h : IST.isRoom σ C) :
+    IsRoomPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) := by
   exact ⟨σ, C, h, rfl⟩
 
 omit [Inhabited T] in
 /-- Extract the room corresponding to a primitive set. -/
-lemma primitive_to_room {X : Finset (ExtendedGoods T I)} (h : isPrimitive (IST := IST) X) :
-    IST.isRoom (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+lemma IsPrimitive.isRoom {X : Finset (ExtendedGoods T I)} (h : IsPrimitive (IST := IST) X) :
+    IST.isRoom (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) := by
   rcases h with ⟨hCard, hDom⟩
-  let σ := fromGoods (T := T) (I := I) X
-  let C := fromMissing (T := T) (I := I) X
+  let σ := goods (T := T) (I := I) X
+  let C := missingColors (T := T) (I := I) X
   have hXcard : X.card = σ.card + (Finset.univ \ C).card := by
     rw [eq_toPrimitive_from_parts (T := T) (I := I) X, card_toPrimitiveSet]
   have hCcard : C.card = σ.card := by
@@ -225,43 +240,47 @@ lemma primitive_to_room {X : Finset (ExtendedGoods T I)} (h : isPrimitive (IST :
     omega
   exact ⟨hDom, hCcard⟩
 
+omit [Inhabited T] in
 /-- A room gives a primitive set in the paper's native sense. -/
-lemma room_to_primitive {σ : Finset T} {C : Finset I} (h : IST.isRoom σ C) :
-    isPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) := by
+lemma isPrimitive_of_room {σ : Finset T} {C : Finset I} (h : IST.isRoom σ C) :
+    IsPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) := by
   constructor
   · exact card_toPrimitiveSet_of_room h
   · simpa using h.1
 
+omit [Inhabited T] in
 /--
 For sets written in room coordinates, being primitive is exactly being a room.
 This is the cardinality condition implicit in the paper's comparison between
 dominant sets and primitive sets.
 -/
 theorem isPrimitive_toPrimitiveSet_iff_room {σ : Finset T} {C : Finset I} :
-    isPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) ↔ IST.isRoom σ C := by
+    IsPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) ↔ IST.isRoom σ C := by
   constructor
   · intro h
-    simpa using primitive_to_room (IST := IST) h
-  · exact room_to_primitive
+    simpa using IsPrimitive.isRoom (IST := IST) h
+  · exact isPrimitive_of_room
 
 omit [Inhabited T] in
 lemma primitive_eq_toPrimitive_from_parts {X : Finset (ExtendedGoods T I)}
-    (_h : isPrimitive (IST := IST) X) :
+    (_h : IsPrimitive (IST := IST) X) :
     X = toPrimitiveSet (I := I)
-      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+      (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) := by
   exact eq_toPrimitive_from_parts X
 
+omit [Inhabited T] in
 /-- A room recovered from a primitive set is again primitive. -/
 lemma primitive_from_parts {X : Finset (ExtendedGoods T I)}
-    (h : isPrimitive (IST := IST) X) :
-    isPrimitive (IST := IST)
+    (h : IsPrimitive (IST := IST) X) :
+    IsPrimitive (IST := IST)
       (toPrimitiveSet (I := I)
-        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X)) := by
-  exact room_to_primitive (primitive_to_room h)
+        (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X)) := by
+  exact isPrimitive_of_room (IsPrimitive.isRoom h)
 
-lemma primitive_to_nativePrimitive {X : Finset (ExtendedGoods T I)}
-    (h : isRoomPrimitive (IST := IST) X) :
-    isPrimitiveNative (IST := IST) X := by
+omit [Inhabited T] in
+lemma IsRoomPrimitive.isPrimitive {X : Finset (ExtendedGoods T I)}
+    (h : IsRoomPrimitive (IST := IST) X) :
+    IsPrimitiveNative (IST := IST) X := by
   constructor
   · rcases h with ⟨σ, C, hRoom, rfl⟩
     exact card_toPrimitiveSet_of_room hRoom
@@ -269,12 +288,12 @@ lemma primitive_to_nativePrimitive {X : Finset (ExtendedGoods T I)}
     simpa using hRoom.1
 
 omit [Inhabited T] in
-lemma nativePrimitive_to_primitive {X : Finset (ExtendedGoods T I)}
-    (h : isPrimitiveNative (IST := IST) X) :
-    isRoomPrimitive (IST := IST) X := by
+lemma IsPrimitive.isRoomPrimitive {X : Finset (ExtendedGoods T I)}
+    (h : IsPrimitiveNative (IST := IST) X) :
+    IsRoomPrimitive (IST := IST) X := by
   rcases h with ⟨hCard, hDom⟩
-  let σ := fromGoods (T := T) (I := I) X
-  let C := fromMissing (T := T) (I := I) X
+  let σ := goods (T := T) (I := I) X
+  let C := missingColors (T := T) (I := I) X
   have hXcard : X.card = σ.card + (Finset.univ \ C).card := by
     rw [eq_toPrimitive_from_parts (T := T) (I := I) X, card_toPrimitiveSet]
   have hCcard : C.card = σ.card := by
@@ -286,38 +305,41 @@ lemma nativePrimitive_to_primitive {X : Finset (ExtendedGoods T I)}
     omega
   have hRoom : IST.isRoom σ C := ⟨hDom, hCcard⟩
   rw [eq_toPrimitive_from_parts (T := T) (I := I) X]
-  exact room_to_roomPrimitive hRoom
+  exact isRoomPrimitive_of_room hRoom
 
-theorem isPrimitive_iff_native {X : Finset (ExtendedGoods T I)} :
-    isRoomPrimitive (IST := IST) X ↔ isPrimitiveNative (IST := IST) X :=
-  ⟨primitive_to_nativePrimitive, nativePrimitive_to_primitive⟩
+omit [Inhabited T] in
+theorem isRoomPrimitive_iff_isPrimitive {X : Finset (ExtendedGoods T I)} :
+    IsRoomPrimitive (IST := IST) X ↔ IsPrimitiveNative (IST := IST) X :=
+  ⟨IsRoomPrimitive.isPrimitive, IsPrimitive.isRoomPrimitive⟩
 
 omit [Inhabited T] [Fintype T] in
 /-- A door of a room gives an almost primitive set. -/
 lemma door_to_almostPrimitive {τ σ : Finset T} {D C : Finset I}
     (h : IST.isDoorof τ D σ C) :
-    isAlmostPrimitive (IST := IST) (toAlmostPrimitive (I := I) τ D) := by
+    IsAlmostPrimitive (IST := IST) (toAlmostPrimitive (I := I) τ D) := by
   exact ⟨τ, D, σ, C, h, rfl⟩
 
+omit [Inhabited T] in
 /-- Recover the door represented by an almost primitive set. -/
-lemma almostPrimitive_to_door {Y : Finset (ExtendedGoods T I)}
-    (h : isAlmostPrimitive (IST := IST) Y) :
-    IST.isDoor (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y) := by
+lemma IsAlmostPrimitive.isDoor {Y : Finset (ExtendedGoods T I)}
+    (h : IsAlmostPrimitive (IST := IST) Y) :
+    IST.isDoor (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y) := by
   rcases h with ⟨τ, D, σ, C, hDoor, rfl⟩
   cases hDoor with
   | idoor _ hD _ _ _ _ => simpa using hD
   | odoor _ hD _ _ _ _ => simpa using hD
 
+omit [Inhabited T] in
 /-- Recover a room incident to an almost primitive set. -/
 lemma almostPrimitive_incident_room {Y : Finset (ExtendedGoods T I)}
-    (h : isAlmostPrimitive (IST := IST) Y) :
+    (h : IsAlmostPrimitive (IST := IST) Y) :
     ∃ σ C,
-      IST.isDoorof (fromGoods (T := T) (I := I) Y)
-        (fromMissing (T := T) (I := I) Y) σ C := by
+      IST.isDoorof (goods (T := T) (I := I) Y)
+        (missingColors (T := T) (I := I) Y) σ C := by
   rcases h with ⟨τ, D, σ, C, hDoor, rfl⟩
   exact ⟨σ, C, by simpa using hDoor⟩
 
-omit [Fintype T] in
+omit [Inhabited T] [Fintype T] in
 /-- Incidence of doors and rooms becomes subset inclusion of the corresponding sets. -/
 lemma doorof_toAlmost_subset_toPrimitive {τ σ : Finset T} {D C : Finset I}
     (h : IST.isDoorof τ D σ C) :
@@ -347,26 +369,27 @@ lemma doorof_toAlmost_subset_toPrimitive {τ σ : Finset T} {D C : Finset I}
           rw [hD] at hz
           exact fun hiC => hz (Finset.mem_insert_of_mem hiC)
 
+omit [Inhabited T] in
 /-- A useful packaged form of the door/primitive-set incidence correspondence. -/
 lemma doorof_iff_subset_primitive {τ σ : Finset T} {D C : Finset I} :
     IST.isDoorof τ D σ C →
       IST.isRoom σ C ∧
-        isAlmostPrimitive (IST := IST) (toAlmostPrimitive (I := I) τ D) ∧
-          isPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) ∧
+        IsAlmostPrimitive (IST := IST) (toAlmostPrimitive (I := I) τ D) ∧
+          IsPrimitive (IST := IST) (toPrimitiveSet (I := I) σ C) ∧
             toAlmostPrimitive (I := I) τ D ⊆ toPrimitiveSet (I := I) σ C := by
   intro h
   have hRoom : IST.isRoom σ C := IST.isRoom_of_Door h
-  exact ⟨hRoom, door_to_almostPrimitive h, room_to_primitive hRoom,
+  exact ⟨hRoom, door_to_almostPrimitive h, isPrimitive_of_room hRoom,
     doorof_toAlmost_subset_toPrimitive h⟩
 
 omit [Inhabited T] in
 lemma almostPrimitive_eq_toAlmost_from_parts {Y : Finset (ExtendedGoods T I)}
-    (_h : isAlmostPrimitive (IST := IST) Y) :
+    (_h : IsAlmostPrimitive (IST := IST) Y) :
     Y = toAlmostPrimitive (I := I)
-      (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y) := by
+      (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y) := by
   exact eq_toAlmost_from_parts Y
 
-omit [Fintype T] in
+omit [Inhabited T] [Fintype T] in
 lemma subset_toPrimitive_toAlmost_doorof {τ σ : Finset T} {D C : Finset I}
     (hDoor : IST.isDoor τ D) (hRoom : IST.isRoom σ C)
     (hsub : toAlmostPrimitive (I := I) τ D ⊆ toPrimitiveSet (I := I) σ C) :
@@ -409,13 +432,14 @@ lemma subset_toPrimitive_toAlmost_doorof {τ σ : Finset T} {D C : Finset I}
       · exact hxInsert
       · exact hCD.symm
 
+omit [Inhabited T] in
 lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
-    (h : isAlmostPrimitiveNative (IST := IST) Y) :
-    isAlmostPrimitive (IST := IST) Y := by
+    (h : IsAlmostPrimitiveNative (IST := IST) Y) :
+    IsAlmostPrimitive (IST := IST) Y := by
   rcases h with ⟨hcard, X, hPrim, hsub⟩
-  rcases nativePrimitive_to_primitive hPrim with ⟨σ, C, hRoom, rfl⟩
-  let τ := fromGoods (T := T) (I := I) Y
-  let D := fromMissing (T := T) (I := I) Y
+  rcases IsPrimitive.isRoomPrimitive hPrim with ⟨σ, C, hRoom, rfl⟩
+  let τ := goods (T := T) (I := I) Y
+  let D := missingColors (T := T) (I := I) Y
   have hYeq : Y = toAlmostPrimitive (I := I) τ D := eq_toAlmost_from_parts Y
   have hτsub : τ ⊆ σ := by
     intro t ht
@@ -424,7 +448,7 @@ lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
     simpa using hx
   have hCsubD : C ⊆ D := by
     intro i hiC
-    rw [mem_fromMissing]
+    rw [mem_missingColors]
     intro hy
     have hx : Sum.inr i ∈ toPrimitiveSet (T := T) σ C := hsub hy
     have hiNotC : i ∉ C := by simpa using hx
@@ -449,9 +473,10 @@ lemma nativeAlmostPrimitive_to_almostPrimitive {Y : Finset (ExtendedGoods T I)}
     exact hsub
   exact ⟨τ, D, σ, C, subset_toPrimitive_toAlmost_doorof hDoor hRoom hsubParts, hYeq⟩
 
+omit [Inhabited T] in
 lemma almostPrimitive_to_nativeAlmostPrimitive {Y : Finset (ExtendedGoods T I)}
-    (h : isAlmostPrimitive (IST := IST) Y) :
-    isAlmostPrimitiveNative (IST := IST) Y := by
+    (h : IsAlmostPrimitive (IST := IST) Y) :
+    IsAlmostPrimitiveNative (IST := IST) Y := by
   rcases h with ⟨τ, D, σ, C, hDoorof, rfl⟩
   have hDoor : IST.isDoor τ D := by
     cases hDoorof with
@@ -460,41 +485,43 @@ lemma almostPrimitive_to_nativeAlmostPrimitive {Y : Finset (ExtendedGoods T I)}
   have hRoom : IST.isRoom σ C := IST.isRoom_of_Door hDoorof
   constructor
   · exact card_toAlmostPrimitive_of_door hDoor
-  · exact ⟨toPrimitiveSet (I := I) σ C, room_to_primitive hRoom,
+  · exact ⟨toPrimitiveSet (I := I) σ C, isPrimitive_of_room hRoom,
       doorof_toAlmost_subset_toPrimitive hDoorof⟩
 
+omit [Inhabited T] in
 theorem isAlmostPrimitive_iff_native {Y : Finset (ExtendedGoods T I)} :
-    isAlmostPrimitive (IST := IST) Y ↔ isAlmostPrimitiveNative (IST := IST) Y :=
+    IsAlmostPrimitive (IST := IST) Y ↔ IsAlmostPrimitiveNative (IST := IST) Y :=
   ⟨almostPrimitive_to_nativeAlmostPrimitive, nativeAlmostPrimitive_to_almostPrimitive⟩
 
+omit [Inhabited T] in
 /--
 Scarf's main lemma for internal almost primitive sets, in the room/door
 language: an internal almost primitive face is contained in two distinct
 primitive sets.
 -/
 theorem internal_almostPrimitive_two_incident_primitives {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y)
-    (hInternal : (fromGoods (T := T) (I := I) Y).Nonempty) :
+    (hY : IsAlmostPrimitive (IST := IST) Y)
+    (hInternal : (goods (T := T) (I := I) Y).Nonempty) :
     ∃ X₁ X₂ : Finset (ExtendedGoods T I),
       X₁ ≠ X₂ ∧
-        isPrimitive (IST := IST) X₁ ∧
-        isPrimitive (IST := IST) X₂ ∧
+        IsPrimitive (IST := IST) X₁ ∧
+        IsPrimitive (IST := IST) X₂ ∧
         Y ⊆ X₁ ∧
         Y ⊆ X₂ := by
-  let τ := fromGoods (T := T) (I := I) Y
-  let D := fromMissing (T := T) (I := I) Y
-  have hDoor : IST.isDoor τ D := almostPrimitive_to_door hY
+  let τ := goods (T := T) (I := I) Y
+  let D := missingColors (T := T) (I := I) Y
+  have hDoor : IST.isDoor τ D := IsAlmostPrimitive.isDoor hY
   obtain ⟨σ₁, σ₂, C₁, C₂, hNe, hRoom₁, hRoom₂, hDoor₁, hDoor₂, _hUnique⟩ :=
     IST.internal_door_two_rooms τ D ⟨hDoor, hInternal⟩
   let X₁ := toPrimitiveSet (I := I) σ₁ C₁
   let X₂ := toPrimitiveSet (I := I) σ₂ C₂
-  refine ⟨X₁, X₂, ?_, room_to_primitive hRoom₁, room_to_primitive hRoom₂, ?_, ?_⟩
+  refine ⟨X₁, X₂, ?_, isPrimitive_of_room hRoom₁, isPrimitive_of_room hRoom₂, ?_, ?_⟩
   · intro hEq
     have hσ : σ₁ = σ₂ := by
-      have := congrArg (fromGoods (T := T) (I := I)) hEq
+      have := congrArg (goods (T := T) (I := I)) hEq
       simpa [X₁, X₂] using this
     have hC : C₁ = C₂ := by
-      have := congrArg (fromMissing (T := T) (I := I)) hEq
+      have := congrArg (missingColors (T := T) (I := I)) hEq
       simpa [X₁, X₂] using this
     exact hNe (by simp [hσ, hC])
   · rw [almostPrimitive_eq_toAlmost_from_parts hY]
@@ -502,31 +529,32 @@ theorem internal_almostPrimitive_two_incident_primitives {Y : Finset (ExtendedGo
   · rw [almostPrimitive_eq_toAlmost_from_parts hY]
     exact doorof_toAlmost_subset_toPrimitive hDoor₂
 
+omit [Inhabited T] in
 theorem internal_almostPrimitive_exactly_two_incident_primitives
     {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y)
-    (hInternal : (fromGoods (T := T) (I := I) Y).Nonempty) :
+    (hY : IsAlmostPrimitive (IST := IST) Y)
+    (hInternal : (goods (T := T) (I := I) Y).Nonempty) :
     ∃ X₁ X₂ : Finset (ExtendedGoods T I),
       X₁ ≠ X₂ ∧
-        isPrimitive (IST := IST) X₁ ∧
-        isPrimitive (IST := IST) X₂ ∧
+        IsPrimitive (IST := IST) X₁ ∧
+        IsPrimitive (IST := IST) X₂ ∧
         Y ⊆ X₁ ∧
         Y ⊆ X₂ ∧
-        ∀ X, isPrimitive (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂ := by
-  let τ := fromGoods (T := T) (I := I) Y
-  let D := fromMissing (T := T) (I := I) Y
-  have hDoor : IST.isDoor τ D := almostPrimitive_to_door hY
+        ∀ X, IsPrimitive (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂ := by
+  let τ := goods (T := T) (I := I) Y
+  let D := missingColors (T := T) (I := I) Y
+  have hDoor : IST.isDoor τ D := IsAlmostPrimitive.isDoor hY
   obtain ⟨σ₁, σ₂, C₁, C₂, hNe, hRoom₁, hRoom₂, hDoor₁, hDoor₂, hUnique⟩ :=
     IST.internal_door_two_rooms τ D ⟨hDoor, hInternal⟩
   let X₁ := toPrimitiveSet (I := I) σ₁ C₁
   let X₂ := toPrimitiveSet (I := I) σ₂ C₂
-  refine ⟨X₁, X₂, ?_, room_to_primitive hRoom₁, room_to_primitive hRoom₂, ?_, ?_, ?_⟩
+  refine ⟨X₁, X₂, ?_, isPrimitive_of_room hRoom₁, isPrimitive_of_room hRoom₂, ?_, ?_, ?_⟩
   · intro hEq
     have hσ : σ₁ = σ₂ := by
-      have := congrArg (fromGoods (T := T) (I := I)) hEq
+      have := congrArg (goods (T := T) (I := I)) hEq
       simpa [X₁, X₂] using this
     have hC : C₁ = C₂ := by
-      have := congrArg (fromMissing (T := T) (I := I)) hEq
+      have := congrArg (missingColors (T := T) (I := I)) hEq
       simpa [X₁, X₂] using this
     exact hNe (by simp [hσ, hC])
   · rw [almostPrimitive_eq_toAlmost_from_parts hY]
@@ -535,53 +563,55 @@ theorem internal_almostPrimitive_exactly_two_incident_primitives
     exact doorof_toAlmost_subset_toPrimitive hDoor₂
   · intro X hX hSub
     have hDoorX :
-        IST.isDoorof τ D (fromGoods (T := T) (I := I) X)
-          (fromMissing (T := T) (I := I) X) := by
-      have hRoomX : IST.isRoom (fromGoods (T := T) (I := I) X)
-          (fromMissing (T := T) (I := I) X) := primitive_to_room hX
+        IST.isDoorof τ D (goods (T := T) (I := I) X)
+          (missingColors (T := T) (I := I) X) := by
+      have hRoomX : IST.isRoom (goods (T := T) (I := I) X)
+          (missingColors (T := T) (I := I) X) := IsPrimitive.isRoom hX
       apply subset_toPrimitive_toAlmost_doorof hDoor hRoomX
       rw [← almostPrimitive_eq_toAlmost_from_parts hY, ← primitive_eq_toPrimitive_from_parts hX]
       exact hSub
-    have hRoomX : IST.isRoom (fromGoods (T := T) (I := I) X)
-        (fromMissing (T := T) (I := I) X) := primitive_to_room hX
+    have hRoomX : IST.isRoom (goods (T := T) (I := I) X)
+        (missingColors (T := T) (I := I) X) := IsPrimitive.isRoom hX
     obtain hLeft | hRight := hUnique
-      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) hRoomX hDoorX
+      (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) hRoomX hDoorX
     · left
       rw [primitive_eq_toPrimitive_from_parts hX, hLeft.1, hLeft.2]
     · right
       rw [primitive_eq_toPrimitive_from_parts hX, hRight.1, hRight.2]
 
+omit [Inhabited T] in
 theorem native_internal_almostPrimitive_exactly_two_incident_primitives
     {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitiveNative (IST := IST) Y)
-    (hInternal : (fromGoods (T := T) (I := I) Y).Nonempty) :
+    (hY : IsAlmostPrimitiveNative (IST := IST) Y)
+    (hInternal : (goods (T := T) (I := I) Y).Nonempty) :
     ∃ X₁ X₂ : Finset (ExtendedGoods T I),
       X₁ ≠ X₂ ∧
-        isPrimitiveNative (IST := IST) X₁ ∧
-        isPrimitiveNative (IST := IST) X₂ ∧
+        IsPrimitiveNative (IST := IST) X₁ ∧
+        IsPrimitiveNative (IST := IST) X₂ ∧
         Y ⊆ X₁ ∧
         Y ⊆ X₂ ∧
-        ∀ X, isPrimitiveNative (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂ := by
-  have hY' : isAlmostPrimitive (IST := IST) Y :=
+        ∀ X, IsPrimitiveNative (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂ := by
+  have hY' : IsAlmostPrimitive (IST := IST) Y :=
     nativeAlmostPrimitive_to_almostPrimitive hY
   obtain ⟨X₁, X₂, hNe, hPrim₁, hPrim₂, hSub₁, hSub₂, hUnique⟩ :=
     internal_almostPrimitive_exactly_two_incident_primitives hY' hInternal
   exact ⟨X₁, X₂, hNe, hPrim₁, hPrim₂, hSub₁, hSub₂, fun X hX hSub =>
     hUnique X hX hSub⟩
+omit [Inhabited T] in
 /--
 Native Scarf main lemma in the "remove one point" form: after removing a
 point from a primitive set, either the resulting face lies in the slack
 boundary, or there is a unique other primitive set containing that face.
 -/
-theorem native_primitive_erase_mainLemma
-    {X : Finset (ExtendedGoods T I)} (hX : isPrimitiveNative (IST := IST) X)
+theorem IsPrimitive.erase_incidence
+    {X : Finset (ExtendedGoods T I)} (hX : IsPrimitiveNative (IST := IST) X)
     {x : ExtendedGoods T I} (hx : x ∈ X) :
-    ¬ (fromGoods (T := T) (I := I) (X.erase x)).Nonempty ∨
+    ¬ (goods (T := T) (I := I) (X.erase x)).Nonempty ∨
       ∃! X' : Finset (ExtendedGoods T I),
-        isPrimitiveNative (IST := IST) X' ∧
+        IsPrimitiveNative (IST := IST) X' ∧
           X.erase x ⊆ X' ∧ X' ≠ X := by
   let Y := X.erase x
-  have hYnative : isAlmostPrimitiveNative (IST := IST) Y := by
+  have hYnative : IsAlmostPrimitiveNative (IST := IST) Y := by
     constructor
     · have hcardErase : Y.card + 1 = X.card := by
         change (X.erase x).card + 1 = X.card
@@ -590,7 +620,7 @@ theorem native_primitive_erase_mainLemma
         omega
       exact hcardErase.trans hX.1
     · exact ⟨X, hX, Finset.erase_subset x X⟩
-  by_cases hInternal : (fromGoods (T := T) (I := I) Y).Nonempty
+  by_cases hInternal : (goods (T := T) (I := I) Y).Nonempty
   · right
     obtain ⟨X₁, X₂, hNe, hPrim₁, hPrim₂, hSub₁, hSub₂, hUnique⟩ :=
       native_internal_almostPrimitive_exactly_two_incident_primitives hYnative hInternal
@@ -617,17 +647,18 @@ theorem native_primitive_erase_mainLemma
   · left
     exact hInternal
 
+omit [Inhabited T] in
 /--
 Scarf's main lemma in the paper's replacement form: after removing $x$ from
 a primitive set $X$, either only slack vectors remain, or there is a unique
 new element $y \notin X$ such that $X - x + y$ is primitive.
 -/
-theorem native_primitive_erase_replacement_mainLemma
-    {X : Finset (ExtendedGoods T I)} (hX : isPrimitiveNative (IST := IST) X)
+theorem IsPrimitive.erase_replacement
+    {X : Finset (ExtendedGoods T I)} (hX : IsPrimitiveNative (IST := IST) X)
     {x : ExtendedGoods T I} (hx : x ∈ X) :
-    ¬ (fromGoods (T := T) (I := I) (X.erase x)).Nonempty ∨
+    ¬ (goods (T := T) (I := I) (X.erase x)).Nonempty ∨
       ∃! y : ExtendedGoods T I,
-        y ∉ X ∧ isPrimitiveNative (IST := IST) (insert y (X.erase x)) := by
+        y ∉ X ∧ IsPrimitiveNative (IST := IST) (insert y (X.erase x)) := by
   let Y := X.erase x
   have hYcard : Y.card + 1 = Fintype.card I := by
     change (X.erase x).card + 1 = Fintype.card I
@@ -635,7 +666,7 @@ theorem native_primitive_erase_replacement_mainLemma
     have hpos : 0 < X.card := Finset.card_pos.mpr ⟨x, hx⟩
     have hle : 1 ≤ X.card := Nat.succ_le_iff.mpr hpos
     rw [Nat.sub_add_cancel hle, hX.1]
-  obtain hBoundary | hOther := native_primitive_erase_mainLemma (IST := IST) hX hx
+  obtain hBoundary | hOther := IsPrimitive.erase_incidence (IST := IST) hX hx
   · exact Or.inl hBoundary
   · right
     rcases hOther with ⟨X', ⟨hPrimX', hSub, hNe⟩, hUniqueX⟩
@@ -680,26 +711,26 @@ def slackBoundary (i : I) : Finset (ExtendedGoods T I) :=
   toAlmostPrimitive (T := T) (Finset.empty : Finset T) ({i} : Finset I)
 
 omit [Inhabited T] IST in
-@[simp] lemma fromGoods_slackBoundary (i : I) :
-    fromGoods (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
+@[simp] lemma goods_slackBoundary (i : I) :
+    goods (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
       (Finset.empty : Finset T) := by
   simp [slackBoundary]
 
-omit [Fintype T] IST in
-@[simp] lemma fromMissing_slackBoundary (i : I) :
-    fromMissing (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
+omit [Inhabited T] [Fintype T] IST in
+@[simp] lemma missingColors_slackBoundary (i : I) :
+    missingColors (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
       ({i} : Finset I) := by
   simp [slackBoundary]
 
-omit IST in
-@[simp] lemma associatedCell_slackBoundary (i : I) :
-    associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
+omit [Inhabited T] IST in
+@[simp] lemma cell_slackBoundary (i : I) :
+    cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i) =
       ((Finset.empty : Finset T), ({i} : Finset I)) := by
   ext <;> simp
 
 /-- Each slack boundary is an almost primitive set. -/
 lemma slackBoundary_isAlmostPrimitive (i : I) :
-    isAlmostPrimitive (IST := IST) (slackBoundary (T := T) (I := I) i) := by
+    IsAlmostPrimitive (IST := IST) (slackBoundary (T := T) (I := I) i) := by
   have hOutside : IST.isOutsideDoor (Finset.empty : Finset T) ({i} : Finset I) :=
     IST.outsidedoor_singleton i
   let xMax : T := @Finset.max' T (IST i) Finset.univ
@@ -719,12 +750,12 @@ lemma slackBoundary_isAlmostPrimitive (i : I) :
   exact door_to_almostPrimitive hDoorof
 
 lemma slackBoundary_isAlmostPrimitiveNative (i : I) :
-    isAlmostPrimitiveNative (IST := IST) (slackBoundary (T := T) (I := I) i) :=
+    IsAlmostPrimitiveNative (IST := IST) (slackBoundary (T := T) (I := I) i) :=
   almostPrimitive_to_nativeAlmostPrimitive (slackBoundary_isAlmostPrimitive (IST := IST) i)
 
 lemma slackBoundary_unique_incident_primitive (i : I) :
     ∃! X : Finset (ExtendedGoods T I),
-      isPrimitive (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X := by
+      IsPrimitive (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X := by
   let xMax : T := @Finset.max' T (IST i) Finset.univ
     (Finset.univ_nonempty_iff.mpr ⟨(default : T)⟩)
   let X₀ := toPrimitiveSet (I := I) ({xMax} : Finset T) ({i} : Finset I)
@@ -743,11 +774,11 @@ lemma slackBoundary_unique_incident_primitive (i : I) :
     · rfl
     · rfl
   have hRoom₀ : IST.isRoom ({xMax} : Finset T) ({i} : Finset I) := IST.isRoom_of_Door hDoorof₀
-  refine ⟨X₀, ⟨room_to_primitive hRoom₀, ?_⟩, ?_⟩
+  refine ⟨X₀, ⟨isPrimitive_of_room hRoom₀, ?_⟩, ?_⟩
   · exact doorof_toAlmost_subset_toPrimitive hDoorof₀
   · intro X hX
     rcases hX with ⟨hPrim, hSub⟩
-    rcases nativePrimitive_to_primitive hPrim with ⟨σ, C, hRoom, rfl⟩
+    rcases IsPrimitive.isRoomPrimitive hPrim with ⟨σ, C, hRoom, rfl⟩
     have hDoorof : IST.isDoorof (Finset.empty : Finset T) ({i} : Finset I) σ C :=
       subset_toPrimitive_toAlmost_doorof hOutside.1 hRoom hSub
     cases hDoorof with
@@ -781,30 +812,31 @@ lemma slackBoundary_unique_incident_primitive (i : I) :
 
 lemma slackBoundary_unique_incident_nativePrimitive (i : I) :
     ∃! X : Finset (ExtendedGoods T I),
-      isPrimitiveNative (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X := by
+      IsPrimitiveNative (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X := by
   rcases slackBoundary_unique_incident_primitive (IST := IST) i with ⟨X, hX, hUnique⟩
   refine ⟨X, hX, ?_⟩
   intro Y hY
   exact hUnique Y hY
 
+omit [Inhabited T] in
 /--
 Every almost primitive face made only of slack vectors is one of the boundary
 faces $I - i$.
 -/
 lemma boundary_almostPrimitive_eq_slackBoundary {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y)
-    (hBoundary : ¬ (fromGoods (T := T) (I := I) Y).Nonempty) :
+    (hY : IsAlmostPrimitive (IST := IST) Y)
+    (hBoundary : ¬ (goods (T := T) (I := I) Y).Nonempty) :
     ∃ i : I, Y = slackBoundary (T := T) (I := I) i := by
-  have hGoods : fromGoods (T := T) (I := I) Y = Finset.empty :=
+  have hGoods : goods (T := T) (I := I) Y = Finset.empty :=
     Finset.not_nonempty_iff_eq_empty.mp hBoundary
-  have hDoor : IST.isDoor (fromGoods (T := T) (I := I) Y)
-      (fromMissing (T := T) (I := I) Y) :=
-    almostPrimitive_to_door hY
-  have hDcard : (fromMissing (T := T) (I := I) Y).card = 1 := by
+  have hDoor : IST.isDoor (goods (T := T) (I := I) Y)
+      (missingColors (T := T) (I := I) Y) :=
+    IsAlmostPrimitive.isDoor hY
+  have hDcard : (missingColors (T := T) (I := I) Y).card = 1 := by
     have hDoorCard := hDoor.2
     rw [hGoods] at hDoorCard
     calc
-      (fromMissing (T := T) (I := I) Y).card =
+      (missingColors (T := T) (I := I) Y).card =
           (Finset.empty : Finset T).card + 1 := hDoorCard
       _ = 1 := by rfl
   obtain ⟨i, hD⟩ := Finset.card_eq_one.mp hDcard
@@ -817,18 +849,18 @@ Boundary almost primitive faces are incident to exactly one primitive set.
 -/
 theorem boundary_almostPrimitive_unique_incident_primitive
     {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y)
-    (hBoundary : ¬ (fromGoods (T := T) (I := I) Y).Nonempty) :
-    ∃! X : Finset (ExtendedGoods T I), isPrimitive (IST := IST) X ∧ Y ⊆ X := by
+    (hY : IsAlmostPrimitive (IST := IST) Y)
+    (hBoundary : ¬ (goods (T := T) (I := I) Y).Nonempty) :
+    ∃! X : Finset (ExtendedGoods T I), IsPrimitive (IST := IST) X ∧ Y ⊆ X := by
   obtain ⟨i, hYeq⟩ := boundary_almostPrimitive_eq_slackBoundary (IST := IST) hY hBoundary
   rw [hYeq]
   exact slackBoundary_unique_incident_primitive (IST := IST) i
 
 theorem native_boundary_almostPrimitive_unique_incident_primitive
     {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitiveNative (IST := IST) Y)
-    (hBoundary : ¬ (fromGoods (T := T) (I := I) Y).Nonempty) :
-    ∃! X : Finset (ExtendedGoods T I), isPrimitiveNative (IST := IST) X ∧ Y ⊆ X :=
+    (hY : IsAlmostPrimitiveNative (IST := IST) Y)
+    (hBoundary : ¬ (goods (T := T) (I := I) Y).Nonempty) :
+    ∃! X : Finset (ExtendedGoods T I), IsPrimitiveNative (IST := IST) X ∧ Y ⊆ X :=
   boundary_almostPrimitive_unique_incident_primitive
     (IST := IST) (nativeAlmostPrimitive_to_almostPrimitive hY) hBoundary
 
@@ -839,18 +871,18 @@ two primitive sets.
 -/
 theorem almostPrimitive_incident_primitives_boundary_or_internal
     {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y) :
-    (¬ (fromGoods (T := T) (I := I) Y).Nonempty ∧
-      ∃! X : Finset (ExtendedGoods T I), isPrimitive (IST := IST) X ∧ Y ⊆ X) ∨
-    ((fromGoods (T := T) (I := I) Y).Nonempty ∧
+    (hY : IsAlmostPrimitive (IST := IST) Y) :
+    (¬ (goods (T := T) (I := I) Y).Nonempty ∧
+      ∃! X : Finset (ExtendedGoods T I), IsPrimitive (IST := IST) X ∧ Y ⊆ X) ∨
+    ((goods (T := T) (I := I) Y).Nonempty ∧
       ∃ X₁ X₂ : Finset (ExtendedGoods T I),
         X₁ ≠ X₂ ∧
-          isPrimitive (IST := IST) X₁ ∧
-          isPrimitive (IST := IST) X₂ ∧
+          IsPrimitive (IST := IST) X₁ ∧
+          IsPrimitive (IST := IST) X₂ ∧
           Y ⊆ X₁ ∧
           Y ⊆ X₂ ∧
-          ∀ X, isPrimitive (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂) := by
-  by_cases hInternal : (fromGoods (T := T) (I := I) Y).Nonempty
+          ∀ X, IsPrimitive (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂) := by
+  by_cases hInternal : (goods (T := T) (I := I) Y).Nonempty
   · right
     exact ⟨hInternal, internal_almostPrimitive_exactly_two_incident_primitives hY hInternal⟩
   · left
@@ -858,23 +890,24 @@ theorem almostPrimitive_incident_primitives_boundary_or_internal
 
 theorem native_almostPrimitive_incident_primitives_boundary_or_internal
     {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitiveNative (IST := IST) Y) :
-    (¬ (fromGoods (T := T) (I := I) Y).Nonempty ∧
-      ∃! X : Finset (ExtendedGoods T I), isPrimitiveNative (IST := IST) X ∧ Y ⊆ X) ∨
-    ((fromGoods (T := T) (I := I) Y).Nonempty ∧
+    (hY : IsAlmostPrimitiveNative (IST := IST) Y) :
+    (¬ (goods (T := T) (I := I) Y).Nonempty ∧
+      ∃! X : Finset (ExtendedGoods T I), IsPrimitiveNative (IST := IST) X ∧ Y ⊆ X) ∨
+    ((goods (T := T) (I := I) Y).Nonempty ∧
       ∃ X₁ X₂ : Finset (ExtendedGoods T I),
         X₁ ≠ X₂ ∧
-          isPrimitiveNative (IST := IST) X₁ ∧
-          isPrimitiveNative (IST := IST) X₂ ∧
+          IsPrimitiveNative (IST := IST) X₁ ∧
+          IsPrimitiveNative (IST := IST) X₂ ∧
           Y ⊆ X₁ ∧
           Y ⊆ X₂ ∧
-          ∀ X, isPrimitiveNative (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂) := by
-  by_cases hInternal : (fromGoods (T := T) (I := I) Y).Nonempty
+          ∀ X, IsPrimitiveNative (IST := IST) X → Y ⊆ X → X = X₁ ∨ X = X₂) := by
+  by_cases hInternal : (goods (T := T) (I := I) Y).Nonempty
   · right
     exact ⟨hInternal, native_internal_almostPrimitive_exactly_two_incident_primitives hY hInternal⟩
   · left
     exact ⟨hInternal, native_boundary_almostPrimitive_unique_incident_primitive hY hInternal⟩
 
+omit [Inhabited T] in
 /--
 Incidence between an almost primitive face and a primitive set is exactly
 the old room-door incidence after translating both sides back to
@@ -882,16 +915,16 @@ $(\mathrm{goods}, \mathrm{indices})$.
 -/
 lemma almostPrimitive_subset_primitive_iff_doorof
     {Y X : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y) (hX : isPrimitive (IST := IST) X) :
+    (hY : IsAlmostPrimitive (IST := IST) Y) (hX : IsPrimitive (IST := IST) X) :
     Y ⊆ X ↔
-      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
-        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+      IST.isDoorof (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y)
+        (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) := by
   constructor
   · intro hSub
-    have hDoor : IST.isDoor (fromGoods (T := T) (I := I) Y)
-        (fromMissing (T := T) (I := I) Y) := almostPrimitive_to_door hY
-    have hRoom : IST.isRoom (fromGoods (T := T) (I := I) X)
-        (fromMissing (T := T) (I := I) X) := primitive_to_room hX
+    have hDoor : IST.isDoor (goods (T := T) (I := I) Y)
+        (missingColors (T := T) (I := I) Y) := IsAlmostPrimitive.isDoor hY
+    have hRoom : IST.isRoom (goods (T := T) (I := I) X)
+        (missingColors (T := T) (I := I) X) := IsPrimitive.isRoom hX
     apply subset_toPrimitive_toAlmost_doorof hDoor hRoom
     rw [← almostPrimitive_eq_toAlmost_from_parts hY, ← primitive_eq_toPrimitive_from_parts hX]
     exact hSub
@@ -904,60 +937,63 @@ A Scarf replacement step: two primitive sets are adjacent if they share an
 almost primitive face. This is the primitive-set version of walking through a
 door from one room to another.
 -/
-def primitiveReplacementStep (X X' : Finset (ExtendedGoods T I)) : Prop :=
-  isPrimitive (IST := IST) X ∧
-    isPrimitive (IST := IST) X' ∧
+def ReplacementStep (X X' : Finset (ExtendedGoods T I)) : Prop :=
+  IsPrimitive (IST := IST) X ∧
+    IsPrimitive (IST := IST) X' ∧
       X ≠ X' ∧
-        ∃ Y, isAlmostPrimitive (IST := IST) Y ∧ Y ⊆ X ∧ Y ⊆ X'
+        ∃ Y, IsAlmostPrimitive (IST := IST) Y ∧ Y ⊆ X ∧ Y ⊆ X'
 
 omit [Inhabited T] in
-lemma primitiveReplacementStep.symm {X X' : Finset (ExtendedGoods T I)}
-    (h : primitiveReplacementStep (IST := IST) X X') :
-    primitiveReplacementStep (IST := IST) X' X := by
+lemma ReplacementStep.symm {X X' : Finset (ExtendedGoods T I)}
+    (h : ReplacementStep (IST := IST) X X') :
+    ReplacementStep (IST := IST) X' X := by
   rcases h with ⟨hX, hX', hne, Y, hY, hYX, hYX'⟩
   exact ⟨hX', hX, hne.symm, Y, hY, hYX', hYX⟩
 
-lemma replacementStep_has_common_door {X X' : Finset (ExtendedGoods T I)}
-    (h : primitiveReplacementStep (IST := IST) X X') :
+omit [Inhabited T] in
+lemma ReplacementStep.common_door {X X' : Finset (ExtendedGoods T I)}
+    (h : ReplacementStep (IST := IST) X X') :
     ∃ Y,
-      isAlmostPrimitive (IST := IST) Y ∧
+      IsAlmostPrimitive (IST := IST) Y ∧
       Y ⊆ X ∧ Y ⊆ X' ∧
-      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
-        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) ∧
-      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
-        (fromGoods (T := T) (I := I) X') (fromMissing (T := T) (I := I) X') := by
+      IST.isDoorof (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y)
+        (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) ∧
+      IST.isDoorof (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y)
+        (goods (T := T) (I := I) X') (missingColors (T := T) (I := I) X') := by
   rcases h with ⟨hX, hX', _hne, Y, hY, hYX, hYX'⟩
   exact ⟨Y, hY, hYX, hYX',
     (almostPrimitive_subset_primitive_iff_doorof hY hX).mp hYX,
     (almostPrimitive_subset_primitive_iff_doorof hY hX').mp hYX'⟩
 
+omit [Inhabited T] in
 lemma common_door_gives_replacementStep
     {τ : Finset T} {D : Finset I} {σ₁ σ₂ : Finset T} {C₁ C₂ : Finset I}
     (hDoor₁ : IST.isDoorof τ D σ₁ C₁)
     (hDoor₂ : IST.isDoorof τ D σ₂ C₂)
     (hNe : (σ₁, C₁) ≠ (σ₂, C₂)) :
-    primitiveReplacementStep (IST := IST)
+    ReplacementStep (IST := IST)
       (toPrimitiveSet (I := I) σ₁ C₁) (toPrimitiveSet (I := I) σ₂ C₂) := by
   have hRoom₁ : IST.isRoom σ₁ C₁ := IST.isRoom_of_Door hDoor₁
   have hRoom₂ : IST.isRoom σ₂ C₂ := IST.isRoom_of_Door hDoor₂
-  refine ⟨room_to_primitive hRoom₁, room_to_primitive hRoom₂, ?_,
+  refine ⟨isPrimitive_of_room hRoom₁, isPrimitive_of_room hRoom₂, ?_,
     toAlmostPrimitive (I := I) τ D, door_to_almostPrimitive hDoor₁, ?_, ?_⟩
   · intro hEq
     have hσ : σ₁ = σ₂ := by
-      have := congrArg (fromGoods (T := T) (I := I)) hEq
+      have := congrArg (goods (T := T) (I := I)) hEq
       simpa using this
     have hC : C₁ = C₂ := by
-      have := congrArg (fromMissing (T := T) (I := I)) hEq
+      have := congrArg (missingColors (T := T) (I := I)) hEq
       simpa using this
     exact hNe (by simp [hσ, hC])
   · exact doorof_toAlmost_subset_toPrimitive hDoor₁
   · exact doorof_toAlmost_subset_toPrimitive hDoor₂
 
+omit [Inhabited T] in
 theorem internal_almostPrimitive_replacementStep {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y)
-    (hInternal : (fromGoods (T := T) (I := I) Y).Nonempty) :
+    (hY : IsAlmostPrimitive (IST := IST) Y)
+    (hInternal : (goods (T := T) (I := I) Y).Nonempty) :
     ∃ X₁ X₂,
-      primitiveReplacementStep (IST := IST) X₁ X₂ ∧ Y ⊆ X₁ ∧ Y ⊆ X₂ := by
+      ReplacementStep (IST := IST) X₁ X₂ ∧ Y ⊆ X₁ ∧ Y ⊆ X₂ := by
   obtain ⟨X₁, X₂, hNe, hPrim₁, hPrim₂, hSub₁, hSub₂⟩ :=
     internal_almostPrimitive_two_incident_primitives hY hInternal
   exact ⟨X₁, X₂, ⟨hPrim₁, hPrim₂, hNe, Y, hY, hSub₁, hSub₂⟩, hSub₁, hSub₂⟩
@@ -975,7 +1011,7 @@ omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] IST i
 @[simp] lemma extendedColoring_inr (c : T → I) (i : I) :
     extendedColoring (T := T) (I := I) c (Sum.inr i) = i := rfl
 
-omit [Fintype T] IST in
+omit [Inhabited T] [Fintype T] IST in
 lemma image_extendedColoring_toPrimitiveSet (c : T → I) (σ : Finset T) (C : Finset I) :
     (toPrimitiveSet (I := I) σ C).image (extendedColoring (T := T) (I := I) c) =
       (σ.image c) ∪ (Finset.univ \ C) := by
@@ -1002,7 +1038,7 @@ lemma image_extendedColoring_toPrimitiveSet (c : T → I) (σ : Finset T) (C : F
           rw [mem_toPrimitiveSet_inr]
           exact (Finset.mem_sdiff.mp hSlack).2)
 
-omit [Fintype T] in
+omit [Inhabited T] [Fintype T] in
 /--
 For a room, Scarf's statement that a primitive set has all colors is exactly
 the Section 1 statement that the corresponding room is colorful.
@@ -1034,39 +1070,40 @@ lemma full_color_primitive_iff_colorful_room (c : T → I) {σ : Finset T} {C : 
     exact Finset.union_sdiff_self_eq_union.symm.trans (by simp)
 
 /-- Scarf's primitive-set coloring condition $c(X) = I$. -/
-def isFullyColoredPrimitive (c : T → I) (X : Finset (ExtendedGoods T I)) : Prop :=
-  isPrimitive (IST := IST) X ∧
+def IsFullyColored (c : T → I) (X : Finset (ExtendedGoods T I)) : Prop :=
+  IsPrimitive (IST := IST) X ∧
     X.image (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I)
 
+omit [Inhabited T] in
 /--
 For an arbitrary primitive set, Scarf's condition $c(X) = I$ is exactly the
 colorful-room condition for the associated room $(X \cap T, I \setminus X)$.
 -/
 lemma full_color_primitive_iff_colorful_associated_room
-    (c : T → I) {X : Finset (ExtendedGoods T I)} (hX : isPrimitive (IST := IST) X) :
+    (c : T → I) {X : Finset (ExtendedGoods T I)} (hX : IsPrimitive (IST := IST) X) :
     X.image (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I) ↔
-      IST.isColorful c (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) := by
+      IST.isColorful c (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) := by
   constructor
   · intro hFull
     have hFull' :
-        (toPrimitiveSet (I := I) (fromGoods (T := T) (I := I) X)
-            (fromMissing (T := T) (I := I) X)).image
+        (toPrimitiveSet (I := I) (goods (T := T) (I := I) X)
+            (missingColors (T := T) (I := I) X)).image
             (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I) := by
       rw [← primitive_eq_toPrimitive_from_parts hX]
       exact hFull
-    exact (full_color_primitive_iff_colorful_room c (primitive_to_room hX)).1 hFull'
+    exact (full_color_primitive_iff_colorful_room c (IsPrimitive.isRoom hX)).1 hFull'
   · intro hColorful
     rw [primitive_eq_toPrimitive_from_parts hX]
-    exact (full_color_primitive_iff_colorful_room c (primitive_to_room hX)).2 hColorful
+    exact (full_color_primitive_iff_colorful_room c (IsPrimitive.isRoom hX)).2 hColorful
 
-omit [Fintype T] IST in
+omit [Inhabited T] [Fintype T] IST in
 lemma image_extendedColoring_toAlmostPrimitive (c : T → I) (τ : Finset T) (D : Finset I) :
     (toAlmostPrimitive (I := I) τ D).image (extendedColoring (T := T) (I := I) c) =
       (τ.image c) ∪ (Finset.univ \ D) := by
   simpa [toAlmostPrimitive] using
     (image_extendedColoring_toPrimitiveSet (T := T) (I := I) c τ D)
 
-omit [Fintype T] IST in
+omit [Inhabited T] [Fintype T] IST in
 lemma diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
     (c : T → I) (i : I) (σ : Finset T) (C : Finset I) :
     C \ σ.image c = {i} ↔
@@ -1140,7 +1177,7 @@ lemma diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
         exact hiNotUnion (Finset.mem_union_left _ hiImage)
       exact Finset.mem_sdiff.mpr ⟨hiC, hiNotImage⟩
 
-omit [Fintype T] IST in
+omit [Inhabited T] [Fintype T] IST in
 lemma diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
     (c : T → I) (i : I) (τ : Finset T) (D : Finset I) :
     D \ τ.image c = {i} ↔
@@ -1150,47 +1187,49 @@ lemma diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
     (diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
       (T := T) (I := I) c i τ D)
 
+omit [Inhabited T] in
 lemma allButColor_primitive_iff_typed_associated_room
     (c : T → I) (i : I) {X : Finset (ExtendedGoods T I)}
-    (hX : isPrimitive (IST := IST) X) :
+    (hX : IsPrimitive (IST := IST) X) :
     X.image (extendedColoring (T := T) (I := I) c) =
         (Finset.univ.erase i : Finset I) ↔
-      IST.isTypedNC c i (fromGoods (T := T) (I := I) X)
-        (fromMissing (T := T) (I := I) X) := by
+      IST.isTypedNC c i (goods (T := T) (I := I) X)
+        (missingColors (T := T) (I := I) X) := by
   constructor
   · intro hAllBut
-    exact ⟨(primitive_to_room hX).1,
+    exact ⟨(IsPrimitive.isRoom hX).1,
       (diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
         (T := T) (I := I) c i
-        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X)).2
+        (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X)).2
           (by rwa [← primitive_eq_toPrimitive_from_parts hX])⟩
   · intro hTyped
     rw [primitive_eq_toPrimitive_from_parts hX]
     exact (diff_image_eq_singleton_iff_allButColor_toPrimitiveSet
       (T := T) (I := I) c i
-      (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X)).1 hTyped.2
+      (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X)).1 hTyped.2
 
+omit [Inhabited T] in
 lemma allButColor_almostPrimitive_iff_typed_associated_door
     (c : T → I) (i : I) {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y) :
+    (hY : IsAlmostPrimitive (IST := IST) Y) :
     Y.image (extendedColoring (T := T) (I := I) c) =
         (Finset.univ.erase i : Finset I) ↔
-      IST.isTypedNC c i (fromGoods (T := T) (I := I) Y)
-        (fromMissing (T := T) (I := I) Y) := by
+      IST.isTypedNC c i (goods (T := T) (I := I) Y)
+        (missingColors (T := T) (I := I) Y) := by
   constructor
   · intro hAllBut
-    exact ⟨(almostPrimitive_to_door hY).1,
+    exact ⟨(IsAlmostPrimitive.isDoor hY).1,
       (diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
         (T := T) (I := I) c i
-        (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)).2
+        (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y)).2
           (by rwa [← almostPrimitive_eq_toAlmost_from_parts hY])⟩
   · intro hTyped
     rw [almostPrimitive_eq_toAlmost_from_parts hY]
     exact (diff_image_eq_singleton_iff_allButColor_toAlmostPrimitive
       (T := T) (I := I) c i
-      (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)).1 hTyped.2
+      (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y)).1 hTyped.2
 
-omit [Fintype T] IST in
+omit [Inhabited T] [Fintype T] IST in
 @[simp] lemma image_extendedColoring_slackBoundary (c : T → I) (i : I) :
     (slackBoundary (T := T) (I := I) i).image (extendedColoring (T := T) (I := I) c) =
       (Finset.univ.erase i : Finset I) := by
@@ -1208,63 +1247,67 @@ omit [Fintype T] IST in
     exact Finset.mem_union_right _ (Finset.mem_sdiff.mpr
       ⟨Finset.mem_univ j, fun hji => (Finset.mem_erase.mp hj).1 (Finset.mem_singleton.mp hji)⟩)
 
-lemma slackBoundary_GiDoorVertex (c : T → I) (i : I) :
-    GiDoorVertex (IST := IST) c i
-      (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
-  have hY : isAlmostPrimitive (IST := IST) (slackBoundary (T := T) (I := I) i) :=
+lemma slackBoundary_isDoorVertex (c : T → I) (i : I) :
+    ScarfPath.IsDoorVertex (IST := IST) c i
+      (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
+  have hY : IsAlmostPrimitive (IST := IST) (slackBoundary (T := T) (I := I) i) :=
     slackBoundary_isAlmostPrimitive (IST := IST) i
   have hTyped := (allButColor_almostPrimitive_iff_typed_associated_door
     (IST := IST) c i hY).1 (image_extendedColoring_slackBoundary (T := T) (I := I) c i)
-  exact ⟨almostPrimitive_to_door hY, hTyped⟩
+  exact ⟨IsAlmostPrimitive.isDoor hY, hTyped⟩
 
-lemma fullyColoredPrimitive_GiRoomVertex
+omit [Inhabited T] in
+lemma fullyColoredPrimitive_isRoomVertex
     {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
-    (hX : isFullyColoredPrimitive (IST := IST) c X) :
-    GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) := by
+    (hX : IsFullyColored (IST := IST) c X) :
+    ScarfPath.IsRoomVertex (IST := IST) c i (cell (T := T) (I := I) X) := by
   exact Or.inl ((full_color_primitive_iff_colorful_associated_room c hX.1).1 hX.2)
 
-lemma allButColorPrimitive_GiRoomVertex
+omit [Inhabited T] in
+lemma allButColorPrimitive_isRoomVertex
     {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
-    (hPrim : isPrimitive (IST := IST) X)
+    (hPrim : IsPrimitive (IST := IST) X)
     (hColor : X.image (extendedColoring (T := T) (I := I) c) =
       (Finset.univ.erase i : Finset I)) :
-    GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) := by
-  exact Or.inr ⟨primitive_to_room hPrim,
+    ScarfPath.IsRoomVertex (IST := IST) c i (cell (T := T) (I := I) X) := by
+  exact Or.inr ⟨IsPrimitive.isRoom hPrim,
     (allButColor_primitive_iff_typed_associated_room c i hPrim).1 hColor⟩
 
-lemma allButColorAlmostPrimitive_GiDoorVertex
+omit [Inhabited T] in
+lemma allButColorAlmostPrimitive_isDoorVertex
     {c : T → I} {i : I} {Y : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y)
+    (hY : IsAlmostPrimitive (IST := IST) Y)
     (hColor : Y.image (extendedColoring (T := T) (I := I) c) =
       (Finset.univ.erase i : Finset I)) :
-    GiDoorVertex (IST := IST) c i (associatedCell (T := T) (I := I) Y) := by
-  exact ⟨almostPrimitive_to_door hY,
+    ScarfPath.IsDoorVertex (IST := IST) c i (cell (T := T) (I := I) Y) := by
+  exact ⟨IsAlmostPrimitive.isDoor hY,
     (allButColor_almostPrimitive_iff_typed_associated_door c i hY).1 hColor⟩
 
-lemma algorithm_incidence_to_GiEdge
+omit [Inhabited T] in
+lemma algorithm_incidence_to_edge
     {c : T → I} {i : I}
     {Y X : Finset (ExtendedGoods T I)}
-    (hY : isAlmostPrimitive (IST := IST) Y)
+    (hY : IsAlmostPrimitive (IST := IST) Y)
     (hYColor : Y.image (extendedColoring (T := T) (I := I) c) =
       (Finset.univ.erase i : Finset I))
-    (hX : isPrimitive (IST := IST) X)
+    (hX : IsPrimitive (IST := IST) X)
     (hXColor :
       X.image (extendedColoring (T := T) (I := I) c) =
         (Finset.univ.erase i : Finset I) ∨
       X.image (extendedColoring (T := T) (I := I) c) =
         (Finset.univ : Finset I))
     (hSub : Y ⊆ X) :
-    GiEdge (IST := IST) c i
-      (associatedCell (T := T) (I := I) X) (associatedCell (T := T) (I := I) Y) := by
-  have hRoomVertex : GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) := by
+    ScarfPath.Edge (IST := IST) c i
+      (cell (T := T) (I := I) X) (cell (T := T) (I := I) Y) := by
+  have hRoomVertex : ScarfPath.IsRoomVertex (IST := IST) c i (cell (T := T) (I := I) X) := by
     rcases hXColor with hAllBut | hFull
-    · exact allButColorPrimitive_GiRoomVertex (IST := IST) hX hAllBut
-    · exact fullyColoredPrimitive_GiRoomVertex (IST := IST) ⟨hX, hFull⟩
-  have hDoorVertex : GiDoorVertex (IST := IST) c i (associatedCell (T := T) (I := I) Y) :=
-    allButColorAlmostPrimitive_GiDoorVertex (IST := IST) hY hYColor
+    · exact allButColorPrimitive_isRoomVertex (IST := IST) hX hAllBut
+    · exact fullyColoredPrimitive_isRoomVertex (IST := IST) ⟨hX, hFull⟩
+  have hDoorVertex : ScarfPath.IsDoorVertex (IST := IST) c i (cell (T := T) (I := I) Y) :=
+    allButColorAlmostPrimitive_isDoorVertex (IST := IST) hY hYColor
   have hDoorof :
-      IST.isDoorof (fromGoods (T := T) (I := I) Y) (fromMissing (T := T) (I := I) Y)
-        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) :=
+      IST.isDoorof (goods (T := T) (I := I) Y) (missingColors (T := T) (I := I) Y)
+        (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) :=
     (almostPrimitive_subset_primitive_iff_doorof hY hX).mp hSub
   exact Or.inl ⟨hRoomVertex, hDoorVertex, hDoorof⟩
 
@@ -1273,16 +1316,16 @@ A split Scarf replacement step, matching $\S 3$: an all-but-$i$ primitive set mo
 through an all-but-$i$ almost primitive face to another primitive set, which is
 either still all-but-$i$ or already fully colored.
 -/
-def scarfSplitReplacementStep (c : T → I) (i : I)
+def SplitStep (c : T → I) (i : I)
     (X Y X' : Finset (ExtendedGoods T I)) : Prop :=
-  isPrimitive (IST := IST) X ∧
+  IsPrimitive (IST := IST) X ∧
     X.image (extendedColoring (T := T) (I := I) c) =
       (Finset.univ.erase i : Finset I) ∧
-    isAlmostPrimitive (IST := IST) Y ∧
+    IsAlmostPrimitive (IST := IST) Y ∧
     Y.image (extendedColoring (T := T) (I := I) c) =
       (Finset.univ.erase i : Finset I) ∧
     Y ⊆ X ∧
-    isPrimitive (IST := IST) X' ∧
+    IsPrimitive (IST := IST) X' ∧
     Y ⊆ X' ∧
     (X'.image (extendedColoring (T := T) (I := I) c) =
         (Finset.univ.erase i : Finset I) ∨
@@ -1291,75 +1334,76 @@ def scarfSplitReplacementStep (c : T → I) (i : I)
     X ≠ X'
 
 omit [Inhabited T] in
-lemma scarfSplitReplacementStep_replacementStep
+lemma SplitStep.replacementStep
     {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
-    (h : scarfSplitReplacementStep (IST := IST) c i X Y X') :
-    primitiveReplacementStep (IST := IST) X X' := by
+    (h : SplitStep (IST := IST) c i X Y X') :
+    ReplacementStep (IST := IST) X X' := by
   rcases h with ⟨hX, _hXColor, hY, _hYColor, hYX, hX', hYX', _hX'Color, hNe⟩
   exact ⟨hX, hX', hNe, Y, hY, hYX, hYX'⟩
 
-lemma scarfSplitReplacementStep_GiEdges
+omit [Inhabited T] in
+lemma SplitStep.edges
     {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
-    (h : scarfSplitReplacementStep (IST := IST) c i X Y X') :
-    GiEdge (IST := IST) c i
-        (associatedCell (T := T) (I := I) X) (associatedCell (T := T) (I := I) Y) ∧
-      GiEdge (IST := IST) c i
-        (associatedCell (T := T) (I := I) X') (associatedCell (T := T) (I := I) Y) := by
+    (h : SplitStep (IST := IST) c i X Y X') :
+    ScarfPath.Edge (IST := IST) c i
+        (cell (T := T) (I := I) X) (cell (T := T) (I := I) Y) ∧
+      ScarfPath.Edge (IST := IST) c i
+        (cell (T := T) (I := I) X') (cell (T := T) (I := I) Y) := by
   rcases h with ⟨hX, hXColor, hY, hYColor, hYX, hX', hYX', hX'Color, _hNe⟩
   exact ⟨
-    algorithm_incidence_to_GiEdge (IST := IST) hY hYColor hX (Or.inl hXColor) hYX,
-    algorithm_incidence_to_GiEdge (IST := IST) hY hYColor hX' hX'Color hYX'⟩
+    algorithm_incidence_to_edge (IST := IST) hY hYColor hX (Or.inl hXColor) hYX,
+    algorithm_incidence_to_edge (IST := IST) hY hYColor hX' hX'Color hYX'⟩
 
 /--
 The graph-walk segment represented by one split Scarf replacement step:
 $X \to Y \to X'$.
 -/
-def scarfSplitReplacementStep_walk
+def SplitStep.walk
     {c : T → I} {i : I} {X Y X' : Finset (ExtendedGoods T I)}
-    (h : scarfSplitReplacementStep (IST := IST) c i X Y X') :
-    (GiGraph (IST := IST) c i).Walk
-      (associatedCell (T := T) (I := I) X)
-      (associatedCell (T := T) (I := I) X') :=
-  let hEdges := scarfSplitReplacementStep_GiEdges (IST := IST) h
+    (h : SplitStep (IST := IST) c i X Y X') :
+    (ScarfPath.graph (IST := IST) c i).Walk
+      (cell (T := T) (I := I) X)
+      (cell (T := T) (I := I) X') :=
+  let hEdges := SplitStep.edges (IST := IST) h
   SimpleGraph.Walk.cons hEdges.1
-    (SimpleGraph.Walk.cons (GiEdge.symm hEdges.2) SimpleGraph.Walk.nil)
+    (SimpleGraph.Walk.cons (ScarfPath.Edge.symm hEdges.2) SimpleGraph.Walk.nil)
 
-lemma initial_scarf_step_to_GiEdge (c : T → I) (i : I) :
+lemma initial_edge (c : T → I) (i : I) :
     ∃ X : Finset (ExtendedGoods T I),
-      isPrimitive (IST := IST) X ∧
+      IsPrimitive (IST := IST) X ∧
         slackBoundary (T := T) (I := I) i ⊆ X ∧
-        GiEdge (IST := IST) c i
-          (associatedCell (T := T) (I := I) X)
-          (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
+        ScarfPath.Edge (IST := IST) c i
+          (cell (T := T) (I := I) X)
+          (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
   rcases slackBoundary_unique_incident_primitive (IST := IST) i with ⟨X, hX, _hUnique⟩
   rcases hX with ⟨hPrim, hSub⟩
-  have hDoorVertex := slackBoundary_GiDoorVertex (IST := IST) c i
+  have hDoorVertex := slackBoundary_isDoorVertex (IST := IST) c i
   have hDoorof :
       IST.isDoorof
-        (fromGoods (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
-        (fromMissing (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
-        (fromGoods (T := T) (I := I) X) (fromMissing (T := T) (I := I) X) :=
+        (goods (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+        (missingColors (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+        (goods (T := T) (I := I) X) (missingColors (T := T) (I := I) X) :=
     (almostPrimitive_subset_primitive_iff_doorof
       (slackBoundary_isAlmostPrimitive (IST := IST) i) hPrim).mp hSub
   have hRoomVertex :
-      GiRoomVertex (IST := IST) c i (associatedCell (T := T) (I := I) X) :=
-    GiRoomVertex_of_incident_typed_door hDoorVertex.2 hDoorof
+      ScarfPath.IsRoomVertex (IST := IST) c i (cell (T := T) (I := I) X) :=
+    ScarfPath.isRoomVertex_of_incident_typed_door hDoorVertex.2 hDoorof
   exact ⟨X, hPrim, hSub, Or.inl ⟨hRoomVertex, hDoorVertex, hDoorof⟩⟩
 
 /-- The first graph-walk segment of Scarf's algorithm, from $I - i$ into the building. -/
-lemma initial_scarf_step_walk (c : T → I) (i : I) :
+lemma initial_walk (c : T → I) (i : I) :
     ∃ X : Finset (ExtendedGoods T I),
-      ∃ _p : (GiGraph (IST := IST) c i).Walk
-          (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
-          (associatedCell (T := T) (I := I) X),
-        isPrimitive (IST := IST) X ∧
+      ∃ _p : (ScarfPath.graph (IST := IST) c i).Walk
+          (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+          (cell (T := T) (I := I) X),
+        IsPrimitive (IST := IST) X ∧
         slackBoundary (T := T) (I := I) i ⊆ X := by
-  rcases initial_scarf_step_to_GiEdge (IST := IST) c i with ⟨X, hPrim, hSub, hEdge⟩
+  rcases initial_edge (IST := IST) c i with ⟨X, hPrim, hSub, hEdge⟩
   refine ⟨X, ?_, hPrim, hSub⟩
   exact SimpleGraph.Walk.cons
-    (show (GiGraph (IST := IST) c i).Adj
-      (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
-      (associatedCell (T := T) (I := I) X) from GiEdge.symm hEdge)
+    (show (ScarfPath.graph (IST := IST) c i).Adj
+      (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+      (cell (T := T) (I := I) X) from ScarfPath.Edge.symm hEdge)
     SimpleGraph.Walk.nil
 
 /--
@@ -1368,30 +1412,31 @@ the boundary face $I - i$, follows $G_i$, and terminates at a fully colored
 primitive set.  The local lemmas above build such walks from initial and split
 replacement segments.
 -/
-structure ScarfAlgorithmTrace (c : T → I) (i : I) where
+structure Trace (c : T → I) (i : I) where
   terminal : Finset (ExtendedGoods T I)
-  terminal_fullyColored : isFullyColoredPrimitive (IST := IST) c terminal
-  walk : (GiGraph (IST := IST) c i).Walk
-    (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
-    (associatedCell (T := T) (I := I) terminal)
+  terminal_fullyColored : IsFullyColored (IST := IST) c terminal
+  walk : (ScarfPath.graph (IST := IST) c i).Walk
+    (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+    (cell (T := T) (I := I) terminal)
 
-lemma ScarfAlgorithmTrace.terminal_colorful_room
-    {c : T → I} {i : I} (trace : ScarfAlgorithmTrace (IST := IST) c i) :
+omit [Inhabited T] in
+lemma Trace.terminal_colorful_room
+    {c : T → I} {i : I} (trace : Trace (IST := IST) c i) :
     IST.isColorful c
-      (fromGoods (T := T) (I := I) trace.terminal)
-      (fromMissing (T := T) (I := I) trace.terminal) :=
+      (goods (T := T) (I := I) trace.terminal)
+      (missingColors (T := T) (I := I) trace.terminal) :=
   (full_color_primitive_iff_colorful_associated_room c trace.terminal_fullyColored.1).1
     trace.terminal_fullyColored.2
 
 omit [Inhabited T] in
 /-- A reachable fully colored primitive set gives a complete Scarf trace. -/
-lemma scarfAlgorithmTrace_of_reachable_fullyColoredPrimitive
+lemma Trace.nonempty_of_reachable
     {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
-    (hX : isFullyColoredPrimitive (IST := IST) c X)
-    (hReach : (GiGraph (IST := IST) c i).Reachable
-      (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
-      (associatedCell (T := T) (I := I) X)) :
-    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) := by
+    (hX : IsFullyColored (IST := IST) c X)
+    (hReach : (ScarfPath.graph (IST := IST) c i).Reachable
+      (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))
+      (cell (T := T) (I := I) X)) :
+    Nonempty (Trace (IST := IST) c i) := by
   rcases hReach with ⟨p⟩
   exact ⟨⟨X, hX, p⟩⟩
 
@@ -1401,16 +1446,16 @@ It is enough to find a fully colored primitive set in the connected component
 of the outside door. This is the component-level form of the path-following
 argument in $\S 3$.
 -/
-lemma scarfAlgorithmTrace_of_component_fullyColoredPrimitive
+lemma Trace.nonempty_of_component
     {c : T → I} {i : I} {X : Finset (ExtendedGoods T I)}
-    (hX : isFullyColoredPrimitive (IST := IST) c X)
+    (hX : IsFullyColored (IST := IST) c X)
     (hComponent :
-      (GiGraph (IST := IST) c i).connectedComponentMk
-        (associatedCell (T := T) (I := I) X) =
-      (GiGraph (IST := IST) c i).connectedComponentMk
-        (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))) :
-    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) := by
-  apply scarfAlgorithmTrace_of_reachable_fullyColoredPrimitive (IST := IST) hX
+      (ScarfPath.graph (IST := IST) c i).connectedComponentMk
+        (cell (T := T) (I := I) X) =
+      (ScarfPath.graph (IST := IST) c i).connectedComponentMk
+        (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i))) :
+    Nonempty (Trace (IST := IST) c i) := by
+  apply Trace.nonempty_of_reachable (IST := IST) hX
   exact SimpleGraph.ConnectedComponent.exact hComponent.symm
 
 omit [Inhabited T] in
@@ -1420,26 +1465,27 @@ primitive set in the connected component of the outside door.  This isolates
 the remaining graph-theoretic endpoint argument from the primitive-set
 translation.
 -/
-theorem scarfAlgorithmTrace_nonempty_iff_component_fullyColoredPrimitive
+theorem Trace.nonempty_iff_component
     (c : T → I) (i : I) :
-    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) ↔
+    Nonempty (Trace (IST := IST) c i) ↔
       ∃ X : Finset (ExtendedGoods T I),
-        isFullyColoredPrimitive (IST := IST) c X ∧
-          (GiGraph (IST := IST) c i).connectedComponentMk
-            (associatedCell (T := T) (I := I) X) =
-          (GiGraph (IST := IST) c i).connectedComponentMk
-            (associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
+        IsFullyColored (IST := IST) c X ∧
+          (ScarfPath.graph (IST := IST) c i).connectedComponentMk
+            (cell (T := T) (I := I) X) =
+          (ScarfPath.graph (IST := IST) c i).connectedComponentMk
+            (cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)) := by
   constructor
   · rintro ⟨trace⟩
     refine ⟨trace.terminal, trace.terminal_fullyColored, ?_⟩
     exact SimpleGraph.ConnectedComponent.sound trace.walk.reachable |>.symm
   · rintro ⟨X, hX, hComponent⟩
-    exact scarfAlgorithmTrace_of_component_fullyColoredPrimitive (IST := IST) hX hComponent
+    exact Trace.nonempty_of_component (IST := IST) hX hComponent
 
+omit [Inhabited T] in
 lemma outsideDoor_endpoint_cell_eq_slackBoundary
-    {c : T → I} {i : I} {v : GiCell T I}
-    (hDoor : GiDoorVertex (IST := IST) c i v) (hOutside : IST.isOutsideDoor v.1 v.2) :
-    v = associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i) := by
+    {c : T → I} {i : I} {v : ScarfPath.Cell T I}
+    (hDoor : ScarfPath.IsDoorVertex (IST := IST) c i v) (hOutside : IST.isOutsideDoor v.1 v.2) :
+    v = cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i) := by
   have hτ : v.1 = Finset.empty := hOutside.2
   have hD : v.2 = ({i} : Finset I) := by
     have hTyped := hDoor.2.2
@@ -1449,99 +1495,61 @@ lemma outsideDoor_endpoint_cell_eq_slackBoundary
     have hsdiff : v.2 \ (Finset.empty : Finset I) = v.2 :=
       Finset.sdiff_eq_self_of_disjoint (Finset.disjoint_empty_right v.2)
     rwa [hsdiff] at hTyped
-  rw [associatedCell_slackBoundary]
+  rw [cell_slackBoundary]
   exact Prod.ext hτ hD
 
 omit [Inhabited T] in
-lemma giVertex_of_GiDegree_eq_one {c : T → I} {i : I} {v : GiCell T I}
-    (hdeg : GiDegree (IST := IST) c i v = 1) :
-    GiVertex (IST := IST) c i v := by
-  have hNonempty : (GiNeighbors (IST := IST) c i v).Nonempty := by
+lemma isVertex_of_degree_eq_one {c : T → I} {i : I} {v : ScarfPath.Cell T I}
+    (hdeg : ScarfPath.degree (IST := IST) c i v = 1) :
+    ScarfPath.IsVertex (IST := IST) c i v := by
+  have hNonempty : (ScarfPath.neighbors (IST := IST) c i v).Nonempty := by
     apply Finset.card_pos.mp
-    change 0 < GiDegree (IST := IST) c i v
+    change 0 < ScarfPath.degree (IST := IST) c i v
     rw [hdeg]
     norm_num
   rcases hNonempty with ⟨w, hw⟩
-  exact GiEdge.left_vertex ((mem_GiNeighbors (IST := IST)).1 hw)
+  exact ScarfPath.Edge.left_vertex ((ScarfPath.mem_neighbors (IST := IST)).1 hw)
 
-omit [Inhabited T] in
-def reachableComponentGraph {α : Type*} (G : SimpleGraph α) (v₀ : α) :
-    SimpleGraph {v : α // G.Reachable v₀ v} where
-  Adj a b := G.Adj a.1 b.1
-  symm := ⟨fun a b h => G.symm.symm a.1 b.1 h⟩
-  loopless := ⟨fun a h => G.loopless.1 a.1 h⟩
-
-omit [Inhabited T] in
-lemma reachableComponentGraph_degree_eq
-    {α : Type*} [Fintype α] [DecidableEq α] (G : SimpleGraph α) (v₀ : α)
-    (x : {v : α // G.Reachable v₀ v}) :
-    (reachableComponentGraph G v₀).degree x = G.degree x.1 := by
+/-- Every chosen color has a classical boundary-to-terminal trace.
+The explicit `i` supplies inhabitation of the color type. -/
+theorem Trace.nonempty (c : T → I) (i : I) :
+    Nonempty (Trace (IST := IST) c i) := by
   classical
-  let H : SimpleGraph {v : α // G.Reachable v₀ v} := reachableComponentGraph G v₀
-  change H.degree x = G.degree x.1
-  have hImage :
-      (H.neighborFinset x).image (fun y : {v : α // G.Reachable v₀ v} => y.1) =
-        G.neighborFinset x.1 := by
-    ext y
-    constructor
-    · intro hy
-      rcases Finset.mem_image.mp hy with ⟨z, hz, rfl⟩
-      exact (SimpleGraph.mem_neighborFinset G x.1 z.1).2
-        ((SimpleGraph.mem_neighborFinset H x z).1 hz)
-    · intro hy
-      have hAdj : G.Adj x.1 y := (SimpleGraph.mem_neighborFinset G x.1 y).1 hy
-      have hReachY : G.Reachable v₀ y := by
-        rcases x.2 with ⟨p⟩
-        exact ⟨p.concat hAdj⟩
-      exact Finset.mem_image.mpr
-        ⟨⟨y, hReachY⟩, (SimpleGraph.mem_neighborFinset H x ⟨y, hReachY⟩).2 hAdj, rfl⟩
-  calc
-    H.degree x = (H.neighborFinset x).card := rfl
-    _ = ((H.neighborFinset x).image (fun y : {v : α // G.Reachable v₀ v} => y.1)).card := by
-      rw [Finset.card_image_of_injOn]
-      intro a _ b _ h
-      exact Subtype.ext h
-    _ = (G.neighborFinset x.1).card := by rw [hImage]
-    _ = G.degree x.1 := rfl
-
-theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
-    Nonempty (ScarfAlgorithmTrace (IST := IST) c i) := by
-  classical
-  let outside : GiCell T I :=
-    associatedCell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)
-  let G := GiGraph (IST := IST) c i
-  let H : SimpleGraph {v : GiCell T I // G.Reachable outside v} :=
-    reachableComponentGraph G outside
-  let outsideSub : {v : GiCell T I // G.Reachable outside v} := ⟨outside, ⟨SimpleGraph.Walk.nil⟩⟩
+  let outside : ScarfPath.Cell T I :=
+    cell (T := T) (I := I) (slackBoundary (T := T) (I := I) i)
+  let G := ScarfPath.graph (IST := IST) c i
+  let H : SimpleGraph {v : ScarfPath.Cell T I // G.Reachable outside v} :=
+    PathComponents.reachableComponent G outside
+  let outsideSub : {v : ScarfPath.Cell T I // G.Reachable outside v} := ⟨outside, ⟨SimpleGraph.Walk.nil⟩⟩
   have hOutsideDoor : IST.isOutsideDoor outside.1 outside.2 := by
     simp [outside]
     exact IST.outsidedoor_singleton i
   have hOutsideTyped : IST.isTypedNC c i outside.1 outside.2 := by
-    have hDoorVertex := slackBoundary_GiDoorVertex (IST := IST) c i
+    have hDoorVertex := slackBoundary_isDoorVertex (IST := IST) c i
     simpa [outside] using hDoorVertex.2
   have hOutsideDegree : G.degree outside = 1 := by
-    change GiDegree (IST := IST) c i outside = 1
-    exact GiDegree_outsideDoor (IST := IST) hOutsideDoor hOutsideTyped
+    change ScarfPath.degree (IST := IST) c i outside = 1
+    exact ScarfPath.degree_of_outsideDoor (IST := IST) hOutsideDoor hOutsideTyped
   have hOutsideSubDegree : H.degree outsideSub = 1 := by
-    rw [reachableComponentGraph_degree_eq G outside outsideSub, hOutsideDegree]
+    rw [PathComponents.reachableComponent_degree G outside outsideSub, hOutsideDegree]
   have hOddOutside : Odd (H.degree outsideSub) := by rw [hOutsideSubDegree]; exact odd_one
   obtain ⟨w, hwNe, hwOdd⟩ :=
     SimpleGraph.exists_ne_odd_degree_of_exists_odd_degree H outsideSub hOddOutside
   have hwOddG : Odd (G.degree w.1) := by
-    rw [← reachableComponentGraph_degree_eq G outside w]
+    rw [← PathComponents.reachableComponent_degree G outside w]
     exact hwOdd
   have hwLe : G.degree w.1 ≤ 2 := by
-    exact (GiPathStructure_of_degreeCharacterization
-      (IST := IST) (GiDegreeCharacterization_holds (IST := IST) c i)).2 w.1
+    exact (ScarfPath.pathStructure_of_degreeCharacterization
+      (IST := IST) (ScarfPath.degree_characterization (IST := IST) c i)).2 w.1
   have hwDegreeOne : G.degree w.1 = 1 := by
     rcases hwOddG with ⟨k, hk⟩
     omega
-  have hwGiDegreeOne : GiDegree (IST := IST) c i w.1 = 1 := by
+  have hwGiDegreeOne : ScarfPath.degree (IST := IST) c i w.1 = 1 := by
     rw [← hwDegreeOne]
     rfl
-  have hwEndpoint : GiEndpoint (IST := IST) c i w.1 :=
-    ⟨giVertex_of_GiDegree_eq_one (IST := IST) hwGiDegreeOne, hwGiDegreeOne⟩
-  have hwEndpointKind := (GiDegreeCharacterization_holds (IST := IST) c i).2 w.1 |>.mp hwEndpoint
+  have hwEndpoint : ScarfPath.IsEndpoint (IST := IST) c i w.1 :=
+    ⟨isVertex_of_degree_eq_one (IST := IST) hwGiDegreeOne, hwGiDegreeOne⟩
+  have hwEndpointKind := (ScarfPath.degree_characterization (IST := IST) c i).2 w.1 |>.mp hwEndpoint
   have hwColorful : IST.isColorful c w.1.1 w.1.2 := by
     rcases hwEndpointKind with hOutside | hColorful
     · have hwEqOutside := outsideDoor_endpoint_cell_eq_slackBoundary
@@ -1554,16 +1562,16 @@ theorem scarfAlgorithmTrace_exists [Inhabited I] (c : T → I) (i : I) :
     · exact hColorful
   let X : Finset (ExtendedGoods T I) := toPrimitiveSet (I := I) w.1.1 w.1.2
   have hRoom : IST.isRoom w.1.1 w.1.2 := IST.room_of_colorful hwColorful
-  have hPrim : isPrimitive (IST := IST) X := room_to_primitive hRoom
+  have hPrim : IsPrimitive (IST := IST) X := isPrimitive_of_room hRoom
   have hFull :
       X.image (extendedColoring (T := T) (I := I) c) = (Finset.univ : Finset I) :=
     (full_color_primitive_iff_colorful_room c hRoom).2 hwColorful
-  apply scarfAlgorithmTrace_of_reachable_fullyColoredPrimitive (IST := IST) ⟨hPrim, hFull⟩
+  apply Trace.nonempty_of_reachable (IST := IST) ⟨hPrim, hFull⟩
   have hReach : G.Reachable outside w.1 := w.2
   rcases hReach with ⟨p⟩
-  change (GiGraph (IST := IST) c i).Reachable outside (associatedCell (T := T) (I := I) X)
-  have hAssoc : associatedCell (T := T) (I := I) X = w.1 := by
-    simp [X, associatedCell]
+  change (ScarfPath.graph (IST := IST) c i).Reachable outside (cell (T := T) (I := I) X)
+  have hAssoc : cell (T := T) (I := I) X = w.1 := by
+    simp [X, cell]
   rw [hAssoc]
   exact ⟨p⟩
 
@@ -1572,26 +1580,26 @@ Scarf's combinatorial theorem in the primitive-set language from $\S 3$: after
 extending a coloring by the identity on slack vectors, some primitive set has
 all colors, obtained by following the Scarf trace from the boundary door.
 -/
-theorem scarf_fullyColoredPrimitive_exists_via_trace [Inhabited I] (c : T → I) :
-    ∃ X : Finset (ExtendedGoods T I), isFullyColoredPrimitive (IST := IST) c X := by
-  obtain ⟨trace⟩ := scarfAlgorithmTrace_exists (IST := IST) c default
+theorem exists_fullyColored_via_trace [Inhabited I] (c : T → I) :
+    ∃ X : Finset (ExtendedGoods T I), IsFullyColored (IST := IST) c X := by
+  obtain ⟨trace⟩ := Trace.nonempty (IST := IST) c default
   exact ⟨trace.terminal, trace.terminal_fullyColored⟩
 
 /--
 Scarf's combinatorial theorem in the primitive-set language from $\S 3$.  The proof
 is routed through the path-following trace, matching the narrative of the paper.
 -/
-theorem scarf_fullyColoredPrimitive_exists [Inhabited I] (c : T → I) :
-    ∃ X : Finset (ExtendedGoods T I), isFullyColoredPrimitive (IST := IST) c X :=
-  scarf_fullyColoredPrimitive_exists_via_trace (IST := IST) c
+theorem exists_fullyColored [Inhabited I] (c : T → I) :
+    ∃ X : Finset (ExtendedGoods T I), IsFullyColored (IST := IST) c X :=
+  exists_fullyColored_via_trace (IST := IST) c
 
 /--
 The unique primitive set incident to the boundary face $I - i$, in the same
 language used to start Scarf's replacement path.
 -/
-lemma initial_scarf_primitive_from_boundary (i : I) :
+lemma initial_primitive (i : I) :
     ∃! X : Finset (ExtendedGoods T I),
-      isPrimitive (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X :=
+      IsPrimitive (IST := IST) X ∧ slackBoundary (T := T) (I := I) i ⊆ X :=
   slackBoundary_unique_incident_nativePrimitive (IST := IST) i
 
 omit [Inhabited T] in
@@ -1599,26 +1607,33 @@ omit [Inhabited T] in
 Splitting a replacement step gives exactly the alternating primitive /
 almost-primitive pattern described in $\S 3$.
 -/
-lemma replacementStep_splits_through_almostPrimitive
+lemma ReplacementStep.exists_face
     {X X' : Finset (ExtendedGoods T I)}
-    (h : primitiveReplacementStep (IST := IST) X X') :
+    (h : ReplacementStep (IST := IST) X X') :
     ∃ Y,
-      isAlmostPrimitive (IST := IST) Y ∧
+      IsAlmostPrimitive (IST := IST) Y ∧
       Y ⊆ X ∧ Y ⊆ X' ∧
       X ≠ X' :=
   let ⟨_, _, hNe, Y, hY, hYX, hYX'⟩ := h
   ⟨Y, hY, hYX, hYX', hNe⟩
 
+/-! ## Coordinate realization
+
+The optional utility model lives in `Primitive.Coordinate`.
+-/
+
+namespace Coordinate
+
 /--
 Utility functions realize the abstract preference orders when they preserve
 and reflect each indexed strict order.
 -/
-structure UtilityRealization (u : I → T → ℝ) : Prop where
+structure Realization (u : I → T → ℝ) : Prop where
   order_iff : ∀ i x y, (IST i).lt x y ↔ u i x < u i y
 
 /-- Positive utility functions, matching the economic convention in $\S 3$. -/
-structure PositiveUtilityRealization (u : I → T → ℝ) : Prop extends
-    UtilityRealization (IST := IST) u where
+structure PositiveRealization (u : I → T → ℝ) : Prop extends
+    Realization (IST := IST) u where
   positive : ∀ i x, 0 < u i x
 
 /-- The lower contour set of $x$ in the order indexed by $i$. -/
@@ -1685,12 +1700,12 @@ lemma orderUtility_order_iff (i : I) (x y : T) :
 
 omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma orderUtility_realization :
-    UtilityRealization (IST := IST) (fun i x => orderUtility (IST := IST) i x) where
+    Realization (IST := IST) (fun i x => orderUtility (IST := IST) i x) where
   order_iff := orderUtility_order_iff
 
 omit [Inhabited T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma positiveOrderUtility_realization :
-    PositiveUtilityRealization (IST := IST) (fun i x => orderUtility (IST := IST) i x) where
+    PositiveRealization (IST := IST) (fun i x => orderUtility (IST := IST) i x) where
   order_iff := orderUtility_order_iff
   positive := orderUtility_positive
 
@@ -1700,7 +1715,7 @@ def utilityVector (u : I → T → ℝ) (x : T) : I → ℝ :=
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma utilityVector_injective_of_realization [Inhabited I] {u : I → T → ℝ}
-    (hu : UtilityRealization (IST := IST) u) :
+    (hu : Realization (IST := IST) u) :
     Function.Injective (utilityVector (I := I) u) := by
   intro x y hxy
   by_contra hne
@@ -1723,7 +1738,7 @@ The paper's "identify $T$ with its image $u(T)$" step, formalized as an
 equivalence once the utility realization separates points.
 -/
 noncomputable def utilityImageEquiv [Inhabited I] (u : I → T → ℝ)
-    (hu : UtilityRealization (IST := IST) u) :
+    (hu : Realization (IST := IST) u) :
     T ≃ {v : I → ℝ // v ∈ utilityImage (T := T) (I := I) u} where
   toFun x := ⟨utilityVector (I := I) u x, by simp [utilityImage]⟩
   invFun v := Classical.choose (Finset.mem_image.mp v.2)
@@ -1822,7 +1837,7 @@ lemma extendedCoordinatePoint_mem_coordinateEnlargedSet
 omit [Fintype T] [Fintype I] [DecidableEq T] in
 lemma slackVector_injective_of_bounds
     {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M) :
     Function.Injective (slackVector (I := I) M) := by
   intro i k hEq
@@ -1837,7 +1852,7 @@ lemma slackVector_injective_of_bounds
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma utilityVector_ne_slackVector_of_positive
     {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u) (x : T) (i : I) :
+    (hu : PositiveRealization (IST := IST) u) (x : T) (i : I) :
     utilityVector (I := I) u x ≠ slackVector (I := I) M i := by
   intro hEq
   have hcoord := congrFun hEq i
@@ -1846,7 +1861,7 @@ lemma utilityVector_ne_slackVector_of_positive
 omit [Fintype T] [Fintype I] [DecidableEq T] in
 lemma extendedCoordinatePoint_injective_of_realization
     [Inhabited I] {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M) :
     Function.Injective (extendedCoordinatePoint (T := T) (I := I) u M) := by
   intro a b hEq
@@ -1855,7 +1870,7 @@ lemma extendedCoordinatePoint_injective_of_realization
       cases b with
       | inl y =>
           exact congrArg Sum.inl
-            (utilityVector_injective_of_realization (IST := IST) hu.toUtilityRealization hEq)
+            (utilityVector_injective_of_realization (IST := IST) hu.toRealization hEq)
       | inr i =>
           exact False.elim (utilityVector_ne_slackVector_of_positive (IST := IST) hu x i hEq)
   | inr i =>
@@ -1882,7 +1897,7 @@ enlarged set $u(T) \cup \{s(i)\}$ under the paper's positivity/slack hypotheses.
 -/
 noncomputable def extendedCoordinateEquivCoordinateEnlargedSet
     [Inhabited I] {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M) :
     ExtendedGoods T I ≃
       {v : I → ℝ // v ∈ coordinateEnlargedSet (T := T) (I := I) u M} where
@@ -1950,7 +1965,7 @@ def extendedCoordinateLt (u : I → T → ℝ) (M : I → ℝ) (i : I)
 The paper assumes, after perturbing if necessary, that coordinate values define
 linear orders on the enlarged set.
 -/
-def CoordinateValuesDefineLinearOrders (u : I → T → ℝ) (M : I → ℝ) : Prop :=
+def DefinesLinearOrders (u : I → T → ℝ) (M : I → ℝ) : Prop :=
   ∀ i, IsStrictTotalOrder (ExtendedGoods T I) (extendedCoordinateLt (T := T) (I := I) u M i)
 
 /-- The paper's "the $M_i$ are pairwise different" assumption. -/
@@ -2024,7 +2039,7 @@ lemma perturbedSlackHeight_pairwiseDistinct [Inhabited I] (u : I → T → ℝ) 
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] [DecidableEq I] in
 lemma utility_coordinate_injective {u : I → T → ℝ}
-    (hu : UtilityRealization (IST := IST) u) (i : I) :
+    (hu : Realization (IST := IST) u) (i : I) :
     Function.Injective (fun x : T => u i x) := by
   intro x y hxy
   by_contra hne
@@ -2038,7 +2053,7 @@ lemma utility_coordinate_injective {u : I → T → ℝ}
 omit [Fintype T] [Fintype I] [DecidableEq T] in
 lemma extendedCoordinatePoint_coordinate_injective
     {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M)
     (hM_inj : SlackHeightsPairwiseDistinct (I := I) M) (i : I) :
     Function.Injective (fun z : ExtendedGoods T I =>
@@ -2049,7 +2064,7 @@ lemma extendedCoordinatePoint_coordinate_injective
       cases b with
       | inl y =>
           exact congrArg Sum.inl
-            (utility_coordinate_injective (IST := IST) hu.toUtilityRealization i
+            (utility_coordinate_injective (IST := IST) hu.toRealization i
               (by simpa [extendedCoordinatePoint, utilityVector] using hEq))
       | inr k =>
           exfalso
@@ -2108,10 +2123,10 @@ values themselves define linear orders on $T \cup I$.
 -/
 theorem coordinateValuesDefineLinearOrders_of_realization
     {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M)
     (hM_inj : SlackHeightsPairwiseDistinct (I := I) M) :
-    CoordinateValuesDefineLinearOrders (T := T) (I := I) u M := by
+    DefinesLinearOrders (T := T) (I := I) u M := by
   intro i
   let f : ExtendedGoods T I → ℝ :=
     fun z => extendedCoordinatePoint (T := T) (I := I) u M z i
@@ -2137,11 +2152,11 @@ dominate all goods coordinates, are pairwise distinct, and therefore make
 coordinate comparison into linear orders on $T \cup I$.
 -/
 theorem exists_perturbedSlackHeights_for_coordinate_orders [Inhabited I]
-    {u : I → T → ℝ} (hu : PositiveUtilityRealization (IST := IST) u) :
+    {u : I → T → ℝ} (hu : PositiveRealization (IST := IST) u) :
     ∃ M : I → ℝ,
       SlackBounds (T := T) (I := I) u M ∧
       SlackHeightsPairwiseDistinct (I := I) M ∧
-      CoordinateValuesDefineLinearOrders (T := T) (I := I) u M := by
+      DefinesLinearOrders (T := T) (I := I) u M := by
   let M := perturbedSlackHeight (T := T) (I := I) u
   have hBounds : SlackBounds (T := T) (I := I) u M :=
     perturbedSlackHeight_slackBounds (T := T) (I := I) u
@@ -2157,14 +2172,14 @@ starting only from the abstract indexed linear orders, choose positive utility
 functions realizing the orders and pairwise distinct slack heights large enough
 to make coordinate comparison linear on the enlarged set.
 -/
-theorem exists_coordinateUtilityModel [Inhabited I] :
+theorem exists_model [Inhabited I] :
     ∃ (u : I → T → ℝ) (M : I → ℝ),
-      PositiveUtilityRealization (IST := IST) u ∧
+      PositiveRealization (IST := IST) u ∧
       SlackBounds (T := T) (I := I) u M ∧
       SlackHeightsPairwiseDistinct (I := I) M ∧
-      CoordinateValuesDefineLinearOrders (T := T) (I := I) u M := by
+      DefinesLinearOrders (T := T) (I := I) u M := by
   let u : I → T → ℝ := fun i x => orderUtility (IST := IST) i x
-  have hu : PositiveUtilityRealization (IST := IST) u :=
+  have hu : PositiveRealization (IST := IST) u :=
     positiveOrderUtility_realization (IST := IST)
   obtain ⟨M, hBounds, hDistinct, hCoord⟩ :=
     exists_perturbedSlackHeights_for_coordinate_orders (IST := IST) hu
@@ -2172,8 +2187,8 @@ theorem exists_coordinateUtilityModel [Inhabited I] :
 
 /-- The indexed family of coordinate-induced orders on the enlarged set. -/
 @[reducible]
-def coordinateIndexedLOrder (u : I → T → ℝ) (M : I → ℝ)
-    (hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M) :
+def indexedLOrder (u : I → T → ℝ) (M : I → ℝ)
+    (hCoord : DefinesLinearOrders (T := T) (I := I) u M) :
     IndexedLOrder I (ExtendedGoods T I) where
   IST := fun i =>
     letI : IsStrictTotalOrder (ExtendedGoods T I)
@@ -2190,7 +2205,7 @@ lemma extendedCoordinateLt_of_coord_lt {u : I → T → ℝ} {M : I → ℝ}
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma extendedCoordinateLt_goods_of_original_lt {u : I → T → ℝ} {M : I → ℝ}
-    (hu : UtilityRealization (IST := IST) u) {i : I} {x y : T}
+    (hu : Realization (IST := IST) u) {i : I} {x y : T}
     (hxy : (IST i).lt x y) :
     extendedCoordinateLt (T := T) (I := I) u M i (Sum.inl x) (Sum.inl y) := by
   apply extendedCoordinateLt_of_coord_lt
@@ -2198,7 +2213,7 @@ lemma extendedCoordinateLt_goods_of_original_lt {u : I → T → ℝ} {M : I →
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma original_lt_of_extendedCoordinateLt_goods {u : I → T → ℝ} {M : I → ℝ}
-    (hu : UtilityRealization (IST := IST) u) {i : I} {x y : T}
+    (hu : Realization (IST := IST) u) {i : I} {x y : T}
     (hxy : extendedCoordinateLt (T := T) (I := I) u M i (Sum.inl x) (Sum.inl y)) :
     (IST i).lt x y := by
   exact (hu.order_iff i x y).mpr (by simpa [extendedCoordinateLt, extendedCoordinatePoint,
@@ -2206,41 +2221,41 @@ lemma original_lt_of_extendedCoordinateLt_goods {u : I → T → ℝ} {M : I →
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma extendedCoordinateLt_goods_iff {u : I → T → ℝ} {M : I → ℝ}
-    (hu : UtilityRealization (IST := IST) u) (i : I) (x y : T) :
+    (hu : Realization (IST := IST) u) (i : I) (x y : T) :
     extendedCoordinateLt (T := T) (I := I) u M i (Sum.inl x) (Sum.inl y) ↔
       (IST i).lt x y :=
   ⟨original_lt_of_extendedCoordinateLt_goods hu, extendedCoordinateLt_goods_of_original_lt hu⟩
 
 omit [Inhabited T] [Fintype T] [Fintype I] in
 lemma coordinateGoods_le_of_original_le {u : I → T → ℝ} {M : I → ℝ}
-    (hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M)
-    (hu : UtilityRealization (IST := IST) u) {i : I} {x y : T}
+    (hCoord : DefinesLinearOrders (T := T) (I := I) u M)
+    (hu : Realization (IST := IST) u) {i : I} {x y : T}
     (hxy : (IST i).le x y) :
-    ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).le (Sum.inl x) (Sum.inl y) := by
+    ((indexedLOrder (T := T) (I := I) u M hCoord) i).le (Sum.inl x) (Sum.inl y) := by
   let : LinearOrder (ExtendedGoods T I) :=
-    (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
+    (indexedLOrder (T := T) (I := I) u M hCoord) i
   let : LinearOrder T := IST i
   by_cases hEq : x = y
   · subst hEq
     exact le_rfl
-  · exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
+  · exact le_of_lt (show ((indexedLOrder (T := T) (I := I) u M hCoord) i).lt
       (Sum.inl x) (Sum.inl y) from
         extendedCoordinateLt_goods_of_original_lt hu (lt_of_le_of_ne hxy hEq))
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma original_le_of_coordinateGoods_le {u : I → T → ℝ} {M : I → ℝ}
-    (hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M)
-    (hu : UtilityRealization (IST := IST) u) {i : I} {x y : T}
-    (hxy : ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).le (Sum.inl x) (Sum.inl y)) :
+    (hCoord : DefinesLinearOrders (T := T) (I := I) u M)
+    (hu : Realization (IST := IST) u) {i : I} {x y : T}
+    (hxy : ((indexedLOrder (T := T) (I := I) u M hCoord) i).le (Sum.inl x) (Sum.inl y)) :
     (IST i).le x y := by
   let : LinearOrder (ExtendedGoods T I) :=
-    (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
+    (indexedLOrder (T := T) (I := I) u M hCoord) i
   let : LinearOrder T := IST i
   by_contra hnot
   have hyx : (IST i).lt y x := lt_of_not_ge hnot
   have hCoordLt : extendedCoordinateLt (T := T) (I := I) u M i (Sum.inl y) (Sum.inl x) :=
     extendedCoordinateLt_goods_of_original_lt hu hyx
-  exact not_lt_of_ge hxy (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
+  exact not_lt_of_ge hxy (show ((indexedLOrder (T := T) (I := I) u M hCoord) i).lt
     (Sum.inl y) (Sum.inl x) from hCoordLt)
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] IST in
@@ -2252,14 +2267,14 @@ lemma coordinateGood_lt_slack_of_ne {u : I → T → ℝ} {M : I → ℝ}
 
 omit [Inhabited T] [Fintype T] [Fintype I] [DecidableEq T] in
 lemma coordinateSlack_lt_good {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u) (i : I) (x : T) :
+    (hu : PositiveRealization (IST := IST) u) (i : I) (x : T) :
     extendedCoordinateLt (T := T) (I := I) u M i (Sum.inr i) (Sum.inl x) := by
   apply extendedCoordinateLt_of_coord_lt
   simpa [extendedCoordinatePoint, utilityVector, slackVector] using hu.positive i x
 
 omit [Fintype T] [Fintype I] [DecidableEq T] in
 lemma coordinateSlack_lt_slack_of_ne {u : I → T → ℝ} {M : I → ℝ}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M) {i k : I} (hik : i ≠ k) :
     extendedCoordinateLt (T := T) (I := I) u M i (Sum.inr i) (Sum.inr k) := by
   apply extendedCoordinateLt_of_coord_lt
@@ -2269,23 +2284,23 @@ lemma coordinateSlack_lt_slack_of_ne {u : I → T → ℝ} {M : I → ℝ}
   simpa [extendedCoordinatePoint, slackVector, hik] using hposM
 
 /-- The literal coordinate-dominance primitive definition on the enlarged ordered set. -/
-def isCoordinatePrimitive (u : I → T → ℝ) (M : I → ℝ)
-    (hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M)
+def IsPrimitive (u : I → T → ℝ) (M : I → ℝ)
+    (hCoord : DefinesLinearOrders (T := T) (I := I) u M)
     (X : Finset (ExtendedGoods T I)) : Prop :=
   X.card = Fintype.card I ∧
-    (coordinateIndexedLOrder (T := T) (I := I) u M hCoord).isDominant X Finset.univ
+    (indexedLOrder (T := T) (I := I) u M hCoord).isDominant X Finset.univ
 
-theorem nativePrimitive_to_coordinatePrimitive {u : I → T → ℝ} {M : I → ℝ}
-    {hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+theorem isPrimitive_of_native {u : I → T → ℝ} {M : I → ℝ}
+    {hCoord : DefinesLinearOrders (T := T) (I := I) u M}
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M)
-    {X : Finset (ExtendedGoods T I)} (hX : isPrimitiveNative (IST := IST) X) :
-    isCoordinatePrimitive (T := T) (I := I) u M hCoord X := by
+    {X : Finset (ExtendedGoods T I)} (hX : IsPrimitiveNative (IST := IST) X) :
+    IsPrimitive (T := T) (I := I) u M hCoord X := by
   constructor
   · exact hX.1
   · intro y
-    let σ := fromGoods (T := T) (I := I) X
-    let C := fromMissing (T := T) (I := I) X
+    let σ := goods (T := T) (I := I) X
+    let C := missingColors (T := T) (I := I) X
     cases y with
     | inl t =>
         obtain ⟨i, hiC, hleGoods⟩ := hX.2 t
@@ -2294,15 +2309,15 @@ theorem nativePrimitive_to_coordinatePrimitive {u : I → T → ℝ} {M : I → 
         cases z with
         | inl x =>
             have hxσ : x ∈ σ := by simpa [σ] using hz
-            exact coordinateGoods_le_of_original_le hCoord hu.toUtilityRealization (hleGoods x hxσ)
+            exact coordinateGoods_le_of_original_le hCoord hu.toRealization (hleGoods x hxσ)
         | inr k =>
             have hkNotC : k ∉ C := by simpa [C] using hz
             have hik : i ≠ k := by
               intro hEq
               exact hkNotC (hEq ▸ hiC)
             let : LinearOrder (ExtendedGoods T I) :=
-              (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
-            exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
+              (indexedLOrder (T := T) (I := I) u M hCoord) i
+            exact le_of_lt (show ((indexedLOrder (T := T) (I := I) u M hCoord) i).lt
               (Sum.inl t) (Sum.inr k) from coordinateGood_lt_slack_of_ne hM hik t)
     | inr j =>
         refine ⟨j, Finset.mem_univ j, ?_⟩
@@ -2310,76 +2325,78 @@ theorem nativePrimitive_to_coordinatePrimitive {u : I → T → ℝ} {M : I → 
         cases z with
         | inl x =>
             let : LinearOrder (ExtendedGoods T I) :=
-              (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
-            exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j).lt
+              (indexedLOrder (T := T) (I := I) u M hCoord) j
+            exact le_of_lt (show ((indexedLOrder (T := T) (I := I) u M hCoord) j).lt
               (Sum.inr j) (Sum.inl x) from coordinateSlack_lt_good (M := M) hu j x)
         | inr k =>
             by_cases hkj : k = j
             · subst hkj
               let : LinearOrder (ExtendedGoods T I) :=
-                (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) k
+                (indexedLOrder (T := T) (I := I) u M hCoord) k
               exact le_rfl
             · let : LinearOrder (ExtendedGoods T I) :=
-                (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j
-              exact le_of_lt (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) j).lt
+                (indexedLOrder (T := T) (I := I) u M hCoord) j
+              exact le_of_lt (show ((indexedLOrder (T := T) (I := I) u M hCoord) j).lt
                 (Sum.inr j) (Sum.inr k) from coordinateSlack_lt_slack_of_ne hu hM (Ne.symm hkj))
 
 omit [Inhabited T] in
-theorem coordinatePrimitive_to_nativePrimitive {u : I → T → ℝ} {M : I → ℝ}
-    {hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+theorem IsPrimitive.to_native {u : I → T → ℝ} {M : I → ℝ}
+    {hCoord : DefinesLinearOrders (T := T) (I := I) u M}
+    (hu : PositiveRealization (IST := IST) u)
     {X : Finset (ExtendedGoods T I)}
-    (hX : isCoordinatePrimitive (T := T) (I := I) u M hCoord X) :
-    isPrimitiveNative (IST := IST) X := by
+    (hX : IsPrimitive (T := T) (I := I) u M hCoord X) :
+    IsPrimitiveNative (IST := IST) X := by
   constructor
   · exact hX.1
   · intro y
     obtain ⟨i, _hi, hleX⟩ := hX.2 (Sum.inl y)
-    have hiMissing : i ∈ fromMissing (T := T) (I := I) X := by
-      rw [mem_fromMissing]
+    have hiMissing : i ∈ missingColors (T := T) (I := I) X := by
+      rw [mem_missingColors]
       intro hiSlack
       have hleSlack := hleX (Sum.inr i) hiSlack
       have hSlackLtGood := coordinateSlack_lt_good (M := M) hu i y
       let : LinearOrder (ExtendedGoods T I) :=
-        (coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i
-      exact not_lt_of_ge hleSlack (show ((coordinateIndexedLOrder (T := T) (I := I) u M hCoord) i).lt
+        (indexedLOrder (T := T) (I := I) u M hCoord) i
+      exact not_lt_of_ge hleSlack (show ((indexedLOrder (T := T) (I := I) u M hCoord) i).lt
         (Sum.inr i) (Sum.inl y) from hSlackLtGood)
     refine ⟨i, hiMissing, ?_⟩
     intro x hx
     have hleGood := hleX (Sum.inl x) (by simpa using hx)
-    exact original_le_of_coordinateGoods_le hCoord hu.toUtilityRealization hleGood
+    exact original_le_of_coordinateGoods_le hCoord hu.toRealization hleGood
 
-theorem coordinatePrimitive_iff_native {u : I → T → ℝ} {M : I → ℝ}
-    {hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+theorem isPrimitive_iff_native {u : I → T → ℝ} {M : I → ℝ}
+    {hCoord : DefinesLinearOrders (T := T) (I := I) u M}
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M)
     {X : Finset (ExtendedGoods T I)} :
-    isCoordinatePrimitive (T := T) (I := I) u M hCoord X ↔ isPrimitiveNative (IST := IST) X :=
-  ⟨coordinatePrimitive_to_nativePrimitive hu, nativePrimitive_to_coordinatePrimitive hu hM⟩
+    IsPrimitive (T := T) (I := I) u M hCoord X ↔ IsPrimitiveNative (IST := IST) X :=
+  ⟨IsPrimitive.to_native hu, isPrimitive_of_native hu hM⟩
 
 /--
 Scarf's main lemma for the literal coordinate-dominance definition of
 primitive sets on $T \cup I$.
 -/
-theorem coordinatePrimitive_erase_replacement_mainLemma
+theorem IsPrimitive.erase_replacement
     {u : I → T → ℝ} {M : I → ℝ}
-    {hCoord : CoordinateValuesDefineLinearOrders (T := T) (I := I) u M}
-    (hu : PositiveUtilityRealization (IST := IST) u)
+    {hCoord : DefinesLinearOrders (T := T) (I := I) u M}
+    (hu : PositiveRealization (IST := IST) u)
     (hM : SlackBounds (T := T) (I := I) u M)
     {X : Finset (ExtendedGoods T I)}
-    (hX : isCoordinatePrimitive (T := T) (I := I) u M hCoord X)
+    (hX : IsPrimitive (T := T) (I := I) u M hCoord X)
     {x : ExtendedGoods T I} (hx : x ∈ X) :
-    ¬ (fromGoods (T := T) (I := I) (X.erase x)).Nonempty ∨
+    ¬ (goods (T := T) (I := I) (X.erase x)).Nonempty ∨
       ∃! y : ExtendedGoods T I,
-        y ∉ X ∧ isCoordinatePrimitive (T := T) (I := I) u M hCoord (insert y (X.erase x)) := by
+        y ∉ X ∧ IsPrimitive (T := T) (I := I) u M hCoord (insert y (X.erase x)) := by
   obtain hBoundary | hReplace :=
-    native_primitive_erase_replacement_mainLemma
-      (IST := IST) (coordinatePrimitive_to_nativePrimitive hu hX) hx
+    Primitive.IsPrimitive.erase_replacement
+      (IST := IST) (IsPrimitive.to_native hu hX) hx
   · exact Or.inl hBoundary
   · right
     rcases hReplace with ⟨y, ⟨hyNotX, hyPrim⟩, hUnique⟩
-    refine ⟨y, ⟨hyNotX, (coordinatePrimitive_iff_native hu hM).2 hyPrim⟩, ?_⟩
+    refine ⟨y, ⟨hyNotX, (isPrimitive_iff_native hu hM).2 hyPrim⟩, ?_⟩
     intro z hz
-    exact hUnique z ⟨hz.1, (coordinatePrimitive_iff_native hu hM).1 hz.2⟩
+    exact hUnique z ⟨hz.1, (isPrimitive_iff_native hu hM).1 hz.2⟩
 
-end IndexedLOrder
+end Coordinate
+
+end Primitive

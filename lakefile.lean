@@ -7,7 +7,8 @@ package «Gametheory» {
 
 @[default_target]
 lean_lib «Gametheory» {
-  -- add library configuration options here
+  roots := #[`GameTheory]
+  globs := #[.one `GameTheory, .submodules `Gametheory]
 }
 
 --require llmlean from git

@@ -1,0 +1,6 @@
+# Keep generated caches and local review outputs out of source archives.
+.lake/** export-ignore
+output/** export-ignore
+tmp/** export-ignore
+.DS_Store export-ignore
+**/.DS_Store export-ignore

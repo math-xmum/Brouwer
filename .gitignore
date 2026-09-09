@@ -1,1 +1,15 @@
 .lake/
+.DS_Store
+output/
+tmp/
+
+# LaTeX build products (the manuscript sources remain tracked).
+paper/cpp2027/*.aux
+paper/cpp2027/*.bbl
+paper/cpp2027/*.blg
+paper/cpp2027/*.fdb_latexmk
+paper/cpp2027/*.fls
+paper/cpp2027/*.log
+paper/cpp2027/*.out
+paper/cpp2027/*.pdf
+paper/cpp2027/*.synctex.gz
