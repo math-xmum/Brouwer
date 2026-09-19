@@ -1,6 +1,6 @@
 # ScarfPath and Primitive: Entry Points and Usage
 
-These interfaces follow formech's organization: namespaces express object context, names inside them remain short, operations and properties live under the corresponding objects, and Lean infers parameters where possible. They use conventional Lean type and predicate names such as `IsPrimitive` and `ReplacementStep`, rather than copying every historical spelling from formech.
+Namespaces express object context, names inside them remain short, operations and properties live under the corresponding objects, and Lean infers parameters where possible. Types and predicates use conventional Lean names such as `IsPrimitive` and `ReplacementStep`.
 
 ## Choose an entry point
 
@@ -74,5 +74,3 @@ The ambient vertex type of `ScarfPath.graph` consists of all finset pairs; pairs
 All declarations previously exported by these two modules have moved from `IndexedLOrder` to the new namespaces; no compatibility layer for old names was added. See [scarf-primitive-renames.md](scarf-primitive-renames.md) for the complete mapping. Ordinary room/door definitions and `IndexedLOrder.Scarf` are unchanged.
 
 Typical calls change from `IndexedLOrder.GiGraph` to `ScarfPath.graph`, and from `IndexedLOrder.scarfAlgorithmTrace_exists` to `Primitive.Trace.nonempty`. It is generally unnecessary to `open` either namespace; retaining the `Primitive.` / `ScarfPath.` prefixes makes the relevant layer explicit.
-
-`paper/cpp2027/main.tex` and `ARTIFACT.md` use the current interface names. Dated audit and revision reports retain the declaration names and line numbers from their original snapshots. Consult the migration table when reading them, and do not treat historical build records as fresh validation.
