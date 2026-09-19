@@ -1,71 +1,71 @@
-# Brouwer / Gametheory 仓库导览
+# Brouwer / Gametheory Repository Guide
 
-这是一份面向新贡献者的快速索引。仓库使用 Lean 4 和 mathlib，目标是形式化从 Scarf 组合引理、Brouwer 不动点定理到有限博弈混合 Nash 均衡存在性的证明。
+This is a quick index for new contributors. The repository uses Lean 4 and mathlib to formalize a proof route from Scarf's combinatorial lemma through Brouwer's fixed-point theorem to the existence of mixed Nash equilibria in finite games.
 
-## 从这里开始
+## Start here
 
-- [scarf-primitive.md](scarf-primitive.md)：ScarfPath / Primitive 的接口入口、可编译用法与迁移说明。
-- [structure.md](structure.md)：顶层目录、Lean 模块、实际导入关系和核心定理。
-- [development.md](development.md)：环境准备、构建、单文件检查、CI 检查和常见维护命令。
-- 仓库根目录的 [`README.md`](../../README.md)：数学证明路线、主要定义和定理的项目级说明。
+- [scarf-primitive.md](scarf-primitive.md): ScarfPath / Primitive entry points, compilable examples, and migration guidance.
+- [structure.md](structure.md): top-level directories, Lean modules, actual imports, and core theorems.
+- [development.md](development.md): environment setup, builds, single-file checks, CI checks, and common maintenance commands.
+- The root [`README.md`](../../README.md): a project-level account of the mathematical proof route, principal definitions, and theorems.
 
-## 30 秒概览
+## At a glance
 
-- 包名和 Lean 库名：`Gametheory`（见 `lakefile.lean`）。
-- 默认入口：根目录的 `GameTheory.lean`。
-- 源码位置：`Gametheory/*.lean`。
-- 主要最终定理：`Gametheory/Nash.lean` 中的 `ExistsNashEq`。
-- 固定工具链：Lean `4.33.0`（见 `lean-toolchain`）。
-- 直接依赖：mathlib `v4.33.0`；清单记录的提交为 `db584cd6d46c92f209a44c0f1c829460d327499d`。
-- 验证方式：当前仓库没有独立的单元测试目录或 Lake 测试目标；编译整个 Lean 库就是主要检查。
+- Package and Lean library name: `Gametheory` (see `lakefile.lean`).
+- Default entry point: `GameTheory.lean` in the repository root.
+- Source location: `Gametheory/*.lean`.
+- Main final theorem: `ExistsNashEq` in `Gametheory/Nash.lean`.
+- Pinned toolchain: Lean `4.33.0` (see `lean-toolchain`).
+- Direct dependency: mathlib `v4.33.0`; the manifest records commit `db584cd6d46c92f209a44c0f1c829460d327499d`.
+- Validation: the repository has no separate unit-test directory or Lake test target; compiling the entire Lean library is the primary check.
 
-## 快速开始
+## Quick start
 
-先安装 `elan`。在仓库根目录执行：
+Install `elan` first. From the repository root, run:
 
 ```sh
 lake build
 ```
 
-`lean-toolchain` 会让 `elan` 选择项目要求的 Lean 版本；`lake-manifest.json` 固定依赖版本。首次构建需要取得依赖，因此耗时和网络要求会高于后续构建。
+`lean-toolchain` tells `elan` which Lean version to select; `lake-manifest.json` pins the dependencies. The first build must obtain dependencies, so it takes more time and network access than subsequent builds.
 
-构建成功后，可以只检查某个正在修改的模块：
+After a successful build, you can check an individual module while editing:
 
 ```sh
 lake env lean Gametheory/Nash.lean
 ```
 
-提交前仍应重新运行完整构建：
+Before committing, run the full build again:
 
 ```sh
 lake build
 git status --short
 ```
 
-`git status --short` 不是测试，但可帮助发现意外生成或修改的文件。不要为得到“干净”输出而删除自己不认识的改动。
+`git status --short` is not a test, but it helps identify unexpected generated or modified files. Do not delete unfamiliar changes just to obtain a clean status.
 
-## 推荐阅读顺序
+## Suggested reading order
 
-1. `Gametheory/Simplex.lean`：标准单纯形的辅助构造。
-2. `Gametheory/Scarf.lean`：有色 room/door 组合框架与 `Scarf`。
-3. `Gametheory/ScarfPath.lean`：固定颜色图 `G_i` 及路径/环结构。
-4. `Gametheory/Primitive.lean`：primitive/almost-primitive 表述、替换轨迹和坐标实现。
-5. `Gametheory/Brouwer.lean`：单个有限维标准单纯形上的 `Brouwer`。
-6. `Gametheory/Brouwer_product.lean`：有限多个单纯形乘积上的 `Brouwer_Product`。
-7. `Gametheory/Nash.lean`：有限博弈、混合策略、Nash 映射和 `ExistsNashEq`。
-8. `Gametheory/AxiomAudit.lean`：对主要端点执行 `#print axioms`。
+1. `Gametheory/Simplex.lean`: auxiliary constructions for the standard simplex.
+2. `Gametheory/Scarf.lean`: the colored room/door combinatorial framework and `Scarf`.
+3. `Gametheory/ScarfPath.lean`: the fixed-color graph `G_i` and its path/cycle structure.
+4. `Gametheory/Primitive.lean`: primitive/almost-primitive formulations, replacement traces, and coordinate realizations.
+5. `Gametheory/Brouwer.lean`: `Brouwer` on a single finite-dimensional standard simplex.
+6. `Gametheory/Brouwer_product.lean`: `Brouwer_Product` on a finite product of simplices.
+7. `Gametheory/Nash.lean`: finite games, mixed strategies, the Nash map, and `ExistsNashEq`.
+8. `Gametheory/AxiomAudit.lean`: `#print axioms` for the main endpoints.
 
-这是一条理解数学内容的阅读路线，不完全等于编译器的导入顺序。例如 `Primitive.lean` 实际导入 `Brouwer.lean` 和 `ScarfPath.lean`，而 Nash 的直接依赖链并不导入 `Primitive.lean`。准确关系见 [structure.md](structure.md)。
+This order follows the mathematical content, rather than the compiler's import order. For example, `Primitive.lean` imports `ScarfPath.lean`, while the direct Nash dependency chain does not import `Primitive.lean`. See [structure.md](structure.md) for the exact relationships.
 
-## 已确认与未确认
+## Scope of this guide
 
-本导览依据以下仓库内容整理：`README.md`、`lakefile.lean`、`lean-toolchain`、`lake-manifest.json`、`GameTheory.lean`、全部 `Gametheory/*.lean` 导入和主要声明、`.github/workflows/lean.yml`，以及本地存在的 `paper/cpp2027/README.md`。
+This guide was assembled from `README.md`, `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`, `GameTheory.lean`, the imports and main declarations in `Gametheory/*.lean`, `.github/workflows/lean.yml`, and the locally available `paper/cpp2027/README.md`.
 
-尚未在仓库中确认的事项：
+The original guide did not establish the following:
 
-- 没有找到贡献流程、代码风格或分支策略的专门文档。
-- 没有找到独立的测试套件或覆盖率配置。
-- 没有找到发布/打包流程。
-- CI 的 `nanoda` 检查由 `leanprover/lean-action@v1` 配置；仓库没有记录与之完全等价的本地命令。
+- A dedicated contribution process, code style, or branch policy.
+- A separate test suite or coverage configuration.
+- A release or packaging process.
+- An exact local equivalent of the CI `nanoda` check configured through `leanprover/lean-action@v1`.
 
-遇到这些事项时，应先与维护者确认，而不是从本导览推断政策。
+Consult the maintainer on these matters rather than inferring policy from this guide.

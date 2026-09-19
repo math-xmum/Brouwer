@@ -1,10 +1,10 @@
-# ScarfPath / Primitive 声明迁移表
+# ScarfPath / Primitive Declaration Migration Table
 
-这是命名空间与声明名称的完整对应表。左列是原先的声明，右列是当前入口；证明方法、通用图论模块与坐标子命名空间的迁移也包含在内。使用方式见 [接口导览](scarf-primitive.md)。
+This is the complete mapping of namespaces and declaration names. The left column lists previous declarations and the right column lists current entry points, including migrations of proof methods, the general graph module, and the coordinate subnamespace. See the [interface guide](scarf-primitive.md) for usage.
 
-## 固定颜色图
+## Fixed-color graph
 
-| 原声明 | 当前声明 |
+| Previous declaration | Current declaration |
 | --- | --- |
 | `IndexedLOrder.GiCell` | `ScarfPath.Cell` |
 | `IndexedLOrder.GiRoomVertex` | `ScarfPath.IsRoomVertex` |
@@ -41,9 +41,9 @@
 | `IndexedLOrder.GiComponentStructure_of_components_are_paths_or_cycles` | `ScarfPath.componentStructure_of_components_have_spanning_paths_or_cycles` |
 | `IndexedLOrder.GiComponentStructure_holds` | `ScarfPath.component_structure` |
 
-## Primitive 与坐标实现
+## Primitive and coordinate realizations
 
-| 原声明 | 当前声明 |
+| Previous declaration | Current declaration |
 | --- | --- |
 | `IndexedLOrder.ExtendedGoods` | `Primitive.ExtendedGoods` |
 | `IndexedLOrder.toPrimitiveSet` | `Primitive.toPrimitiveSet` |
@@ -220,9 +220,9 @@
 | `IndexedLOrder.coordinatePrimitive_iff_native` | `Primitive.Coordinate.isPrimitive_iff_native` |
 | `IndexedLOrder.coordinatePrimitive_erase_replacement_mainLemma` | `Primitive.Coordinate.IsPrimitive.erase_replacement` |
 
-## 通用图论
+## General graph theory
 
-| 原声明 | 当前声明 |
+| Previous declaration | Current declaration |
 | --- | --- |
 | `IndexedLOrder.simpleGraphDegreeAtMostTwo` | `PathComponents.DegreeAtMostTwo` |
 | `IndexedLOrder.simpleGraphPathComponent` | `PathComponents.ComponentHasSpanningPath` |
